@@ -7,10 +7,17 @@ require (
 	github.com/chainreactors/tui v0.0.0-20250825071101-9e61744e554f
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/mitchellh/mapstructure v1.5.0
-	golang.org/x/exp v0.0.0-20251023183803-a4bb9ffd2546
-	google.golang.org/grpc v1.76.0
-	google.golang.org/protobuf v1.36.10
 	gopkg.in/yaml.v3 v3.0.1
+)
+
+// compatibility
+require (
+	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63
+	golang.org/x/net v0.27.0 // indirect
+	golang.org/x/sync v0.16.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
+	google.golang.org/grpc v1.57.2
+	google.golang.org/protobuf v1.34.1
 )
 
 require (
@@ -26,6 +33,7 @@ require (
 	github.com/charmbracelet/x/term v0.2.1 // indirect
 	github.com/erikgeiser/coninput v0.0.0-20211004153227-1c3628e74d0f // indirect
 	github.com/evertras/bubble-table v0.17.2 // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-localereader v0.0.1 // indirect
@@ -37,9 +45,6 @@ require (
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/sahilm/fuzzy v0.1.1 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
-	golang.org/x/net v0.42.0 // indirect
-	golang.org/x/sync v0.17.0 // indirect
-	golang.org/x/sys v0.34.0 // indirect
 	golang.org/x/text v0.27.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250804133106-a7a43d27e69b // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230530153820-e85fd2cbaebc // indirect
 )
