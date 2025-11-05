@@ -1,4 +1,4 @@
-package session
+package client
 
 import (
 	"context"
@@ -19,7 +19,7 @@ import (
 
 var LogDir string
 
-func NewSession(sess *clientpb.Session, server *ServerStatus) *Session {
+func NewSession(sess *clientpb.Session, server *ServerState) *Session {
 	var data *SessionContext
 	err := json.Unmarshal([]byte(sess.Data), &data)
 	if err != nil {
@@ -43,7 +43,7 @@ type Session struct {
 	ctx      context.Context
 	ctxValue map[string]string
 	Data     *SessionContext
-	Server   *ServerStatus
+	Server   *ServerState
 	Callee   string // cmd/mal/sdk
 	LastTask *clientpb.Task
 	Log      *Logger

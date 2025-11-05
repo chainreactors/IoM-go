@@ -1,4 +1,4 @@
-package session
+package client
 
 import (
 	"context"
@@ -13,9 +13,9 @@ import (
 
 type TaskCallback func(resp *clientpb.TaskContext)
 
-func InitServerStatus(conn *grpc.ClientConn, config *mtls.ClientConfig) (*ServerStatus, error) {
+func NewServerStatus(conn *grpc.ClientConn, config *mtls.ClientConfig) (*ServerState, error) {
 	var err error
-	s := &ServerStatus{
+	s := &ServerState{
 		Rpc: &Rpc{
 			MaliceRPCClient:   clientrpc.NewMaliceRPCClient(conn),
 			ListenerRPCClient: listenerrpc.NewListenerRPCClient(conn),
@@ -48,9 +48,6 @@ func InitServerStatus(conn *grpc.ClientConn, config *mtls.ClientConfig) (*Server
 	if err != nil {
 		return nil, err
 	}
-	if err != nil {
-		return nil, err
-	}
 	return s, nil
 }
 
@@ -59,7 +56,7 @@ type Rpc struct {
 	listenerrpc.ListenerRPCClient
 }
 
-type ServerStatus struct {
+type ServerState struct {
 	*Rpc
 	Info   *clientpb.Basic
 	Client *clientpb.Client
@@ -77,7 +74,7 @@ type ServerStatus struct {
 	EventCallback   map[string]func(*clientpb.Event)
 }
 
-func (s *ServerStatus) Update() error {
+func (s *ServerState) Update() error {
 	clients, err := s.Rpc.GetClients(context.Background(), &clientpb.Empty{})
 	if err != nil {
 		return err
@@ -103,7 +100,7 @@ func (s *ServerStatus) Update() error {
 	return nil
 }
 
-func (s *ServerStatus) AddSession(sess *clientpb.Session) *Session {
+func (s *ServerState) AddSession(sess *clientpb.Session) *Session {
 	if origin, ok := s.Sessions[sess.SessionId]; ok {
 		origin.Session = sess
 		return origin
@@ -113,7 +110,7 @@ func (s *ServerStatus) AddSession(sess *clientpb.Session) *Session {
 	}
 }
 
-func (s *ServerStatus) UpdateSessions(all bool) error {
+func (s *ServerState) UpdateSessions(all bool) error {
 	var sessions *clientpb.Sessions
 	var err error
 	if s == nil {
@@ -141,7 +138,7 @@ func (s *ServerStatus) UpdateSessions(all bool) error {
 	return nil
 }
 
-func (s *ServerStatus) UpdateSession(sid string) (*Session, error) {
+func (s *ServerState) UpdateSession(sid string) (*Session, error) {
 	session, err := s.Rpc.GetSession(context.Background(), &clientpb.SessionRequest{SessionId: sid})
 	if err != nil {
 		return nil, err
@@ -156,7 +153,7 @@ func (s *ServerStatus) UpdateSession(sid string) (*Session, error) {
 	}
 }
 
-func (s *ServerStatus) GetLocalSession(sid string) (*Session, bool) {
+func (s *ServerState) GetLocalSession(sid string) (*Session, bool) {
 	if sess, ok := s.Sessions[sid]; ok {
 		return sess, true
 	} else {
@@ -164,7 +161,7 @@ func (s *ServerStatus) GetLocalSession(sid string) (*Session, bool) {
 	}
 }
 
-func (s *ServerStatus) GetOrUpdateSession(sid string) (*Session, error) {
+func (s *ServerState) GetOrUpdateSession(sid string) (*Session, error) {
 	if sess, ok := s.Sessions[sid]; ok {
 		return sess, nil
 	} else {
@@ -172,7 +169,7 @@ func (s *ServerStatus) GetOrUpdateSession(sid string) (*Session, error) {
 	}
 }
 
-func (s *ServerStatus) AlivedSessions() []*clientpb.Session {
+func (s *ServerState) AlivedSessions() []*clientpb.Session {
 	var alivedSessions []*clientpb.Session
 	for _, session := range s.sessions {
 		if session.IsAlive {
@@ -182,7 +179,7 @@ func (s *ServerStatus) AlivedSessions() []*clientpb.Session {
 	return alivedSessions
 }
 
-func (s *ServerStatus) UpdateTasks(session *Session) error {
+func (s *ServerState) UpdateTasks(session *Session) error {
 	if session == nil {
 		return errors.New("session is nil")
 	}
@@ -197,7 +194,7 @@ func (s *ServerStatus) UpdateTasks(session *Session) error {
 	return nil
 }
 
-func (s *ServerStatus) UpdateListener() error {
+func (s *ServerState) UpdateListener() error {
 	listeners, err := s.Rpc.GetListeners(context.Background(), &clientpb.Empty{})
 	if err != nil {
 		return err
@@ -208,7 +205,7 @@ func (s *ServerStatus) UpdateListener() error {
 	return nil
 }
 
-func (s *ServerStatus) UpdatePipeline() error {
+func (s *ServerState) UpdatePipeline() error {
 	pipelines, err := s.Rpc.ListPipelines(context.Background(), &clientpb.Listener{})
 	if err != nil {
 		return err
@@ -219,17 +216,17 @@ func (s *ServerStatus) UpdatePipeline() error {
 	return nil
 }
 
-func (s *ServerStatus) AddObserver(session *Session) string {
+func (s *ServerState) AddObserver(session *Session) string {
 	Log.Infof("Add observer to %s", session.SessionId)
 	s.Observers[session.SessionId] = session
 	return session.SessionId
 }
 
-func (s *ServerStatus) RemoveObserver(observerID string) {
+func (s *ServerState) RemoveObserver(observerID string) {
 	delete(s.Observers, observerID)
 }
 
-func (s *ServerStatus) ObserverLog(sessionId string) *Logger {
+func (s *ServerState) ObserverLog(sessionId string) *Logger {
 	if s.Session != nil && s.Session.SessionId == sessionId {
 		return s.Session.Log
 	}

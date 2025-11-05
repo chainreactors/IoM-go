@@ -1,4 +1,4 @@
-package session
+package client
 
 import (
 	"encoding/json"
