@@ -2,7 +2,7 @@ package client
 
 import (
 	"encoding/json"
-	clientpb "github.com/chainreactors/IoM-go/proto/client/clientpb"
+	"github.com/chainreactors/IoM-go/proto/client/clientpb"
 	"github.com/chainreactors/IoM-go/proto/implant/implantpb"
 	"github.com/mitchellh/mapstructure"
 )
