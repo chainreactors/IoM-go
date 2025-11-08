@@ -30,13 +30,11 @@ basic:
     server_names: []
     domains: []
 
-  targets:
-  # tcp
-  - address: "127.0.0.1:5001"
-    tcp: {}
+  targets: []
 
 build:
   zigbuild: false
+  obfstr: true
   remap: false # Force refresh remap-path-prefix configuration even if it already exists
   toolchain: "nightly-2023-09-18"
   ollvm:
