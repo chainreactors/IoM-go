@@ -7,8 +7,9 @@
 package listenerrpc
 
 import (
+	"github.com/chainreactors/IoM-go/proto/client/clientpb"
 	"github.com/chainreactors/IoM-go/proto/implant/implantpb"
-	clientpb "github.com/chainreactors/IoM-go/proto/client/clientpb"
+	pro
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"

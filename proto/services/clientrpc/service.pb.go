@@ -7,9 +7,9 @@
 package clientrpc
 
 import (
+	"github.com/chainreactors/IoM-go/proto/client/clientp
 	"github.com/chainreactors/IoM-go/proto/client/rootpb"
 	"github.com/chainreactors/IoM-go/proto/implant/implantpb"
-	clientpb "github.com/chainreactors/IoM-go/proto/client/clientpb"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"

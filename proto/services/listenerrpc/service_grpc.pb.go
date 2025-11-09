@@ -8,7 +8,7 @@ package listenerrpc
 
 import (
 	context "context"
-	clientpb "github.com/chainreactors/IoM-go/proto/client/clientpb"
+	"github.com/chainreactors/IoM-go/proto/client/clientpb"
 	"github.com/chainreactors/IoM-go/proto/implant/implantpb"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
