@@ -5,6 +5,8 @@ const (
 	CalleeMal      = "mal"
 	CalleeSDK      = "sdk"
 	CalleeGui      = "gui"
+	CalleeMCP      = "mcp"
+	CalleeRPC      = "rpc"
 	CalleeExplorer = "explorer"
 	CalleePty      = "pty"
 )
