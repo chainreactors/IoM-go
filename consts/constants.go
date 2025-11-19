@@ -84,12 +84,14 @@ const (
 	ContextDownload   = "download"
 	ContextUpload     = "upload"
 	ContextPort       = "port"
+	ContextMedia      = "media"
 )
 
 const (
 	DownloadPath   = "download"
 	KeyLoggerPath  = "keylogger"
 	ScreenShotPath = "screenshot"
+	MediaPath      = "media"
 	TaskPath       = "task"
 	CachePath      = "cache"
 	RequestPath    = "request"
