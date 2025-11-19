@@ -17,8 +17,14 @@ var (
 	LogLevel = logs.WarnLevel
 	Stdout   = NewStdoutWrapper(os.Stdout)
 	Log      = &Logger{Logger: NewLog(LogLevel)}
-	MuteLog  = &Logger{Logger: NewLog(logs.ImportantLevel + 1)}
+	MuteLog  = newMuteLog()
 )
+
+func newMuteLog() *Logger {
+	log := NewLog(logs.ImportantLevel + 1)
+	log.SetClean(true) // Disable Console() output
+	return &Logger{Logger: log}
+}
 
 var (
 	NewLine                    = "\x1b[1E"
