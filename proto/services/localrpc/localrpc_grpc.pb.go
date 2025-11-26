@@ -31,6 +31,11 @@ type CommandServiceClient interface {
 	ExecuteLua(ctx context.Context, in *ExecuteLuaRequest, opts ...grpc.CallOption) (*ExecuteLuaResponse, error)
 	// GetHistory retrieves rendered history data for a specific task
 	GetHistory(ctx context.Context, in *GetHistoryRequest, opts ...grpc.CallOption) (*GetHistoryResponse, error)
+	// GetSchemas retrieves JSON schemas for commands in specified cobra group
+	// Returns schemas suitable for react-jsonschema-form rendering
+	GetSchemas(ctx context.Context, in *GetSchemasRequest, opts ...grpc.CallOption) (*GetSchemasResponse, error)
+	// GetGroups retrieves information about all available command groups
+	GetGroups(ctx context.Context, in *GetGroupsRequest, opts ...grpc.CallOption) (*GetGroupsResponse, error)
 }
 
 type commandServiceClient struct {
@@ -68,6 +73,24 @@ func (c *commandServiceClient) GetHistory(ctx context.Context, in *GetHistoryReq
 	return out, nil
 }
 
+func (c *commandServiceClient) GetSchemas(ctx context.Context, in *GetSchemasRequest, opts ...grpc.CallOption) (*GetSchemasResponse, error) {
+	out := new(GetSchemasResponse)
+	err := c.cc.Invoke(ctx, "/services.localrpc.CommandService/GetSchemas", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commandServiceClient) GetGroups(ctx context.Context, in *GetGroupsRequest, opts ...grpc.CallOption) (*GetGroupsResponse, error) {
+	out := new(GetGroupsResponse)
+	err := c.cc.Invoke(ctx, "/services.localrpc.CommandService/GetGroups", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CommandServiceServer is the server API for CommandService service.
 // All implementations must embed UnimplementedCommandServiceServer
 // for forward compatibility
@@ -81,6 +104,11 @@ type CommandServiceServer interface {
 	ExecuteLua(context.Context, *ExecuteLuaRequest) (*ExecuteLuaResponse, error)
 	// GetHistory retrieves rendered history data for a specific task
 	GetHistory(context.Context, *GetHistoryRequest) (*GetHistoryResponse, error)
+	// GetSchemas retrieves JSON schemas for commands in specified cobra group
+	// Returns schemas suitable for react-jsonschema-form rendering
+	GetSchemas(context.Context, *GetSchemasRequest) (*GetSchemasResponse, error)
+	// GetGroups retrieves information about all available command groups
+	GetGroups(context.Context, *GetGroupsRequest) (*GetGroupsResponse, error)
 	mustEmbedUnimplementedCommandServiceServer()
 }
 
@@ -96,6 +124,12 @@ func (UnimplementedCommandServiceServer) ExecuteLua(context.Context, *ExecuteLua
 }
 func (UnimplementedCommandServiceServer) GetHistory(context.Context, *GetHistoryRequest) (*GetHistoryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHistory not implemented")
+}
+func (UnimplementedCommandServiceServer) GetSchemas(context.Context, *GetSchemasRequest) (*GetSchemasResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSchemas not implemented")
+}
+func (UnimplementedCommandServiceServer) GetGroups(context.Context, *GetGroupsRequest) (*GetGroupsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGroups not implemented")
 }
 func (UnimplementedCommandServiceServer) mustEmbedUnimplementedCommandServiceServer() {}
 
@@ -164,6 +198,42 @@ func _CommandService_GetHistory_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CommandService_GetSchemas_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSchemasRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommandServiceServer).GetSchemas(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.localrpc.CommandService/GetSchemas",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommandServiceServer).GetSchemas(ctx, req.(*GetSchemasRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommandService_GetGroups_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetGroupsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommandServiceServer).GetGroups(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.localrpc.CommandService/GetGroups",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommandServiceServer).GetGroups(ctx, req.(*GetGroupsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CommandService_ServiceDesc is the grpc.ServiceDesc for CommandService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -182,6 +252,14 @@ var CommandService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetHistory",
 			Handler:    _CommandService_GetHistory_Handler,
+		},
+		{
+			MethodName: "GetSchemas",
+			Handler:    _CommandService_GetSchemas_Handler,
+		},
+		{
+			MethodName: "GetGroups",
+			Handler:    _CommandService_GetGroups_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
