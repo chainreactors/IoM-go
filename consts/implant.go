@@ -127,7 +127,7 @@ var (
 const (
 	Windows = "windows"
 	Linux   = "linux"
-	Darwin
+	Darwin  = "darwin"
 )
 
 const (
