@@ -1,6 +1,7 @@
 package clientpb
 
 import (
+	"encoding/binary"
 	"fmt"
 	"github.com/chainreactors/IoM-go/consts"
 )
@@ -88,4 +89,10 @@ func (pipe *Pipeline) KVMap() (map[string]interface{}, []string) {
 	}
 
 	return pipelineMap, orderedKeys
+}
+
+func (session *Session) Raw() []byte {
+	raw := make([]byte, 4)
+	binary.LittleEndian.PutUint32(raw, session.RawId)
+	return raw
 }
