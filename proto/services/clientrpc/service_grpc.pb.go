@@ -151,6 +151,10 @@ type MaliceRPCClient interface {
 	EXE2Shellcode(ctx context.Context, in *clientpb.EXE2Shellcode, opts ...grpc.CallOption) (*clientpb.Bin, error)
 	DLL2Shellcode(ctx context.Context, in *clientpb.DLL2Shellcode, opts ...grpc.CallOption) (*clientpb.Bin, error)
 	ShellcodeEncode(ctx context.Context, in *clientpb.ShellcodeEncode, opts ...grpc.CallOption) (*clientpb.Bin, error)
+	// malefic-mutant tools
+	MutantSrdi(ctx context.Context, in *clientpb.MutantSrdiRequest, opts ...grpc.CallOption) (*clientpb.Bin, error)
+	MutantStrip(ctx context.Context, in *clientpb.MutantStripRequest, opts ...grpc.CallOption) (*clientpb.Bin, error)
+	MutantSigforge(ctx context.Context, in *clientpb.MutantSigforgeRequest, opts ...grpc.CallOption) (*clientpb.Bin, error)
 	// jobs
 	ListJobs(ctx context.Context, in *clientpb.Empty, opts ...grpc.CallOption) (*clientpb.Pipelines, error)
 	// generator
@@ -1192,6 +1196,33 @@ func (c *maliceRPCClient) ShellcodeEncode(ctx context.Context, in *clientpb.Shel
 	return out, nil
 }
 
+func (c *maliceRPCClient) MutantSrdi(ctx context.Context, in *clientpb.MutantSrdiRequest, opts ...grpc.CallOption) (*clientpb.Bin, error) {
+	out := new(clientpb.Bin)
+	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/MutantSrdi", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *maliceRPCClient) MutantStrip(ctx context.Context, in *clientpb.MutantStripRequest, opts ...grpc.CallOption) (*clientpb.Bin, error) {
+	out := new(clientpb.Bin)
+	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/MutantStrip", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *maliceRPCClient) MutantSigforge(ctx context.Context, in *clientpb.MutantSigforgeRequest, opts ...grpc.CallOption) (*clientpb.Bin, error) {
+	out := new(clientpb.Bin)
+	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/MutantSigforge", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *maliceRPCClient) ListJobs(ctx context.Context, in *clientpb.Empty, opts ...grpc.CallOption) (*clientpb.Pipelines, error) {
 	out := new(clientpb.Pipelines)
 	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/ListJobs", in, out, opts...)
@@ -1583,6 +1614,10 @@ type MaliceRPCServer interface {
 	EXE2Shellcode(context.Context, *clientpb.EXE2Shellcode) (*clientpb.Bin, error)
 	DLL2Shellcode(context.Context, *clientpb.DLL2Shellcode) (*clientpb.Bin, error)
 	ShellcodeEncode(context.Context, *clientpb.ShellcodeEncode) (*clientpb.Bin, error)
+	// malefic-mutant tools
+	MutantSrdi(context.Context, *clientpb.MutantSrdiRequest) (*clientpb.Bin, error)
+	MutantStrip(context.Context, *clientpb.MutantStripRequest) (*clientpb.Bin, error)
+	MutantSigforge(context.Context, *clientpb.MutantSigforgeRequest) (*clientpb.Bin, error)
 	// jobs
 	ListJobs(context.Context, *clientpb.Empty) (*clientpb.Pipelines, error)
 	// generator
@@ -1949,6 +1984,15 @@ func (UnimplementedMaliceRPCServer) DLL2Shellcode(context.Context, *clientpb.DLL
 }
 func (UnimplementedMaliceRPCServer) ShellcodeEncode(context.Context, *clientpb.ShellcodeEncode) (*clientpb.Bin, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ShellcodeEncode not implemented")
+}
+func (UnimplementedMaliceRPCServer) MutantSrdi(context.Context, *clientpb.MutantSrdiRequest) (*clientpb.Bin, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MutantSrdi not implemented")
+}
+func (UnimplementedMaliceRPCServer) MutantStrip(context.Context, *clientpb.MutantStripRequest) (*clientpb.Bin, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MutantStrip not implemented")
+}
+func (UnimplementedMaliceRPCServer) MutantSigforge(context.Context, *clientpb.MutantSigforgeRequest) (*clientpb.Bin, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MutantSigforge not implemented")
 }
 func (UnimplementedMaliceRPCServer) ListJobs(context.Context, *clientpb.Empty) (*clientpb.Pipelines, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListJobs not implemented")
@@ -3997,6 +4041,60 @@ func _MaliceRPC_ShellcodeEncode_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MaliceRPC_MutantSrdi_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.MutantSrdiRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).MutantSrdi(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.MaliceRPC/MutantSrdi",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).MutantSrdi(ctx, req.(*clientpb.MutantSrdiRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaliceRPC_MutantStrip_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.MutantStripRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).MutantStrip(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.MaliceRPC/MutantStrip",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).MutantStrip(ctx, req.(*clientpb.MutantStripRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaliceRPC_MutantSigforge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.MutantSigforgeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).MutantSigforge(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.MaliceRPC/MutantSigforge",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).MutantSigforge(ctx, req.(*clientpb.MutantSigforgeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MaliceRPC_ListJobs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(clientpb.Empty)
 	if err := dec(in); err != nil {
@@ -4953,6 +5051,18 @@ var MaliceRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ShellcodeEncode",
 			Handler:    _MaliceRPC_ShellcodeEncode_Handler,
+		},
+		{
+			MethodName: "MutantSrdi",
+			Handler:    _MaliceRPC_MutantSrdi_Handler,
+		},
+		{
+			MethodName: "MutantStrip",
+			Handler:    _MaliceRPC_MutantStrip_Handler,
+		},
+		{
+			MethodName: "MutantSigforge",
+			Handler:    _MaliceRPC_MutantSigforge_Handler,
 		},
 		{
 			MethodName: "ListJobs",
