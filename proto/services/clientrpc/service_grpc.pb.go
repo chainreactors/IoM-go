@@ -51,7 +51,6 @@ const (
 	MaliceRPC_ListModule_FullMethodName          = "/clientrpc.MaliceRPC/ListModule"
 	MaliceRPC_LoadModule_FullMethodName          = "/clientrpc.MaliceRPC/LoadModule"
 	MaliceRPC_RefreshModule_FullMethodName       = "/clientrpc.MaliceRPC/RefreshModule"
-	MaliceRPC_ModuleCommon_FullMethodName        = "/clientrpc.MaliceRPC/ModuleCommon"
 	MaliceRPC_ExecuteModule_FullMethodName       = "/clientrpc.MaliceRPC/ExecuteModule"
 	MaliceRPC_ListAddon_FullMethodName           = "/clientrpc.MaliceRPC/ListAddon"
 	MaliceRPC_LoadAddon_FullMethodName           = "/clientrpc.MaliceRPC/LoadAddon"
@@ -203,7 +202,6 @@ type MaliceRPCClient interface {
 	ListModule(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
 	LoadModule(ctx context.Context, in *implantpb.LoadModule, opts ...grpc.CallOption) (*clientpb.Task, error)
 	RefreshModule(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
-	ModuleCommon(ctx context.Context, in *implantpb.CommonRequest, opts ...grpc.CallOption) (*clientpb.Task, error)
 	ExecuteModule(ctx context.Context, in *implantpb.ExecuteModuleRequest, opts ...grpc.CallOption) (*clientpb.Task, error)
 	ListAddon(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
 	LoadAddon(ctx context.Context, in *implantpb.LoadAddon, opts ...grpc.CallOption) (*clientpb.Task, error)
@@ -624,15 +622,6 @@ func (c *maliceRPCClient) LoadModule(ctx context.Context, in *implantpb.LoadModu
 func (c *maliceRPCClient) RefreshModule(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error) {
 	out := new(clientpb.Task)
 	err := c.cc.Invoke(ctx, MaliceRPC_RefreshModule_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *maliceRPCClient) ModuleCommon(ctx context.Context, in *implantpb.CommonRequest, opts ...grpc.CallOption) (*clientpb.Task, error) {
-	out := new(clientpb.Task)
-	err := c.cc.Invoke(ctx, MaliceRPC_ModuleCommon_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1676,7 +1665,6 @@ type MaliceRPCServer interface {
 	ListModule(context.Context, *implantpb.Request) (*clientpb.Task, error)
 	LoadModule(context.Context, *implantpb.LoadModule) (*clientpb.Task, error)
 	RefreshModule(context.Context, *implantpb.Request) (*clientpb.Task, error)
-	ModuleCommon(context.Context, *implantpb.CommonRequest) (*clientpb.Task, error)
 	ExecuteModule(context.Context, *implantpb.ExecuteModuleRequest) (*clientpb.Task, error)
 	ListAddon(context.Context, *implantpb.Request) (*clientpb.Task, error)
 	LoadAddon(context.Context, *implantpb.LoadAddon) (*clientpb.Task, error)
@@ -1902,9 +1890,6 @@ func (UnimplementedMaliceRPCServer) LoadModule(context.Context, *implantpb.LoadM
 }
 func (UnimplementedMaliceRPCServer) RefreshModule(context.Context, *implantpb.Request) (*clientpb.Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RefreshModule not implemented")
-}
-func (UnimplementedMaliceRPCServer) ModuleCommon(context.Context, *implantpb.CommonRequest) (*clientpb.Task, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ModuleCommon not implemented")
 }
 func (UnimplementedMaliceRPCServer) ExecuteModule(context.Context, *implantpb.ExecuteModuleRequest) (*clientpb.Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExecuteModule not implemented")
@@ -2773,24 +2758,6 @@ func _MaliceRPC_RefreshModule_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MaliceRPCServer).RefreshModule(ctx, req.(*implantpb.Request))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _MaliceRPC_ModuleCommon_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(implantpb.CommonRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MaliceRPCServer).ModuleCommon(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: MaliceRPC_ModuleCommon_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MaliceRPCServer).ModuleCommon(ctx, req.(*implantpb.CommonRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -4911,10 +4878,6 @@ var MaliceRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RefreshModule",
 			Handler:    _MaliceRPC_RefreshModule_Handler,
-		},
-		{
-			MethodName: "ModuleCommon",
-			Handler:    _MaliceRPC_ModuleCommon_Handler,
 		},
 		{
 			MethodName: "ExecuteModule",
