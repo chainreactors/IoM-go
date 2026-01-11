@@ -2,6 +2,7 @@ package types
 
 import (
 	"errors"
+
 	"github.com/chainreactors/IoM-go/consts"
 	implantpb "github.com/chainreactors/IoM-go/proto/implant/implantpb"
 	"google.golang.org/protobuf/proto"
@@ -116,7 +117,8 @@ func BuildSpite(spite *implantpb.Spite, msg proto.Message) (*implantpb.Spite, er
 	case *implantpb.CommonRequest:
 		spite.Name = msg.Name
 		spite.Body = &implantpb.Spite_Common{Common: msg.Body}
-
+	case *implantpb.Spite:
+		return msg, nil
 	default:
 		return spite, ErrUnknownSpite
 	}

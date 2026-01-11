@@ -4,15 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"path/filepath"
+	"strings"
+	"sync"
+
 	"github.com/chainreactors/IoM-go/consts"
 	"github.com/chainreactors/IoM-go/proto/client/clientpb"
 	"github.com/chainreactors/IoM-go/proto/implant/implantpb"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 	"google.golang.org/grpc/metadata"
-	"path/filepath"
-	"strings"
-	"sync"
 
 	"github.com/chainreactors/logs"
 )
@@ -175,7 +176,7 @@ type ActiveTarget struct {
 
 func (s *ActiveTarget) GetInteractive() *Session {
 	if s.Session == nil {
-		logs.Log.Warn("Please select a session or beacon via `use`")
+		logs.Log.Warn("Please select a session or beacon via `use`\n")
 		return nil
 	}
 	return s.Session
