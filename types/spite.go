@@ -3,6 +3,7 @@ package types
 import (
 	"errors"
 	"fmt"
+
 	implantpb "github.com/chainreactors/IoM-go/proto/implant/implantpb"
 )
 
@@ -84,6 +85,9 @@ func AssertSpite(spite *implantpb.Spite, expect MsgName) error {
 	body := spite.GetBody()
 	if body == nil && expect != MsgNil {
 		return ErrNilResponseBody
+	}
+	if expect == "" {
+		return nil
 	}
 
 	if expect != MessageType(spite) {
