@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/chainreactors/IoM-go/mtls"
 	"github.com/chainreactors/IoM-go/proto/client/clientpb"
 	"github.com/chainreactors/IoM-go/proto/services/clientrpc"
@@ -142,6 +143,9 @@ func (s *ServerState) UpdateSession(sid string) (*Session, error) {
 	session, err := s.Rpc.GetSession(context.Background(), &clientpb.SessionRequest{SessionId: sid})
 	if err != nil {
 		return nil, err
+	}
+	if session == nil || session.SessionId == "" {
+		return nil, fmt.Errorf("session %s not found", sid)
 	}
 	if rawSess, ok := s.Sessions[session.SessionId]; ok {
 		rawSess.Session = session
