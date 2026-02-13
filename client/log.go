@@ -9,8 +9,6 @@ import (
 	"time"
 
 	"github.com/chainreactors/logs"
-	"github.com/chainreactors/tui"
-	"github.com/charmbracelet/lipgloss"
 )
 
 var (
@@ -33,14 +31,12 @@ var (
 	Info            logs.Level = 30
 	Error           logs.Level = 40
 	Important       logs.Level = 50
-	GroupStyle                 = lipgloss.NewStyle().Foreground(lipgloss.Color("#8BE9FD"))
-	NameStyle                  = lipgloss.NewStyle().Foreground(lipgloss.Color("#FF79C6"))
 	DefaultLogStyle            = map[logs.Level]string{
-		Debug:     NewLine + tui.BlueBg.Bold(true).Render(tui.Rocket+"[+]") + " %s",
-		Warn:      NewLine + tui.YellowBg.Bold(true).Render(tui.Zap+"[warn]") + " %s",
-		Important: NewLine + tui.PurpleBg.Bold(true).Render(tui.Fire+"[*]") + " %s",
-		Info:      NewLine + tui.GreenBg.Bold(true).Render(tui.HotSpring+"[i]") + " %s",
-		Error:     NewLine + tui.RedBg.Bold(true).Render(tui.Monster+"[-]") + " %s",
+		Debug:     NewLine + "[+] %s",
+		Warn:      NewLine + "[warn] %s",
+		Important: NewLine + "[*] %s",
+		Info:      NewLine + "[i] %s",
+		Error:     NewLine + "[-] %s",
 	}
 )
 
