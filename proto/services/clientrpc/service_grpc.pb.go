@@ -191,6 +191,7 @@ type MaliceRPCClient interface {
 	AddPort(ctx context.Context, in *clientpb.Context, opts ...grpc.CallOption) (*clientpb.Empty, error)
 	AddUpload(ctx context.Context, in *clientpb.Context, opts ...grpc.CallOption) (*clientpb.Empty, error)
 	AddDownload(ctx context.Context, in *clientpb.Context, opts ...grpc.CallOption) (*clientpb.Empty, error)
+	DeleteContext(ctx context.Context, in *clientpb.Context, opts ...grpc.CallOption) (*clientpb.Empty, error)
 }
 
 type maliceRPCClient struct {
@@ -1484,6 +1485,15 @@ func (c *maliceRPCClient) AddDownload(ctx context.Context, in *clientpb.Context,
 	return out, nil
 }
 
+func (c *maliceRPCClient) DeleteContext(ctx context.Context, in *clientpb.Context, opts ...grpc.CallOption) (*clientpb.Empty, error) {
+	out := new(clientpb.Empty)
+	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/DeleteContext", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MaliceRPCServer is the server API for MaliceRPC service.
 // All implementations must embed UnimplementedMaliceRPCServer
 // for forward compatibility
@@ -1654,6 +1664,7 @@ type MaliceRPCServer interface {
 	AddPort(context.Context, *clientpb.Context) (*clientpb.Empty, error)
 	AddUpload(context.Context, *clientpb.Context) (*clientpb.Empty, error)
 	AddDownload(context.Context, *clientpb.Context) (*clientpb.Empty, error)
+	DeleteContext(context.Context, *clientpb.Context) (*clientpb.Empty, error)
 	mustEmbedUnimplementedMaliceRPCServer()
 }
 
@@ -2080,6 +2091,9 @@ func (UnimplementedMaliceRPCServer) AddUpload(context.Context, *clientpb.Context
 }
 func (UnimplementedMaliceRPCServer) AddDownload(context.Context, *clientpb.Context) (*clientpb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddDownload not implemented")
+}
+func (UnimplementedMaliceRPCServer) DeleteContext(context.Context, *clientpb.Context) (*clientpb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteContext not implemented")
 }
 func (UnimplementedMaliceRPCServer) mustEmbedUnimplementedMaliceRPCServer() {}
 
@@ -4617,6 +4631,24 @@ func _MaliceRPC_AddDownload_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MaliceRPC_DeleteContext_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.Context)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).DeleteContext(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.MaliceRPC/DeleteContext",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).DeleteContext(ctx, req.(*clientpb.Context))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MaliceRPC_ServiceDesc is the grpc.ServiceDesc for MaliceRPC service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -5179,6 +5211,10 @@ var MaliceRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddDownload",
 			Handler:    _MaliceRPC_AddDownload_Handler,
+		},
+		{
+			MethodName: "DeleteContext",
+			Handler:    _MaliceRPC_DeleteContext_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
