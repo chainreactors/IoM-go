@@ -19,6 +19,7 @@ require (
 )
 
 require (
+	github.com/chainreactors/files v0.0.0-20231102192550-a652458cee26 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230530153820-e85fd2cbaebc // indirect
 )

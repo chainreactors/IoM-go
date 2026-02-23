@@ -158,7 +158,8 @@ func Connect(config *ClientConfig) (*grpc.ClientConn, error) {
 		return nil, err
 	}
 
-	ctx, _ := context.WithTimeout(context.Background(), consts.DefaultTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), consts.DefaultTimeout)
+	defer cancel()
 	conn, err := grpc.DialContext(ctx, config.Address(), options...)
 	if err != nil {
 		return nil, err
