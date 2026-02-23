@@ -78,7 +78,7 @@ type Register struct {
 	Addons  []*Addon `protobuf:"bytes,4,rep,name=addons,proto3" json:"addons,omitempty"`
 	Timer   *Timer   `protobuf:"bytes,5,opt,name=timer,proto3" json:"timer,omitempty"`
 	Sysinfo *SysInfo `protobuf:"bytes,11,opt,name=sysinfo,proto3" json:"sysinfo,omitempty"`
-	Secure  *Secure  `protobuf:"bytes,12,opt,name=secure,proto3" json:"secure,omitempty"` // implant的公钥，用于server加密数据
+	Secure  *Secure  `protobuf:"bytes,12,opt,name=secure,proto3" json:"secure,omitempty"` // Implant's public key, used by server to encrypt data
 }
 
 func (x *Register) Reset() {
@@ -170,7 +170,7 @@ type Secure struct {
 	Enable    bool   `protobuf:"varint,1,opt,name=enable,proto3" json:"enable,omitempty"`
 	Key       string `protobuf:"bytes,2,opt,name=key,proto3" json:"key,omitempty"`                              // encryption key
 	Type      string `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`                            // encryption type
-	PublicKey string `protobuf:"bytes,4,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"` // implant的公钥，用于server加密数据
+	PublicKey string `protobuf:"bytes,4,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"` // Implant's public key, used by server to encrypt data
 }
 
 func (x *Secure) Reset() {
@@ -233,16 +233,16 @@ func (x *Secure) GetPublicKey() string {
 	return ""
 }
 
-// Age 密钥交换相关消息
+// Age key exchange related messages
 type KeyExchangeRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	PublicKey string `protobuf:"bytes,1,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"` // 临时公钥 (Age X25519)
-	Signature []byte `protobuf:"bytes,2,opt,name=signature,proto3" json:"signature,omitempty"`                  // 对临时公钥的签名
-	Timestamp uint64 `protobuf:"varint,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`                 // 时间戳
-	Nonce     string `protobuf:"bytes,4,opt,name=nonce,proto3" json:"nonce,omitempty"`                          // 随机数
+	PublicKey string `protobuf:"bytes,1,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"` // Temporary public key (Age X25519)
+	Signature []byte `protobuf:"bytes,2,opt,name=signature,proto3" json:"signature,omitempty"`                  // Signature of temporary public key
+	Timestamp uint64 `protobuf:"varint,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`                 // Timestamp
+	Nonce     string `protobuf:"bytes,4,opt,name=nonce,proto3" json:"nonce,omitempty"`                          // Nonce
 }
 
 func (x *KeyExchangeRequest) Reset() {
@@ -310,7 +310,7 @@ type KeyExchangeResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	PublicKey string `protobuf:"bytes,1,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"` // Server 临时公钥
+	PublicKey string `protobuf:"bytes,1,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"` // Server temporary public key
 }
 
 func (x *KeyExchangeResponse) Reset() {
@@ -3855,13 +3855,13 @@ type RunAsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Username   string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"` // 需要执行的用户名
-	Domain     string `protobuf:"bytes,2,opt,name=domain,proto3" json:"domain,omitempty"`     // 用户所属域
-	Password   string `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"` // 用户密码
-	Program    string `protobuf:"bytes,4,opt,name=program,proto3" json:"program,omitempty"`   // 程序路径
-	Args       string `protobuf:"bytes,5,opt,name=args,proto3" json:"args,omitempty"`         // 程序参数（可选）
+	Username   string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"` // Username to execute as
+	Domain     string `protobuf:"bytes,2,opt,name=domain,proto3" json:"domain,omitempty"`     // User domain
+	Password   string `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"` // User password
+	Program    string `protobuf:"bytes,4,opt,name=program,proto3" json:"program,omitempty"`   // Program path
+	Args       string `protobuf:"bytes,5,opt,name=args,proto3" json:"args,omitempty"`         // Program arguments (optional)
 	UseProfile bool   `protobuf:"varint,6,opt,name=use_profile,json=useProfile,proto3" json:"use_profile,omitempty"`
-	Netonly    bool   `protobuf:"varint,7,opt,name=netonly,proto3" json:"netonly,omitempty"` // 是否仅使用网络凭据 (可选，默认 false)
+	Netonly    bool   `protobuf:"varint,7,opt,name=netonly,proto3" json:"netonly,omitempty"` // Use network credentials only (optional, default false)
 	UseEnv     bool   `protobuf:"varint,8,opt,name=use_env,json=useEnv,proto3" json:"use_env,omitempty"`
 }
 
@@ -4589,11 +4589,11 @@ type PtyResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	SessionId      string            `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`              // 会话ID
-	OutputData     []byte            `protobuf:"bytes,2,opt,name=output_data,json=outputData,proto3" json:"output_data,omitempty"`           // 输出数据（二进制）
-	OutputText     string            `protobuf:"bytes,3,opt,name=output_text,json=outputText,proto3" json:"output_text,omitempty"`           // 输出数据（文本）
-	Error          string            `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`                                       // 错误信息
-	SessionActive  bool              `protobuf:"varint,5,opt,name=session_active,json=sessionActive,proto3" json:"session_active,omitempty"` // 会话是否仍然活跃
+	SessionId      string            `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`              // Session ID
+	OutputData     []byte            `protobuf:"bytes,2,opt,name=output_data,json=outputData,proto3" json:"output_data,omitempty"`           // Output data (binary)
+	OutputText     string            `protobuf:"bytes,3,opt,name=output_text,json=outputText,proto3" json:"output_text,omitempty"`           // Output data (text)
+	Error          string            `protobuf:"bytes,4,opt,name=error,proto3" json:"error,omitempty"`                                       // Error message
+	SessionActive  bool              `protobuf:"varint,5,opt,name=session_active,json=sessionActive,proto3" json:"session_active,omitempty"` // Whether session is still active
 	ActiveSessions []string          `protobuf:"bytes,6,rep,name=active_sessions,json=activeSessions,proto3" json:"active_sessions,omitempty"`
 	Metadata       map[string]string `protobuf:"bytes,7,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }

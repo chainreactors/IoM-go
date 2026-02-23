@@ -5238,12 +5238,6 @@ type RootRPCClient interface {
 	AddListener(ctx context.Context, in *rootpb.Operator, opts ...grpc.CallOption) (*rootpb.Response, error)
 	RemoveListener(ctx context.Context, in *rootpb.Operator, opts ...grpc.CallOption) (*rootpb.Response, error)
 	ListListeners(ctx context.Context, in *rootpb.Operator, opts ...grpc.CallOption) (*clientpb.Listeners, error)
-	// auth management
-	SetOperatorRole(ctx context.Context, in *rootpb.Operator, opts ...grpc.CallOption) (*rootpb.Response, error)
-	RevokeOperator(ctx context.Context, in *rootpb.Operator, opts ...grpc.CallOption) (*rootpb.Response, error)
-	ListAuthzRules(ctx context.Context, in *rootpb.Operator, opts ...grpc.CallOption) (*rootpb.Response, error)
-	AddAuthzRule(ctx context.Context, in *rootpb.Operator, opts ...grpc.CallOption) (*rootpb.Response, error)
-	RemoveAuthzRule(ctx context.Context, in *rootpb.Operator, opts ...grpc.CallOption) (*rootpb.Response, error)
 }
 
 type rootRPCClient struct {
@@ -5308,51 +5302,6 @@ func (c *rootRPCClient) ListListeners(ctx context.Context, in *rootpb.Operator, 
 	return out, nil
 }
 
-func (c *rootRPCClient) SetOperatorRole(ctx context.Context, in *rootpb.Operator, opts ...grpc.CallOption) (*rootpb.Response, error) {
-	out := new(rootpb.Response)
-	err := c.cc.Invoke(ctx, "/clientrpc.RootRPC/SetOperatorRole", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *rootRPCClient) RevokeOperator(ctx context.Context, in *rootpb.Operator, opts ...grpc.CallOption) (*rootpb.Response, error) {
-	out := new(rootpb.Response)
-	err := c.cc.Invoke(ctx, "/clientrpc.RootRPC/RevokeOperator", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *rootRPCClient) ListAuthzRules(ctx context.Context, in *rootpb.Operator, opts ...grpc.CallOption) (*rootpb.Response, error) {
-	out := new(rootpb.Response)
-	err := c.cc.Invoke(ctx, "/clientrpc.RootRPC/ListAuthzRules", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *rootRPCClient) AddAuthzRule(ctx context.Context, in *rootpb.Operator, opts ...grpc.CallOption) (*rootpb.Response, error) {
-	out := new(rootpb.Response)
-	err := c.cc.Invoke(ctx, "/clientrpc.RootRPC/AddAuthzRule", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *rootRPCClient) RemoveAuthzRule(ctx context.Context, in *rootpb.Operator, opts ...grpc.CallOption) (*rootpb.Response, error) {
-	out := new(rootpb.Response)
-	err := c.cc.Invoke(ctx, "/clientrpc.RootRPC/RemoveAuthzRule", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // RootRPCServer is the server API for RootRPC service.
 // All implementations must embed UnimplementedRootRPCServer
 // for forward compatibility
@@ -5364,12 +5313,6 @@ type RootRPCServer interface {
 	AddListener(context.Context, *rootpb.Operator) (*rootpb.Response, error)
 	RemoveListener(context.Context, *rootpb.Operator) (*rootpb.Response, error)
 	ListListeners(context.Context, *rootpb.Operator) (*clientpb.Listeners, error)
-	// auth management
-	SetOperatorRole(context.Context, *rootpb.Operator) (*rootpb.Response, error)
-	RevokeOperator(context.Context, *rootpb.Operator) (*rootpb.Response, error)
-	ListAuthzRules(context.Context, *rootpb.Operator) (*rootpb.Response, error)
-	AddAuthzRule(context.Context, *rootpb.Operator) (*rootpb.Response, error)
-	RemoveAuthzRule(context.Context, *rootpb.Operator) (*rootpb.Response, error)
 	mustEmbedUnimplementedRootRPCServer()
 }
 
@@ -5394,21 +5337,6 @@ func (UnimplementedRootRPCServer) RemoveListener(context.Context, *rootpb.Operat
 }
 func (UnimplementedRootRPCServer) ListListeners(context.Context, *rootpb.Operator) (*clientpb.Listeners, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListListeners not implemented")
-}
-func (UnimplementedRootRPCServer) SetOperatorRole(context.Context, *rootpb.Operator) (*rootpb.Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetOperatorRole not implemented")
-}
-func (UnimplementedRootRPCServer) RevokeOperator(context.Context, *rootpb.Operator) (*rootpb.Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RevokeOperator not implemented")
-}
-func (UnimplementedRootRPCServer) ListAuthzRules(context.Context, *rootpb.Operator) (*rootpb.Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListAuthzRules not implemented")
-}
-func (UnimplementedRootRPCServer) AddAuthzRule(context.Context, *rootpb.Operator) (*rootpb.Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddAuthzRule not implemented")
-}
-func (UnimplementedRootRPCServer) RemoveAuthzRule(context.Context, *rootpb.Operator) (*rootpb.Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RemoveAuthzRule not implemented")
 }
 func (UnimplementedRootRPCServer) mustEmbedUnimplementedRootRPCServer() {}
 
@@ -5531,96 +5459,6 @@ func _RootRPC_ListListeners_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RootRPC_SetOperatorRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(rootpb.Operator)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RootRPCServer).SetOperatorRole(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/clientrpc.RootRPC/SetOperatorRole",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RootRPCServer).SetOperatorRole(ctx, req.(*rootpb.Operator))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _RootRPC_RevokeOperator_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(rootpb.Operator)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RootRPCServer).RevokeOperator(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/clientrpc.RootRPC/RevokeOperator",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RootRPCServer).RevokeOperator(ctx, req.(*rootpb.Operator))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _RootRPC_ListAuthzRules_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(rootpb.Operator)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RootRPCServer).ListAuthzRules(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/clientrpc.RootRPC/ListAuthzRules",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RootRPCServer).ListAuthzRules(ctx, req.(*rootpb.Operator))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _RootRPC_AddAuthzRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(rootpb.Operator)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RootRPCServer).AddAuthzRule(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/clientrpc.RootRPC/AddAuthzRule",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RootRPCServer).AddAuthzRule(ctx, req.(*rootpb.Operator))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _RootRPC_RemoveAuthzRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(rootpb.Operator)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RootRPCServer).RemoveAuthzRule(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/clientrpc.RootRPC/RemoveAuthzRule",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RootRPCServer).RemoveAuthzRule(ctx, req.(*rootpb.Operator))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // RootRPC_ServiceDesc is the grpc.ServiceDesc for RootRPC service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -5651,26 +5489,6 @@ var RootRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListListeners",
 			Handler:    _RootRPC_ListListeners_Handler,
-		},
-		{
-			MethodName: "SetOperatorRole",
-			Handler:    _RootRPC_SetOperatorRole_Handler,
-		},
-		{
-			MethodName: "RevokeOperator",
-			Handler:    _RootRPC_RevokeOperator_Handler,
-		},
-		{
-			MethodName: "ListAuthzRules",
-			Handler:    _RootRPC_ListAuthzRules_Handler,
-		},
-		{
-			MethodName: "AddAuthzRule",
-			Handler:    _RootRPC_AddAuthzRule_Handler,
-		},
-		{
-			MethodName: "RemoveAuthzRule",
-			Handler:    _RootRPC_RemoveAuthzRule_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
