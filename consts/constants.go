@@ -12,7 +12,7 @@ const (
 	ClientMaxReceiveMessageSize = 4 * GB
 	// ServerMaxMessageSize - Server-side max GRPC message size
 	ServerMaxMessageSize = 2 * GB
-	DefaultTimeout       = 10 * time.Second // second
+	DefaultTimeout       = 20 * time.Second // second
 	SyncBuildTimeout     = 300 * time.Second
 )
 
