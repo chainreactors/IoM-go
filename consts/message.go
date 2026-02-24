@@ -261,6 +261,7 @@ const (
 	CommandProfileLoad      = "load"
 	CommandProfileNew       = "new"
 	CommandProfileDelete    = "delete"
+	CommandProfileShow      = "show"
 	CommandSRDI             = "srdi"
 	CommandDonut            = "donut"
 	CommandReg              = "reg"
