@@ -309,6 +309,7 @@ const (
 	CommandCertImport     = "import"
 	CommandCertSelfSigned = "self_signed"
 	CommandCertAcme       = "acme"
+	CommandCertAcmeConfig = "acme_config"
 )
 
 const (

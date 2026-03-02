@@ -174,12 +174,15 @@ type MaliceRPCClient interface {
 	GetGithubConfig(ctx context.Context, in *clientpb.Empty, opts ...grpc.CallOption) (*clientpb.GithubActionBuildConfig, error)
 	UpdateNotifyConfig(ctx context.Context, in *clientpb.Notify, opts ...grpc.CallOption) (*clientpb.Empty, error)
 	GetNotifyConfig(ctx context.Context, in *clientpb.Empty, opts ...grpc.CallOption) (*clientpb.Notify, error)
+	GetAcmeConfig(ctx context.Context, in *clientpb.Empty, opts ...grpc.CallOption) (*clientpb.AcmeConfig, error)
+	UpdateAcmeConfig(ctx context.Context, in *clientpb.AcmeConfig, opts ...grpc.CallOption) (*clientpb.Empty, error)
 	RefreshConfig(ctx context.Context, in *clientpb.Empty, opts ...grpc.CallOption) (*clientpb.Empty, error)
 	// certs
 	DeleteCertificate(ctx context.Context, in *clientpb.Cert, opts ...grpc.CallOption) (*clientpb.Empty, error)
 	UpdateCertificate(ctx context.Context, in *clientpb.TLS, opts ...grpc.CallOption) (*clientpb.Empty, error)
 	GetAllCertificates(ctx context.Context, in *clientpb.Empty, opts ...grpc.CallOption) (*clientpb.Certs, error)
 	DownloadCertificate(ctx context.Context, in *clientpb.Cert, opts ...grpc.CallOption) (*clientpb.TLS, error)
+	ObtainAcmeCert(ctx context.Context, in *clientpb.AcmeRequest, opts ...grpc.CallOption) (*clientpb.Empty, error)
 	// pty
 	PtyRequest(ctx context.Context, in *implantpb.PtyRequest, opts ...grpc.CallOption) (*clientpb.Task, error)
 	// context
@@ -1359,6 +1362,24 @@ func (c *maliceRPCClient) GetNotifyConfig(ctx context.Context, in *clientpb.Empt
 	return out, nil
 }
 
+func (c *maliceRPCClient) GetAcmeConfig(ctx context.Context, in *clientpb.Empty, opts ...grpc.CallOption) (*clientpb.AcmeConfig, error) {
+	out := new(clientpb.AcmeConfig)
+	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/GetAcmeConfig", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *maliceRPCClient) UpdateAcmeConfig(ctx context.Context, in *clientpb.AcmeConfig, opts ...grpc.CallOption) (*clientpb.Empty, error) {
+	out := new(clientpb.Empty)
+	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/UpdateAcmeConfig", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *maliceRPCClient) RefreshConfig(ctx context.Context, in *clientpb.Empty, opts ...grpc.CallOption) (*clientpb.Empty, error) {
 	out := new(clientpb.Empty)
 	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/RefreshConfig", in, out, opts...)
@@ -1398,6 +1419,15 @@ func (c *maliceRPCClient) GetAllCertificates(ctx context.Context, in *clientpb.E
 func (c *maliceRPCClient) DownloadCertificate(ctx context.Context, in *clientpb.Cert, opts ...grpc.CallOption) (*clientpb.TLS, error) {
 	out := new(clientpb.TLS)
 	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/DownloadCertificate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *maliceRPCClient) ObtainAcmeCert(ctx context.Context, in *clientpb.AcmeRequest, opts ...grpc.CallOption) (*clientpb.Empty, error) {
+	out := new(clientpb.Empty)
+	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/ObtainAcmeCert", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1647,12 +1677,15 @@ type MaliceRPCServer interface {
 	GetGithubConfig(context.Context, *clientpb.Empty) (*clientpb.GithubActionBuildConfig, error)
 	UpdateNotifyConfig(context.Context, *clientpb.Notify) (*clientpb.Empty, error)
 	GetNotifyConfig(context.Context, *clientpb.Empty) (*clientpb.Notify, error)
+	GetAcmeConfig(context.Context, *clientpb.Empty) (*clientpb.AcmeConfig, error)
+	UpdateAcmeConfig(context.Context, *clientpb.AcmeConfig) (*clientpb.Empty, error)
 	RefreshConfig(context.Context, *clientpb.Empty) (*clientpb.Empty, error)
 	// certs
 	DeleteCertificate(context.Context, *clientpb.Cert) (*clientpb.Empty, error)
 	UpdateCertificate(context.Context, *clientpb.TLS) (*clientpb.Empty, error)
 	GetAllCertificates(context.Context, *clientpb.Empty) (*clientpb.Certs, error)
 	DownloadCertificate(context.Context, *clientpb.Cert) (*clientpb.TLS, error)
+	ObtainAcmeCert(context.Context, *clientpb.AcmeRequest) (*clientpb.Empty, error)
 	// pty
 	PtyRequest(context.Context, *implantpb.PtyRequest) (*clientpb.Task, error)
 	// context
@@ -2050,6 +2083,12 @@ func (UnimplementedMaliceRPCServer) UpdateNotifyConfig(context.Context, *clientp
 func (UnimplementedMaliceRPCServer) GetNotifyConfig(context.Context, *clientpb.Empty) (*clientpb.Notify, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetNotifyConfig not implemented")
 }
+func (UnimplementedMaliceRPCServer) GetAcmeConfig(context.Context, *clientpb.Empty) (*clientpb.AcmeConfig, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAcmeConfig not implemented")
+}
+func (UnimplementedMaliceRPCServer) UpdateAcmeConfig(context.Context, *clientpb.AcmeConfig) (*clientpb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAcmeConfig not implemented")
+}
 func (UnimplementedMaliceRPCServer) RefreshConfig(context.Context, *clientpb.Empty) (*clientpb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RefreshConfig not implemented")
 }
@@ -2064,6 +2103,9 @@ func (UnimplementedMaliceRPCServer) GetAllCertificates(context.Context, *clientp
 }
 func (UnimplementedMaliceRPCServer) DownloadCertificate(context.Context, *clientpb.Cert) (*clientpb.TLS, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DownloadCertificate not implemented")
+}
+func (UnimplementedMaliceRPCServer) ObtainAcmeCert(context.Context, *clientpb.AcmeRequest) (*clientpb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ObtainAcmeCert not implemented")
 }
 func (UnimplementedMaliceRPCServer) PtyRequest(context.Context, *implantpb.PtyRequest) (*clientpb.Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PtyRequest not implemented")
@@ -4379,6 +4421,42 @@ func _MaliceRPC_GetNotifyConfig_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MaliceRPC_GetAcmeConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).GetAcmeConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.MaliceRPC/GetAcmeConfig",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).GetAcmeConfig(ctx, req.(*clientpb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaliceRPC_UpdateAcmeConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.AcmeConfig)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).UpdateAcmeConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.MaliceRPC/UpdateAcmeConfig",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).UpdateAcmeConfig(ctx, req.(*clientpb.AcmeConfig))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MaliceRPC_RefreshConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(clientpb.Empty)
 	if err := dec(in); err != nil {
@@ -4465,6 +4543,24 @@ func _MaliceRPC_DownloadCertificate_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MaliceRPCServer).DownloadCertificate(ctx, req.(*clientpb.Cert))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaliceRPC_ObtainAcmeCert_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.AcmeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).ObtainAcmeCert(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.MaliceRPC/ObtainAcmeCert",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).ObtainAcmeCert(ctx, req.(*clientpb.AcmeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -5157,6 +5253,14 @@ var MaliceRPC_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MaliceRPC_GetNotifyConfig_Handler,
 		},
 		{
+			MethodName: "GetAcmeConfig",
+			Handler:    _MaliceRPC_GetAcmeConfig_Handler,
+		},
+		{
+			MethodName: "UpdateAcmeConfig",
+			Handler:    _MaliceRPC_UpdateAcmeConfig_Handler,
+		},
+		{
 			MethodName: "RefreshConfig",
 			Handler:    _MaliceRPC_RefreshConfig_Handler,
 		},
@@ -5175,6 +5279,10 @@ var MaliceRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DownloadCertificate",
 			Handler:    _MaliceRPC_DownloadCertificate_Handler,
+		},
+		{
+			MethodName: "ObtainAcmeCert",
+			Handler:    _MaliceRPC_ObtainAcmeCert_Handler,
 		},
 		{
 			MethodName: "PtyRequest",
