@@ -55,6 +55,7 @@ type MaliceRPCClient interface {
 	// implant::internal
 	Ping(ctx context.Context, in *implantpb.Ping, opts ...grpc.CallOption) (*clientpb.Task, error)
 	Sleep(ctx context.Context, in *implantpb.Timer, opts ...grpc.CallOption) (*clientpb.Task, error)
+	Keepalive(ctx context.Context, in *implantpb.CommonBody, opts ...grpc.CallOption) (*clientpb.Task, error)
 	Suicide(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
 	ListModule(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
 	LoadModule(ctx context.Context, in *implantpb.LoadModule, opts ...grpc.CallOption) (*clientpb.Task, error)
@@ -447,6 +448,15 @@ func (c *maliceRPCClient) Ping(ctx context.Context, in *implantpb.Ping, opts ...
 func (c *maliceRPCClient) Sleep(ctx context.Context, in *implantpb.Timer, opts ...grpc.CallOption) (*clientpb.Task, error) {
 	out := new(clientpb.Task)
 	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/Sleep", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *maliceRPCClient) Keepalive(ctx context.Context, in *implantpb.CommonBody, opts ...grpc.CallOption) (*clientpb.Task, error) {
+	out := new(clientpb.Task)
+	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/Keepalive", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1558,6 +1568,7 @@ type MaliceRPCServer interface {
 	// implant::internal
 	Ping(context.Context, *implantpb.Ping) (*clientpb.Task, error)
 	Sleep(context.Context, *implantpb.Timer) (*clientpb.Task, error)
+	Keepalive(context.Context, *implantpb.CommonBody) (*clientpb.Task, error)
 	Suicide(context.Context, *implantpb.Request) (*clientpb.Task, error)
 	ListModule(context.Context, *implantpb.Request) (*clientpb.Task, error)
 	LoadModule(context.Context, *implantpb.LoadModule) (*clientpb.Task, error)
@@ -1779,6 +1790,9 @@ func (UnimplementedMaliceRPCServer) Ping(context.Context, *implantpb.Ping) (*cli
 }
 func (UnimplementedMaliceRPCServer) Sleep(context.Context, *implantpb.Timer) (*clientpb.Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Sleep not implemented")
+}
+func (UnimplementedMaliceRPCServer) Keepalive(context.Context, *implantpb.CommonBody) (*clientpb.Task, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Keepalive not implemented")
 }
 func (UnimplementedMaliceRPCServer) Suicide(context.Context, *implantpb.Request) (*clientpb.Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Suicide not implemented")
@@ -2599,6 +2613,24 @@ func _MaliceRPC_Sleep_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MaliceRPCServer).Sleep(ctx, req.(*implantpb.Timer))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaliceRPC_Keepalive_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(implantpb.CommonBody)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).Keepalive(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.MaliceRPC/Keepalive",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).Keepalive(ctx, req.(*implantpb.CommonBody))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -4847,6 +4879,10 @@ var MaliceRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Sleep",
 			Handler:    _MaliceRPC_Sleep_Handler,
+		},
+		{
+			MethodName: "Keepalive",
+			Handler:    _MaliceRPC_Keepalive_Handler,
 		},
 		{
 			MethodName: "Suicide",

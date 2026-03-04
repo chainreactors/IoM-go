@@ -58,6 +58,7 @@ const (
 	MsgWmiQuery          MsgName = consts.ModuleWmiQuery
 	MsgWmiExecute        MsgName = consts.ModuleWmiExec
 	MsgKeyExchange       MsgName = consts.ModuleKeyExchange
+	MsgKeepalive         MsgName = consts.ModuleKeepalive
 	MsgPty               MsgName = consts.ModulePty
 	MsgPtyRequest        MsgName = consts.ModulePtyRequest
 	MsgPtyResponse       MsgName = consts.ModulePtyResponse
