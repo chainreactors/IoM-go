@@ -24,15 +24,6 @@ func BuildPingSpites() *implantpb.Spites {
 	return BuildOneSpites(BuildPingSpite())
 }
 
-func BuildKeepaliveSpite(enable bool) *implantpb.Spite {
-	return &implantpb.Spite{
-		Name: consts.ModuleKeepalive,
-		Body: &implantpb.Spite_Common{Common: &implantpb.CommonBody{
-			Name:      consts.ModuleKeepalive,
-			BoolArray: []bool{enable},
-		}},
-	}
-}
 
 // BuildSpite build spite request, msg: Spite body
 func BuildSpite(spite *implantpb.Spite, msg proto.Message) (*implantpb.Spite, error) {
