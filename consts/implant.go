@@ -18,6 +18,7 @@ const (
 	ArtifactFromDocker       = "docker"
 	ArtifactFromUpload       = "upload"
 	ArtifactFromSaas         = "saas"
+	ArtifactFromPatch        = "patch"
 )
 
 // Format constants for artifact conversion
@@ -164,6 +165,7 @@ var BuildSource = []string{
 	ArtifactFromDocker,
 	ArtifactFromGithubAction,
 	ArtifactFromSaas,
+	ArtifactFromPatch,
 }
 
 var Modules = []string{
