@@ -85,6 +85,7 @@ type MaliceRPCClient interface {
 	Cp(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
 	Cat(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
 	Mkdir(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
+	Touch(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
 	Chmod(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
 	Chown(ctx context.Context, in *implantpb.ChownRequest, opts ...grpc.CallOption) (*clientpb.Task, error)
 	EnumDrivers(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
@@ -691,6 +692,15 @@ func (c *maliceRPCClient) Cat(ctx context.Context, in *implantpb.Request, opts .
 func (c *maliceRPCClient) Mkdir(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error) {
 	out := new(clientpb.Task)
 	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/Mkdir", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *maliceRPCClient) Touch(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error) {
+	out := new(clientpb.Task)
+	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/Touch", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1598,6 +1608,7 @@ type MaliceRPCServer interface {
 	Cp(context.Context, *implantpb.Request) (*clientpb.Task, error)
 	Cat(context.Context, *implantpb.Request) (*clientpb.Task, error)
 	Mkdir(context.Context, *implantpb.Request) (*clientpb.Task, error)
+	Touch(context.Context, *implantpb.Request) (*clientpb.Task, error)
 	Chmod(context.Context, *implantpb.Request) (*clientpb.Task, error)
 	Chown(context.Context, *implantpb.ChownRequest) (*clientpb.Task, error)
 	EnumDrivers(context.Context, *implantpb.Request) (*clientpb.Task, error)
@@ -1871,6 +1882,9 @@ func (UnimplementedMaliceRPCServer) Cat(context.Context, *implantpb.Request) (*c
 }
 func (UnimplementedMaliceRPCServer) Mkdir(context.Context, *implantpb.Request) (*clientpb.Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Mkdir not implemented")
+}
+func (UnimplementedMaliceRPCServer) Touch(context.Context, *implantpb.Request) (*clientpb.Task, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Touch not implemented")
 }
 func (UnimplementedMaliceRPCServer) Chmod(context.Context, *implantpb.Request) (*clientpb.Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Chmod not implemented")
@@ -3099,6 +3113,24 @@ func _MaliceRPC_Mkdir_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MaliceRPCServer).Mkdir(ctx, req.(*implantpb.Request))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaliceRPC_Touch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(implantpb.Request)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).Touch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.MaliceRPC/Touch",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).Touch(ctx, req.(*implantpb.Request))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -4987,6 +5019,10 @@ var MaliceRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Mkdir",
 			Handler:    _MaliceRPC_Mkdir_Handler,
+		},
+		{
+			MethodName: "Touch",
+			Handler:    _MaliceRPC_Touch_Handler,
 		},
 		{
 			MethodName: "Chmod",

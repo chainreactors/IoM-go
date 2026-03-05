@@ -66,6 +66,7 @@ const (
 	ModuleCd                   = "cd"
 	ModuleMv                   = "mv"
 	ModuleMkdir                = "mkdir"
+	ModuleTouch                = "touch"
 	ModuleRm                   = "rm"
 	ModuleCat                  = "cat"
 	ModulePs                   = "ps"
