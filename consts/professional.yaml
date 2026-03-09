@@ -5,8 +5,9 @@ basic:
     url: ""
   cron: "*/1 * * * * * *" # cron express
   jitter: 0.2
-  server_retry: 10
-  global_retry: 1000000
+  keepalive: false
+  retry: 10             # 重试次数
+  max_cycles: -1        # 最大循环次数，-1 表示无限循环
   encryption: aes
   key: maliceofinternal
 
