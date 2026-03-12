@@ -5645,7 +5645,7 @@ type BuildConfig struct {
 	//	*BuildConfig_GithubAction
 	//	*BuildConfig_Saas
 	SourceConfig isBuildConfig_SourceConfig `protobuf_oneof:"source_config"`
-	Lib          bool                       `protobuf:"varint,13,opt,name=lib,proto3" json:"lib,omitempty"`
+	OutputType   string                     `protobuf:"bytes,13,opt,name=output_type,json=outputType,proto3" json:"output_type,omitempty"`
 	Comment      string                     `protobuf:"bytes,14,opt,name=comment,proto3" json:"comment,omitempty"`
 }
 
@@ -5772,11 +5772,11 @@ func (x *BuildConfig) GetSaas() *SaasBuildConfig {
 	return nil
 }
 
-func (x *BuildConfig) GetLib() bool {
+func (x *BuildConfig) GetOutputType() string {
 	if x != nil {
-		return x.Lib
+		return x.OutputType
 	}
-	return false
+	return ""
 }
 
 func (x *BuildConfig) GetComment() string {
