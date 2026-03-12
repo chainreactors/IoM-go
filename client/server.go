@@ -69,7 +69,6 @@ type ServerState struct {
 	Pipelines       map[string]*clientpb.Pipeline
 	Sessions        map[string]*Session
 	Observers       map[string]*Session
-	sessions        []*clientpb.Session
 	mu              sync.RWMutex
 	FinishCallbacks *sync.Map
 	DoneCallbacks   *sync.Map
@@ -221,7 +220,6 @@ func (s *ServerState) updateSessionsLocked(all bool) error {
 	if err != nil {
 		return err
 	}
-	s.sessions = sessions.Sessions
 	newSessions := make(map[string]*Session)
 
 	for _, session := range sessions.GetSessions() {
@@ -279,9 +277,9 @@ func (s *ServerState) AlivedSessions() []*clientpb.Session {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	var alivedSessions []*clientpb.Session
-	for _, session := range s.sessions {
+	for _, session := range s.Sessions {
 		if session.IsAlive {
-			alivedSessions = append(alivedSessions, session)
+			alivedSessions = append(alivedSessions, session.Session)
 		}
 	}
 	return alivedSessions
