@@ -8,20 +8,23 @@ import (
 )
 
 func NewSessionContext(req *clientpb.RegisterSession) *SessionContext {
+	info := &SessionInfo{
+		Os:       &implantpb.Os{},
+		Process:  &implantpb.Process{},
+		ProxyURL: req.RegisterData.Proxy,
+	}
+	if req.RegisterData.Timer != nil {
+		info.Expression = req.RegisterData.Timer.Expression
+		info.Jitter = req.RegisterData.Timer.Jitter
+	}
 	return &SessionContext{
-		SessionInfo: &SessionInfo{
-			Os:         &implantpb.Os{},
-			Process:    &implantpb.Process{},
-			ProxyURL:   req.RegisterData.Proxy,
-			Expression: req.RegisterData.Timer.Expression,
-			Jitter:     req.RegisterData.Timer.Jitter,
-		},
-		Secure:  req.RegisterData.Secure,
-		KeyPair: nil, // 密钥对在后续初始化时设置
-		Modules: req.RegisterData.Module,
-		Addons:  req.RegisterData.Addons,
-		Argue:   map[string]string{},
-		Any:     map[string]interface{}{},
+		SessionInfo: info,
+		Secure:      req.RegisterData.Secure,
+		KeyPair:     nil, // 密钥对在后续初始化时设置
+		Modules:     req.RegisterData.Module,
+		Addons:      req.RegisterData.Addons,
+		Argue:       map[string]string{},
+		Any:         map[string]interface{}{},
 	}
 }
 
@@ -31,6 +34,7 @@ func RecoverSessionContext(content string) (*SessionContext, error) {
 	if err != nil {
 		return nil, err
 	}
+	sessionContext.Any = make(map[string]interface{})
 	return sessionContext, nil
 }
 
@@ -41,7 +45,7 @@ type SessionContext struct {
 	Modules      []string               `json:"modules"`
 	Addons       []*implantpb.Addon     `json:"addons"`
 	Argue        map[string]string      `json:"argue"` // 参数欺骗
-	Any          map[string]interface{} `json:"any"`
+	Any          map[string]interface{} `json:"-"`
 }
 
 func (ctx *SessionContext) Data() map[string]interface{} {
