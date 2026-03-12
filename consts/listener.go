@@ -6,6 +6,7 @@ const (
 	BindPipeline    = "bind"
 	WebsitePipeline = "website"
 	RemPipeline     = "rem"
+	CustomPipeline  = "custom"
 )
 
 const (
