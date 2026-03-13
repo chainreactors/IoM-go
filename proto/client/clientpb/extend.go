@@ -86,6 +86,17 @@ func (pipe *Pipeline) KVMap() (map[string]interface{}, []string) {
 		pipelineMap["TLS"] = pipe.Tls.Enable
 		pipelineMap["Cert"] = pipe.CertName
 		orderedKeys = append(orderedKeys, "Port", "URL", "TLS", "Cert")
+	case *Pipeline_Custom:
+		if c := pipe.GetCustom(); c != nil {
+			if c.Host != "" {
+				pipelineMap["Host"] = c.Host
+				orderedKeys = append(orderedKeys, "Host")
+			}
+			if c.Port > 0 {
+				pipelineMap["Port"] = c.Port
+				orderedKeys = append(orderedKeys, "Port")
+			}
+		}
 	}
 
 	return pipelineMap, orderedKeys

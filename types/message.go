@@ -62,6 +62,7 @@ const (
 	MsgPty               MsgName = consts.ModulePty
 	MsgPtyRequest        MsgName = consts.ModulePtyRequest
 	MsgPtyResponse       MsgName = consts.ModulePtyResponse
+	MsgLlmEvent          MsgName = "llm_event"
 )
 
 func (r MsgName) String() string {
@@ -139,6 +140,8 @@ func MessageType(message *implantpb.Spite) MsgName {
 		return MsgKeyExchangeResponse
 	case *implantpb.Spite_KeyExchangeRequest:
 		return MsgKeyExchange
+	case *implantpb.Spite_LlmEvent:
+		return MsgName(message.Name)
 	default:
 		return MsgUnknown
 	}
