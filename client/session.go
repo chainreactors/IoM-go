@@ -51,6 +51,13 @@ type Session struct {
 	Locker   *sync.Mutex
 }
 
+func (s *Session) Close() error {
+	if s == nil || s.Log == nil {
+		return nil
+	}
+	return s.Log.Close()
+}
+
 func (s *Session) Clone(callee string) *Session {
 	return &Session{
 		Data:     s.Data,

@@ -178,3 +178,12 @@ func (l *Logger) FileLog(s string) {
 		l.logFile.Sync()
 	}
 }
+
+func (l *Logger) Close() error {
+	if l == nil || l.logFile == nil {
+		return nil
+	}
+	err := l.logFile.Close()
+	l.logFile = nil
+	return err
+}

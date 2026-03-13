@@ -6,7 +6,14 @@ import (
 	"github.com/chainreactors/IoM-go/consts"
 )
 
+func tlsEnabled(pipe *Pipeline) bool {
+	return pipe != nil && pipe.Tls != nil && pipe.Tls.Enable
+}
+
 func (pipe *Pipeline) Address() string {
+	if pipe == nil {
+		return ""
+	}
 	switch body := pipe.Body.(type) {
 	case *Pipeline_Http:
 		return fmt.Sprintf("%s:%d", pipe.Ip, body.Http.Port)
@@ -29,17 +36,29 @@ func (task *Task) Progress() string {
 
 func (pipe *Pipeline) URL() string {
 	scheme := "http"
-	if pipe.Tls.Enable {
+	if tlsEnabled(pipe) {
 		scheme = "https"
+	}
+	if pipe == nil {
+		return ""
 	}
 
 	if pipe.Type == consts.WebsitePipeline {
 		web := pipe.GetWeb()
+		if web == nil {
+			return ""
+		}
 		// baseURL 只到 host:port
 		return fmt.Sprintf("%s://%s:%d", scheme, pipe.Ip, web.Port) + web.Root
 	} else if pipe.Type == consts.HTTPPipeline {
+		if pipe.GetHttp() == nil {
+			return ""
+		}
 		return fmt.Sprintf("%s://%s:%d", scheme, pipe.Ip, pipe.GetHttp().Port)
 	} else if pipe.Type == consts.TCPPipeline {
+		if pipe.GetTcp() == nil {
+			return ""
+		}
 		return fmt.Sprintf("tcp://%s:%d", pipe.Ip, pipe.GetTcp().Port)
 	}
 
@@ -66,12 +85,12 @@ func (pipe *Pipeline) KVMap() (map[string]interface{}, []string) {
 	switch pipe.Body.(type) {
 	case *Pipeline_Tcp:
 		pipelineMap["Address"] = pipe.Address()
-		pipelineMap["TLS"] = pipe.Tls.Enable
+		pipelineMap["TLS"] = tlsEnabled(pipe)
 		pipelineMap["Cert"] = pipe.CertName
 		orderedKeys = append(orderedKeys, "Address", "TLS", "Cert")
 	case *Pipeline_Http:
 		pipelineMap["Address"] = pipe.Address()
-		pipelineMap["TLS"] = pipe.Tls.Enable
+		pipelineMap["TLS"] = tlsEnabled(pipe)
 		pipelineMap["Cert"] = pipe.CertName
 		orderedKeys = append(orderedKeys, "Address", "TLS", "Cert")
 	case *Pipeline_Bind:
@@ -83,7 +102,7 @@ func (pipe *Pipeline) KVMap() (map[string]interface{}, []string) {
 	case *Pipeline_Web:
 		pipelineMap["Port"] = pipe.GetWeb().Port
 		pipelineMap["URL"] = pipe.URL()
-		pipelineMap["TLS"] = pipe.Tls.Enable
+		pipelineMap["TLS"] = tlsEnabled(pipe)
 		pipelineMap["Cert"] = pipe.CertName
 		orderedKeys = append(orderedKeys, "Port", "URL", "TLS", "Cert")
 	case *Pipeline_Custom:

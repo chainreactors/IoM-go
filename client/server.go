@@ -112,17 +112,70 @@ func (s *ServerState) reconcileSession(event *clientpb.Event) {
 }
 
 func (s *ServerState) reconcilePipeline(event *clientpb.Event) {
-	pipeline := event.GetJob().GetPipeline()
+	job := event.GetJob()
+	pipeline := job.GetPipeline()
 	if pipeline == nil {
 		return
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	switch event.Op {
-	case consts.CtrlPipelineSync, consts.CtrlPipelineStart:
+	case consts.CtrlPipelineSync, consts.CtrlPipelineStart, consts.CtrlWebsiteStart, consts.CtrlRemStart:
 		s.Pipelines[pipeline.Name] = pipeline
-	case consts.CtrlPipelineStop:
+	case consts.CtrlPipelineStop, consts.CtrlWebsiteStop, consts.CtrlRemStop:
 		delete(s.Pipelines, pipeline.Name)
+	case consts.CtrlWebContentAdd, consts.CtrlWebContentAddArtifact:
+		current, ok := s.Pipelines[pipeline.Name]
+		if !ok || current == nil {
+			s.Pipelines[pipeline.Name] = pipeline
+			current = pipeline
+		}
+		if current.GetWeb() == nil {
+			s.Pipelines[pipeline.Name] = pipeline
+			return
+		}
+		if current.GetWeb().Contents == nil {
+			current.GetWeb().Contents = make(map[string]*clientpb.WebContent)
+		}
+		for path, content := range pipeline.GetWeb().GetContents() {
+			if content == nil {
+				continue
+			}
+			if path == "" {
+				path = content.Path
+			}
+			current.GetWeb().Contents[path] = content
+		}
+		for path, content := range job.GetContents() {
+			if content == nil {
+				continue
+			}
+			if path == "" {
+				path = content.Path
+			}
+			current.GetWeb().Contents[path] = content
+		}
+	case consts.CtrlWebContentRemove:
+		current, ok := s.Pipelines[pipeline.Name]
+		if !ok || current == nil || current.GetWeb() == nil || current.GetWeb().Contents == nil {
+			return
+		}
+		for path, content := range pipeline.GetWeb().GetContents() {
+			if path == "" && content != nil {
+				path = content.Path
+			}
+			if path != "" {
+				delete(current.GetWeb().Contents, path)
+			}
+		}
+		for path, content := range job.GetContents() {
+			if path == "" && content != nil {
+				path = content.Path
+			}
+			if path != "" {
+				delete(current.GetWeb().Contents, path)
+			}
+		}
 	}
 }
 
@@ -332,6 +385,27 @@ func (s *ServerState) updatePipelineLocked() error {
 	s.Pipelines = make(map[string]*clientpb.Pipeline)
 	for _, pipeline := range pipelines.GetPipelines() {
 		s.Pipelines[pipeline.Name] = pipeline
+	}
+
+	websites, err := s.Rpc.ListWebsites(context.Background(), &clientpb.Listener{})
+	if err != nil {
+		return err
+	}
+	for _, website := range websites.GetPipelines() {
+		if web := website.GetWeb(); web != nil {
+			contents, contentErr := s.Rpc.ListWebContent(context.Background(), &clientpb.Website{Name: website.Name})
+			if contentErr != nil {
+				return contentErr
+			}
+			web.Contents = make(map[string]*clientpb.WebContent, len(contents.GetContents()))
+			for _, content := range contents.GetContents() {
+				if content == nil {
+					continue
+				}
+				web.Contents[content.Path] = content
+			}
+		}
+		s.Pipelines[website.Name] = website
 	}
 	return nil
 }
