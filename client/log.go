@@ -32,11 +32,11 @@ var (
 	Error           logs.Level = 40
 	Important       logs.Level = 50
 	DefaultLogStyle            = map[logs.Level]string{
-		Debug:     NewLine + "[+] %s",
-		Warn:      NewLine + "[warn] %s",
-		Important: NewLine + "[*] %s",
-		Info:      NewLine + "[i] %s",
-		Error:     NewLine + "[-] %s",
+		Debug:     NewLine + "\033[0;90m●\033[0m %s",
+		Warn:      NewLine + "\033[1;33m●\033[0m %s",
+		Important: NewLine + "\033[1;35m●\033[0m %s",
+		Info:      NewLine + "\033[0;36m●\033[0m %s",
+		Error:     NewLine + "\033[1;31m●\033[0m %s",
 	}
 )
 
@@ -60,6 +60,14 @@ func NewStdoutWrapper(stdout io.Writer) *StdoutWrapper {
 		bufferSize: 0,
 		maxSize:    1000,
 	}
+}
+
+// SetWriter replaces the underlying output writer.
+// Used to route output through TransientPrintf for prompt-safe async display.
+func (w *StdoutWrapper) SetWriter(writer io.Writer) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	w.stdout = writer
 }
 
 // RemoveOldestEntries 删除指定数量的最早日志条目
