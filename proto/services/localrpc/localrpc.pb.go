@@ -28,7 +28,7 @@ type ExecuteCommandRequest struct {
 
 	// The command to execute, exactly as you would type it in the console
 	// Examples:
-	// - "session --all --static" - List all sessions
+	// - "session --all" - List all sessions
 	// - "use <session_id>" - Switch to a session
 	// - "whoami" - Execute whoami in current session (requires active session)
 	// - "ls" - List files in current directory (requires active session)
