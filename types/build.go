@@ -24,7 +24,6 @@ func BuildPingSpites() *implantpb.Spites {
 	return BuildOneSpites(BuildPingSpite())
 }
 
-
 // BuildSpite build spite request, msg: Spite body
 func BuildSpite(spite *implantpb.Spite, msg proto.Message) (*implantpb.Spite, error) {
 	switch msg := msg.(type) {
@@ -100,6 +99,9 @@ func BuildSpite(spite *implantpb.Spite, msg proto.Message) (*implantpb.Spite, er
 	case *implantpb.WmiMethodRequest:
 		spite.Name = MsgWmiExecute.String()
 		spite.Body = &implantpb.Spite_WmiMethodRequest{WmiMethodRequest: msg}
+	case *implantpb.RunAsRequest:
+		spite.Name = consts.ModuleRunas
+		spite.Body = &implantpb.Spite_RunasRequest{RunasRequest: msg}
 	case *implantpb.PipeRequest:
 		spite.Name = msg.Type
 		spite.Body = &implantpb.Spite_PipeRequest{PipeRequest: msg.Pipe}
