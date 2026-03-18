@@ -10,8 +10,10 @@ var (
 	// ErrInvalidSessionID - Invalid Session ID in request
 	ErrInvalidSessionID = status.Error(codes.InvalidArgument, "Invalid session ID")
 	ErrInvalidateTarget = status.Error(codes.InvalidArgument, "target not validate")
-	// ErrMissingRequestField - Returned when a request does not contain a  implantpb.Request
-	ErrMissingRequestField = status.Error(codes.InvalidArgument, "Missing session request field")
+	// ErrMissingRequestField - Returned when a request is missing a required field.
+	ErrMissingRequestField = status.Error(codes.InvalidArgument, "missing required request field")
+	// ErrMissingSessionRequestField - Returned when a session-scoped request is missing required session fields.
+	ErrMissingSessionRequestField = status.Error(codes.InvalidArgument, "missing session request field")
 	// ErrAsyncNotSupported - Unsupported mode / command type
 	ErrAsyncNotSupported = status.Error(codes.Unavailable, "Async not supported for this command")
 	// ErrDatabaseFailure - Generic database failure error (real error is logged)
