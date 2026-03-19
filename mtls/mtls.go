@@ -53,6 +53,10 @@ func GetGrpcOptions(caCertificate []byte, certificate []byte, privateKey []byte,
 	tlsConfig := &tls.Config{
 		Certificates:       []tls.Certificate{certPEM},
 		RootCAs:            caCertPool,
+		// InsecureSkipVerify is intentionally true because we use a private CA
+		// that is not in the system root store. Certificate verification is
+		// performed by the custom VerifyPeerCertificate callback below, which
+		// validates the server cert against our private CA.
 		InsecureSkipVerify: true,
 		VerifyPeerCertificate: func(rawCerts [][]byte, _ [][]*x509.Certificate) error {
 			return VerifyCertificate(caCertificate, rawCerts)
