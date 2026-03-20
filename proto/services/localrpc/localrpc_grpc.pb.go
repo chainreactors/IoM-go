@@ -25,6 +25,7 @@ const (
 	CommandService_GetSchemas_FullMethodName     = "/services.localrpc.CommandService/GetSchemas"
 	CommandService_GetGroups_FullMethodName      = "/services.localrpc.CommandService/GetGroups"
 	CommandService_SearchCommands_FullMethodName = "/services.localrpc.CommandService/SearchCommands"
+	CommandService_StreamCommand_FullMethodName  = "/services.localrpc.CommandService/StreamCommand"
 )
 
 // CommandServiceClient is the client API for CommandService service.
@@ -48,6 +49,8 @@ type CommandServiceClient interface {
 	// SearchCommands searches for commands by name or description with fuzzy matching
 	// Returns lightweight command summaries to avoid context pollution
 	SearchCommands(ctx context.Context, in *SearchCommandsRequest, opts ...grpc.CallOption) (*SearchCommandsResponse, error)
+	// StreamCommand executes a command and continuously streams back task event output.
+	StreamCommand(ctx context.Context, in *ExecuteCommandRequest, opts ...grpc.CallOption) (CommandService_StreamCommandClient, error)
 }
 
 type commandServiceClient struct {
@@ -112,6 +115,38 @@ func (c *commandServiceClient) SearchCommands(ctx context.Context, in *SearchCom
 	return out, nil
 }
 
+func (c *commandServiceClient) StreamCommand(ctx context.Context, in *ExecuteCommandRequest, opts ...grpc.CallOption) (CommandService_StreamCommandClient, error) {
+	stream, err := c.cc.NewStream(ctx, &CommandService_ServiceDesc.Streams[0], CommandService_StreamCommand_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &commandServiceStreamCommandClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type CommandService_StreamCommandClient interface {
+	Recv() (*ExecuteCommandResponse, error)
+	grpc.ClientStream
+}
+
+type commandServiceStreamCommandClient struct {
+	grpc.ClientStream
+}
+
+func (x *commandServiceStreamCommandClient) Recv() (*ExecuteCommandResponse, error) {
+	m := new(ExecuteCommandResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // CommandServiceServer is the server API for CommandService service.
 // All implementations must embed UnimplementedCommandServiceServer
 // for forward compatibility
@@ -133,7 +168,22 @@ type CommandServiceServer interface {
 	// SearchCommands searches for commands by name or description with fuzzy matching
 	// Returns lightweight command summaries to avoid context pollution
 	SearchCommands(context.Context, *SearchCommandsRequest) (*SearchCommandsResponse, error)
+	// StreamCommand executes a command and continuously streams back task event output.
+	StreamCommand(*ExecuteCommandRequest, CommandService_StreamCommandServer) error
 	mustEmbedUnimplementedCommandServiceServer()
+}
+
+type CommandService_StreamCommandServer interface {
+	Send(*ExecuteCommandResponse) error
+	grpc.ServerStream
+}
+
+type commandServiceStreamCommandServer struct {
+	grpc.ServerStream
+}
+
+func (x *commandServiceStreamCommandServer) Send(m *ExecuteCommandResponse) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 // UnimplementedCommandServiceServer must be embedded to have forward compatible implementations.
@@ -157,6 +207,9 @@ func (UnimplementedCommandServiceServer) GetGroups(context.Context, *GetGroupsRe
 }
 func (UnimplementedCommandServiceServer) SearchCommands(context.Context, *SearchCommandsRequest) (*SearchCommandsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchCommands not implemented")
+}
+func (UnimplementedCommandServiceServer) StreamCommand(*ExecuteCommandRequest, CommandService_StreamCommandServer) error {
+	return status.Errorf(codes.Unimplemented, "method StreamCommand not implemented")
 }
 func (UnimplementedCommandServiceServer) mustEmbedUnimplementedCommandServiceServer() {}
 
@@ -279,6 +332,14 @@ func _CommandService_SearchCommands_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CommandService_StreamCommand_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ExecuteCommandRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(CommandServiceServer).StreamCommand(m, &commandServiceStreamCommandServer{stream})
+}
+
 // CommandService_ServiceDesc is the grpc.ServiceDesc for CommandService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -311,6 +372,12 @@ var CommandService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CommandService_SearchCommands_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "StreamCommand",
+			Handler:       _CommandService_StreamCommand_Handler,
+			ServerStreams:  true,
+		},
+	},
 	Metadata: "services/localrpc/localrpc.proto",
 }
