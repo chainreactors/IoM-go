@@ -36,6 +36,10 @@ type CommandServiceClient interface {
 	GetSchemas(ctx context.Context, in *GetSchemasRequest, opts ...grpc.CallOption) (*GetSchemasResponse, error)
 	// GetGroups retrieves information about all available command groups
 	GetGroups(ctx context.Context, in *GetGroupsRequest, opts ...grpc.CallOption) (*GetGroupsResponse, error)
+	// SearchCommands searches for commands by name and description
+	SearchCommands(ctx context.Context, in *SearchCommandsRequest, opts ...grpc.CallOption) (*SearchCommandsResponse, error)
+	// StreamCommand executes a command and streams back task event output
+	StreamCommand(ctx context.Context, in *ExecuteCommandRequest, opts ...grpc.CallOption) (CommandService_StreamCommandClient, error)
 }
 
 type commandServiceClient struct {
@@ -91,6 +95,47 @@ func (c *commandServiceClient) GetGroups(ctx context.Context, in *GetGroupsReque
 	return out, nil
 }
 
+func (c *commandServiceClient) SearchCommands(ctx context.Context, in *SearchCommandsRequest, opts ...grpc.CallOption) (*SearchCommandsResponse, error) {
+	out := new(SearchCommandsResponse)
+	err := c.cc.Invoke(ctx, "/services.localrpc.CommandService/SearchCommands", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commandServiceClient) StreamCommand(ctx context.Context, in *ExecuteCommandRequest, opts ...grpc.CallOption) (CommandService_StreamCommandClient, error) {
+	stream, err := c.cc.NewStream(ctx, &CommandService_ServiceDesc.Streams[0], "/services.localrpc.CommandService/StreamCommand", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &commandServiceStreamCommandClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type CommandService_StreamCommandClient interface {
+	Recv() (*ExecuteCommandResponse, error)
+	grpc.ClientStream
+}
+
+type commandServiceStreamCommandClient struct {
+	grpc.ClientStream
+}
+
+func (x *commandServiceStreamCommandClient) Recv() (*ExecuteCommandResponse, error) {
+	m := new(ExecuteCommandResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // CommandServiceServer is the server API for CommandService service.
 // All implementations must embed UnimplementedCommandServiceServer
 // for forward compatibility
@@ -109,6 +154,10 @@ type CommandServiceServer interface {
 	GetSchemas(context.Context, *GetSchemasRequest) (*GetSchemasResponse, error)
 	// GetGroups retrieves information about all available command groups
 	GetGroups(context.Context, *GetGroupsRequest) (*GetGroupsResponse, error)
+	// SearchCommands searches for commands by name and description
+	SearchCommands(context.Context, *SearchCommandsRequest) (*SearchCommandsResponse, error)
+	// StreamCommand executes a command and streams back task event output
+	StreamCommand(*ExecuteCommandRequest, CommandService_StreamCommandServer) error
 	mustEmbedUnimplementedCommandServiceServer()
 }
 
@@ -130,6 +179,12 @@ func (UnimplementedCommandServiceServer) GetSchemas(context.Context, *GetSchemas
 }
 func (UnimplementedCommandServiceServer) GetGroups(context.Context, *GetGroupsRequest) (*GetGroupsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGroups not implemented")
+}
+func (UnimplementedCommandServiceServer) SearchCommands(context.Context, *SearchCommandsRequest) (*SearchCommandsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchCommands not implemented")
+}
+func (UnimplementedCommandServiceServer) StreamCommand(*ExecuteCommandRequest, CommandService_StreamCommandServer) error {
+	return status.Errorf(codes.Unimplemented, "method StreamCommand not implemented")
 }
 func (UnimplementedCommandServiceServer) mustEmbedUnimplementedCommandServiceServer() {}
 
@@ -234,6 +289,45 @@ func _CommandService_GetGroups_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CommandService_SearchCommands_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchCommandsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommandServiceServer).SearchCommands(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.localrpc.CommandService/SearchCommands",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommandServiceServer).SearchCommands(ctx, req.(*SearchCommandsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommandService_StreamCommand_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ExecuteCommandRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(CommandServiceServer).StreamCommand(m, &commandServiceStreamCommandServer{stream})
+}
+
+type CommandService_StreamCommandServer interface {
+	Send(*ExecuteCommandResponse) error
+	grpc.ServerStream
+}
+
+type commandServiceStreamCommandServer struct {
+	grpc.ServerStream
+}
+
+func (x *commandServiceStreamCommandServer) Send(m *ExecuteCommandResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // CommandService_ServiceDesc is the grpc.ServiceDesc for CommandService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -261,7 +355,17 @@ var CommandService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "GetGroups",
 			Handler:    _CommandService_GetGroups_Handler,
 		},
+		{
+			MethodName: "SearchCommands",
+			Handler:    _CommandService_SearchCommands_Handler,
+		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "StreamCommand",
+			Handler:       _CommandService_StreamCommand_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "services/localrpc/localrpc.proto",
 }
