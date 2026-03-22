@@ -104,9 +104,8 @@ func (s *ServerState) reconcileSession(event *clientpb.Event) {
 		s.addSessionLocked(event.Session)
 	case consts.CtrlSessionDead:
 		sid := event.Session.SessionId
-		delete(s.Sessions, sid)
-		if s.ActiveTarget != nil && s.Session != nil && s.Session.SessionId == sid {
-			s.Background()
+		if origin, ok := s.Sessions[sid]; ok {
+			origin.IsAlive = false
 		}
 	}
 }
