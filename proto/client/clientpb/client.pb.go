@@ -5104,7 +5104,7 @@ type REMAgent struct {
 
 	PipelineId string   `protobuf:"bytes,1,opt,name=pipeline_id,json=pipelineId,proto3" json:"pipeline_id,omitempty"`
 	Id         string   `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
-	Mod        string   `protobuf:"bytes,3,opt,name=mod,proto3" json:"mod,omitempty"`
+	InboundSide string   `protobuf:"bytes,3,opt,name=inbound_side,json=inboundSide,proto3" json:"inbound_side,omitempty"`
 	Local      string   `protobuf:"bytes,4,opt,name=local,proto3" json:"local,omitempty"`
 	Remote     string   `protobuf:"bytes,5,opt,name=remote,proto3" json:"remote,omitempty"`
 	Enable     bool     `protobuf:"varint,6,opt,name=enable,proto3" json:"enable,omitempty"`
@@ -5158,9 +5158,9 @@ func (x *REMAgent) GetId() string {
 	return ""
 }
 
-func (x *REMAgent) GetMod() string {
+func (x *REMAgent) GetInboundSide() string {
 	if x != nil {
-		return x.Mod
+		return x.InboundSide
 	}
 	return ""
 }
