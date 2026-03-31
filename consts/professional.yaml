@@ -36,7 +36,7 @@ build:
   zigbuild: false
   obfstr: true
   remap: false # Force refresh remap-path-prefix configuration even if it already exists
-  toolchain: "nightly-2023-09-18"
+  toolchain: "nightly-2024-02-03"
   ollvm:
     enable: false
     bcfobf: false # Bogus Control Flow Obfuscation
