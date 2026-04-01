@@ -50,6 +50,8 @@ type CommandServiceClient interface {
 	// Returns lightweight command summaries to avoid context pollution
 	SearchCommands(ctx context.Context, in *SearchCommandsRequest, opts ...grpc.CallOption) (*SearchCommandsResponse, error)
 	// StreamCommand executes a command and continuously streams back task event output.
+	// Suitable for any command that produces persistent EventTaskDone events (e.g. tapping, poison).
+	// The client cancels the context to stop the stream.
 	StreamCommand(ctx context.Context, in *ExecuteCommandRequest, opts ...grpc.CallOption) (CommandService_StreamCommandClient, error)
 }
 
@@ -169,21 +171,10 @@ type CommandServiceServer interface {
 	// Returns lightweight command summaries to avoid context pollution
 	SearchCommands(context.Context, *SearchCommandsRequest) (*SearchCommandsResponse, error)
 	// StreamCommand executes a command and continuously streams back task event output.
+	// Suitable for any command that produces persistent EventTaskDone events (e.g. tapping, poison).
+	// The client cancels the context to stop the stream.
 	StreamCommand(*ExecuteCommandRequest, CommandService_StreamCommandServer) error
 	mustEmbedUnimplementedCommandServiceServer()
-}
-
-type CommandService_StreamCommandServer interface {
-	Send(*ExecuteCommandResponse) error
-	grpc.ServerStream
-}
-
-type commandServiceStreamCommandServer struct {
-	grpc.ServerStream
-}
-
-func (x *commandServiceStreamCommandServer) Send(m *ExecuteCommandResponse) error {
-	return x.ServerStream.SendMsg(m)
 }
 
 // UnimplementedCommandServiceServer must be embedded to have forward compatible implementations.
@@ -340,6 +331,19 @@ func _CommandService_StreamCommand_Handler(srv interface{}, stream grpc.ServerSt
 	return srv.(CommandServiceServer).StreamCommand(m, &commandServiceStreamCommandServer{stream})
 }
 
+type CommandService_StreamCommandServer interface {
+	Send(*ExecuteCommandResponse) error
+	grpc.ServerStream
+}
+
+type commandServiceStreamCommandServer struct {
+	grpc.ServerStream
+}
+
+func (x *commandServiceStreamCommandServer) Send(m *ExecuteCommandResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // CommandService_ServiceDesc is the grpc.ServiceDesc for CommandService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -376,7 +380,7 @@ var CommandService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "StreamCommand",
 			Handler:       _CommandService_StreamCommand_Handler,
-			ServerStreams:  true,
+			ServerStreams: true,
 		},
 	},
 	Metadata: "services/localrpc/localrpc.proto",
