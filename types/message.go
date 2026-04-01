@@ -32,6 +32,7 @@ const (
 	MsgSysInfo        MsgName = consts.ModuleSysInfo
 	MsgUpload         MsgName = consts.ModuleUpload
 	MsgDownload       MsgName = consts.ModuleDownload
+	MsgChat           MsgName = consts.ModuleChat
 	MsgCurl           MsgName = consts.ModuleRequest
 	MsgFFmpeg         MsgName = consts.ModuleFFmpeg
 	MsgExec           MsgName = consts.ModuleExecute
@@ -142,6 +143,11 @@ func MessageType(message *implantpb.Spite) MsgName {
 		return MsgKeyExchange
 	case *implantpb.Spite_LlmEvent:
 		return MsgName(message.Name)
+	case *implantpb.Spite_BridgeAgentRequest,
+		*implantpb.Spite_BridgeAgentResponse,
+		*implantpb.Spite_BridgeLlmRequest,
+		*implantpb.Spite_BridgeLlmResponse:
+		return MsgChat
 	default:
 		return MsgUnknown
 	}

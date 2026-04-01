@@ -54,6 +54,7 @@ const (
 	MaliceRPC_LoadModule_FullMethodName          = "/clientrpc.MaliceRPC/LoadModule"
 	MaliceRPC_RefreshModule_FullMethodName       = "/clientrpc.MaliceRPC/RefreshModule"
 	MaliceRPC_ExecuteModule_FullMethodName       = "/clientrpc.MaliceRPC/ExecuteModule"
+	MaliceRPC_BridgeAgentChat_FullMethodName     = "/clientrpc.MaliceRPC/BridgeAgentChat"
 	MaliceRPC_ListAddon_FullMethodName           = "/clientrpc.MaliceRPC/ListAddon"
 	MaliceRPC_LoadAddon_FullMethodName           = "/clientrpc.MaliceRPC/LoadAddon"
 	MaliceRPC_ExecuteAddon_FullMethodName        = "/clientrpc.MaliceRPC/ExecuteAddon"
@@ -212,6 +213,7 @@ type MaliceRPCClient interface {
 	LoadModule(ctx context.Context, in *implantpb.LoadModule, opts ...grpc.CallOption) (*clientpb.Task, error)
 	RefreshModule(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
 	ExecuteModule(ctx context.Context, in *implantpb.ExecuteModuleRequest, opts ...grpc.CallOption) (*clientpb.Task, error)
+	BridgeAgentChat(ctx context.Context, in *implantpb.BridgeAgentRequest, opts ...grpc.CallOption) (*clientpb.Task, error)
 	ListAddon(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
 	LoadAddon(ctx context.Context, in *implantpb.LoadAddon, opts ...grpc.CallOption) (*clientpb.Task, error)
 	ExecuteAddon(ctx context.Context, in *implantpb.ExecuteAddon, opts ...grpc.CallOption) (*clientpb.Task, error)
@@ -663,6 +665,15 @@ func (c *maliceRPCClient) RefreshModule(ctx context.Context, in *implantpb.Reque
 func (c *maliceRPCClient) ExecuteModule(ctx context.Context, in *implantpb.ExecuteModuleRequest, opts ...grpc.CallOption) (*clientpb.Task, error) {
 	out := new(clientpb.Task)
 	err := c.cc.Invoke(ctx, MaliceRPC_ExecuteModule_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *maliceRPCClient) BridgeAgentChat(ctx context.Context, in *implantpb.BridgeAgentRequest, opts ...grpc.CallOption) (*clientpb.Task, error) {
+	out := new(clientpb.Task)
+	err := c.cc.Invoke(ctx, MaliceRPC_BridgeAgentChat_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1745,6 +1756,7 @@ type MaliceRPCServer interface {
 	LoadModule(context.Context, *implantpb.LoadModule) (*clientpb.Task, error)
 	RefreshModule(context.Context, *implantpb.Request) (*clientpb.Task, error)
 	ExecuteModule(context.Context, *implantpb.ExecuteModuleRequest) (*clientpb.Task, error)
+	BridgeAgentChat(context.Context, *implantpb.BridgeAgentRequest) (*clientpb.Task, error)
 	ListAddon(context.Context, *implantpb.Request) (*clientpb.Task, error)
 	LoadAddon(context.Context, *implantpb.LoadAddon) (*clientpb.Task, error)
 	ExecuteAddon(context.Context, *implantpb.ExecuteAddon) (*clientpb.Task, error)
@@ -1983,6 +1995,9 @@ func (UnimplementedMaliceRPCServer) RefreshModule(context.Context, *implantpb.Re
 }
 func (UnimplementedMaliceRPCServer) ExecuteModule(context.Context, *implantpb.ExecuteModuleRequest) (*clientpb.Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExecuteModule not implemented")
+}
+func (UnimplementedMaliceRPCServer) BridgeAgentChat(context.Context, *implantpb.BridgeAgentRequest) (*clientpb.Task, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BridgeAgentChat not implemented")
 }
 func (UnimplementedMaliceRPCServer) ListAddon(context.Context, *implantpb.Request) (*clientpb.Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAddon not implemented")
@@ -2917,6 +2932,24 @@ func _MaliceRPC_ExecuteModule_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MaliceRPCServer).ExecuteModule(ctx, req.(*implantpb.ExecuteModuleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaliceRPC_BridgeAgentChat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(implantpb.BridgeAgentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).BridgeAgentChat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MaliceRPC_BridgeAgentChat_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).BridgeAgentChat(ctx, req.(*implantpb.BridgeAgentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -5121,6 +5154,10 @@ var MaliceRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ExecuteModule",
 			Handler:    _MaliceRPC_ExecuteModule_Handler,
+		},
+		{
+			MethodName: "BridgeAgentChat",
+			Handler:    _MaliceRPC_BridgeAgentChat_Handler,
 		},
 		{
 			MethodName: "ListAddon",

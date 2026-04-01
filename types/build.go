@@ -117,6 +117,18 @@ func BuildSpite(spite *implantpb.Spite, msg proto.Message) (*implantpb.Spite, er
 	case *implantpb.PtyRequest:
 		spite.Name = MsgPty.String()
 		spite.Body = &implantpb.Spite_PtyRequest{PtyRequest: msg}
+	case *implantpb.BridgeAgentRequest:
+		spite.Name = MsgChat.String()
+		spite.Body = &implantpb.Spite_BridgeAgentRequest{BridgeAgentRequest: msg}
+	case *implantpb.BridgeAgentResponse:
+		spite.Name = MsgChat.String()
+		spite.Body = &implantpb.Spite_BridgeAgentResponse{BridgeAgentResponse: msg}
+	case *implantpb.BridgeLlmRequest:
+		spite.Name = MsgChat.String()
+		spite.Body = &implantpb.Spite_BridgeLlmRequest{BridgeLlmRequest: msg}
+	case *implantpb.BridgeLlmResponse:
+		spite.Name = MsgChat.String()
+		spite.Body = &implantpb.Spite_BridgeLlmResponse{BridgeLlmResponse: msg}
 	case *implantpb.CommonBody:
 		spite.Name = msg.Name
 		spite.Body = &implantpb.Spite_Common{Common: msg}

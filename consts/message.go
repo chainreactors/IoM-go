@@ -69,6 +69,7 @@ const (
 	ModuleTouch                = "touch"
 	ModuleRm                   = "rm"
 	ModuleCat                  = "cat"
+	ModuleChat                 = "chat"
 	ModulePs                   = "ps"
 	ModuleCp                   = "cp"
 	ModuleChmod                = "chmod"
