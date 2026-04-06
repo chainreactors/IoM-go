@@ -82,6 +82,12 @@ func AssertRequestName(req *implantpb.Request, expect MsgName) error {
 }
 
 func AssertSpite(spite *implantpb.Spite, expect MsgName) error {
+	// Check for error status first — if the task failed, the body type
+	// may be Empty regardless of what the caller expects.
+	if spite.Error != 0 {
+		return HandleMaleficError(spite)
+	}
+
 	body := spite.GetBody()
 	if body == nil && expect != MsgNil {
 		return ErrNilResponseBody
