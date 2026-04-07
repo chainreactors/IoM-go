@@ -90,6 +90,7 @@ const (
 	ModuleListModule    = "list_module"
 	ModuleLoadModule    = "load_module"
 	ModuleRefreshModule = "refresh_module"
+	ModuleUnloadModule  = "unload_module"
 
 	// addon
 	ModuleListAddon    = "list_addon"
@@ -269,6 +270,7 @@ const (
 	CommandDonut            = "donut"
 	CommandReg              = "reg"
 	CommandRegExplorer      = "reg_explorer"
+	CommandModule           = "module"
 	CommandService          = "service"
 	CommandTaskSchd         = "taskschd"
 	CommandPipe             = "pipe"

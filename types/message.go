@@ -38,6 +38,7 @@ const (
 	MsgExec           MsgName = consts.ModuleExecute
 	MsgListModule     MsgName = consts.ModuleListModule
 	MsgLoadModule     MsgName = consts.ModuleLoadModule
+	MsgUnloadModule   MsgName = consts.ModuleUnloadModule
 	MsgListAddon      MsgName = consts.ModuleListAddon
 	MsgLoadAddon      MsgName = consts.ModuleLoadAddon
 	MsgBinaryResponse MsgName = "assembly_response"
