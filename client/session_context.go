@@ -44,7 +44,8 @@ type SessionContext struct {
 	KeyPair      *clientpb.KeyPair      `json:"key_pair,omitempty"` // Age 密钥对
 	Modules      []string               `json:"modules"`
 	Addons       []*implantpb.Addon     `json:"addons"`
-	Argue        map[string]string      `json:"argue"` // 参数欺骗
+	Argue        map[string]string      `json:"argue"`                    // 参数欺骗
+	BundleMap    map[string]string      `json:"bundle_map,omitempty"`     // module -> bundle name
 	Any          map[string]interface{} `json:"-"`
 }
 
