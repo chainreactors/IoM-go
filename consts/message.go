@@ -253,6 +253,7 @@ const (
 	CommandBuildModules     = "modules"
 	CommandBuild3rdModules  = "3rd"
 	CommandBuildPulse       = "pulse"
+	CommandBuildProxyDll    = "proxydll"
 	CommandBuildLog         = "log"
 	CommandArtifact         = "artifact"
 	CommandArtifactList     = "list"
