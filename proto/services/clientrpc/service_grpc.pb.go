@@ -74,6 +74,8 @@ type MaliceRPCClient interface {
 	Switch(ctx context.Context, in *implantpb.Switch, opts ...grpc.CallOption) (*clientpb.Task, error)
 	// implant::bind
 	Polling(ctx context.Context, in *clientpb.Polling, opts ...grpc.CallOption) (*clientpb.Empty, error)
+	StopPolling(ctx context.Context, in *clientpb.Polling, opts ...grpc.CallOption) (*clientpb.Empty, error)
+	PollingStatus(ctx context.Context, in *clientpb.Polling, opts ...grpc.CallOption) (*clientpb.PollingState, error)
 	// implant::file
 	Upload(ctx context.Context, in *implantpb.UploadRequest, opts ...grpc.CallOption) (*clientpb.Task, error)
 	Download(ctx context.Context, in *implantpb.DownloadRequest, opts ...grpc.CallOption) (*clientpb.Task, error)
@@ -622,6 +624,24 @@ func (c *maliceRPCClient) Switch(ctx context.Context, in *implantpb.Switch, opts
 func (c *maliceRPCClient) Polling(ctx context.Context, in *clientpb.Polling, opts ...grpc.CallOption) (*clientpb.Empty, error) {
 	out := new(clientpb.Empty)
 	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/Polling", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *maliceRPCClient) StopPolling(ctx context.Context, in *clientpb.Polling, opts ...grpc.CallOption) (*clientpb.Empty, error) {
+	out := new(clientpb.Empty)
+	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/StopPolling", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *maliceRPCClient) PollingStatus(ctx context.Context, in *clientpb.Polling, opts ...grpc.CallOption) (*clientpb.PollingState, error) {
+	out := new(clientpb.PollingState)
+	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/PollingStatus", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1694,6 +1714,8 @@ type MaliceRPCServer interface {
 	Switch(context.Context, *implantpb.Switch) (*clientpb.Task, error)
 	// implant::bind
 	Polling(context.Context, *clientpb.Polling) (*clientpb.Empty, error)
+	StopPolling(context.Context, *clientpb.Polling) (*clientpb.Empty, error)
+	PollingStatus(context.Context, *clientpb.Polling) (*clientpb.PollingState, error)
 	// implant::file
 	Upload(context.Context, *implantpb.UploadRequest) (*clientpb.Task, error)
 	Download(context.Context, *implantpb.DownloadRequest) (*clientpb.Task, error)
@@ -1963,6 +1985,12 @@ func (UnimplementedMaliceRPCServer) Switch(context.Context, *implantpb.Switch) (
 }
 func (UnimplementedMaliceRPCServer) Polling(context.Context, *clientpb.Polling) (*clientpb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Polling not implemented")
+}
+func (UnimplementedMaliceRPCServer) StopPolling(context.Context, *clientpb.Polling) (*clientpb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StopPolling not implemented")
+}
+func (UnimplementedMaliceRPCServer) PollingStatus(context.Context, *clientpb.Polling) (*clientpb.PollingState, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PollingStatus not implemented")
 }
 func (UnimplementedMaliceRPCServer) Upload(context.Context, *implantpb.UploadRequest) (*clientpb.Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Upload not implemented")
@@ -3080,6 +3108,42 @@ func _MaliceRPC_Polling_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MaliceRPCServer).Polling(ctx, req.(*clientpb.Polling))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaliceRPC_StopPolling_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.Polling)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).StopPolling(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.MaliceRPC/StopPolling",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).StopPolling(ctx, req.(*clientpb.Polling))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaliceRPC_PollingStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.Polling)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).PollingStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.MaliceRPC/PollingStatus",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).PollingStatus(ctx, req.(*clientpb.Polling))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -5241,6 +5305,14 @@ var MaliceRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Polling",
 			Handler:    _MaliceRPC_Polling_Handler,
+		},
+		{
+			MethodName: "StopPolling",
+			Handler:    _MaliceRPC_StopPolling_Handler,
+		},
+		{
+			MethodName: "PollingStatus",
+			Handler:    _MaliceRPC_PollingStatus_Handler,
 		},
 		{
 			MethodName: "Upload",
