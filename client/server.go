@@ -97,6 +97,9 @@ func (s *ServerState) findPipelineLocked(pipeline *clientpb.Pipeline) (*clientpb
 		}
 	}
 	current, ok := s.Pipelines[pipeline.Name]
+	if ok && pipeline.ListenerId != "" && current != nil && current.ListenerId != "" && current.ListenerId != pipeline.ListenerId {
+		return nil, false
+	}
 	return current, ok
 }
 
