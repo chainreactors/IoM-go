@@ -77,6 +77,93 @@ type ServerState struct {
 	EventCallback   map[string]func(*clientpb.Event)
 }
 
+func PipelineCacheKey(pipeline *clientpb.Pipeline) string {
+	if pipeline == nil {
+		return ""
+	}
+	if pipeline.ListenerId == "" {
+		return pipeline.Name
+	}
+	return pipeline.ListenerId + ":" + pipeline.Name
+}
+
+func (s *ServerState) findPipelineLocked(pipeline *clientpb.Pipeline) (*clientpb.Pipeline, bool) {
+	if pipeline == nil || s.Pipelines == nil {
+		return nil, false
+	}
+	if key := PipelineCacheKey(pipeline); key != "" {
+		if current, ok := s.Pipelines[key]; ok {
+			return current, true
+		}
+	}
+	current, ok := s.Pipelines[pipeline.Name]
+	return current, ok
+}
+
+func (s *ServerState) upsertPipelineLocked(pipeline *clientpb.Pipeline) {
+	if pipeline == nil {
+		return
+	}
+	if s.Pipelines == nil {
+		s.Pipelines = make(map[string]*clientpb.Pipeline)
+	}
+	if pipeline.ListenerId == "" {
+		s.Pipelines[pipeline.Name] = pipeline
+		return
+	}
+
+	if current, ok := s.Pipelines[pipeline.Name]; ok {
+		if current == nil || current.ListenerId == "" || current.ListenerId == pipeline.ListenerId {
+			s.Pipelines[pipeline.Name] = pipeline
+			return
+		}
+		s.Pipelines[PipelineCacheKey(current)] = current
+		delete(s.Pipelines, pipeline.Name)
+		s.Pipelines[PipelineCacheKey(pipeline)] = pipeline
+		return
+	}
+
+	for _, current := range s.Pipelines {
+		if current != nil && current.Name == pipeline.Name {
+			s.Pipelines[PipelineCacheKey(pipeline)] = pipeline
+			return
+		}
+	}
+	s.Pipelines[pipeline.Name] = pipeline
+}
+
+func (s *ServerState) removePipelineLocked(pipeline *clientpb.Pipeline) {
+	if pipeline == nil || s.Pipelines == nil {
+		return
+	}
+	if pipeline.ListenerId == "" {
+		delete(s.Pipelines, pipeline.Name)
+		return
+	}
+
+	delete(s.Pipelines, PipelineCacheKey(pipeline))
+	if current, ok := s.Pipelines[pipeline.Name]; ok && current != nil && current.ListenerId == pipeline.ListenerId {
+		delete(s.Pipelines, pipeline.Name)
+	}
+
+	var remainingKey string
+	var remaining *clientpb.Pipeline
+	for key, current := range s.Pipelines {
+		if current == nil || current.Name != pipeline.Name {
+			continue
+		}
+		if remaining != nil {
+			return
+		}
+		remainingKey = key
+		remaining = current
+	}
+	if remaining != nil {
+		delete(s.Pipelines, remainingKey)
+		s.Pipelines[remaining.Name] = remaining
+	}
+}
+
 // ReconcileEvent is the single entry point for updating client-side state
 // from server events. All map mutations go through here.
 func (s *ServerState) ReconcileEvent(event *clientpb.Event) {
@@ -120,17 +207,17 @@ func (s *ServerState) reconcilePipeline(event *clientpb.Event) {
 	defer s.mu.Unlock()
 	switch event.Op {
 	case consts.CtrlPipelineSync, consts.CtrlPipelineStart, consts.CtrlWebsiteStart, consts.CtrlRemStart:
-		s.Pipelines[pipeline.Name] = pipeline
+		s.upsertPipelineLocked(pipeline)
 	case consts.CtrlPipelineStop, consts.CtrlWebsiteStop, consts.CtrlRemStop:
-		delete(s.Pipelines, pipeline.Name)
+		s.removePipelineLocked(pipeline)
 	case consts.CtrlWebContentAdd, consts.CtrlWebContentAddArtifact:
-		current, ok := s.Pipelines[pipeline.Name]
+		current, ok := s.findPipelineLocked(pipeline)
 		if !ok || current == nil {
-			s.Pipelines[pipeline.Name] = pipeline
+			s.upsertPipelineLocked(pipeline)
 			current = pipeline
 		}
 		if current.GetWeb() == nil {
-			s.Pipelines[pipeline.Name] = pipeline
+			s.upsertPipelineLocked(pipeline)
 			return
 		}
 		if current.GetWeb().Contents == nil {
@@ -155,7 +242,7 @@ func (s *ServerState) reconcilePipeline(event *clientpb.Event) {
 			current.GetWeb().Contents[path] = content
 		}
 	case consts.CtrlWebContentRemove:
-		current, ok := s.Pipelines[pipeline.Name]
+		current, ok := s.findPipelineLocked(pipeline)
 		if !ok || current == nil || current.GetWeb() == nil || current.GetWeb().Contents == nil {
 			return
 		}
@@ -383,7 +470,7 @@ func (s *ServerState) updatePipelineLocked() error {
 	}
 	s.Pipelines = make(map[string]*clientpb.Pipeline)
 	for _, pipeline := range pipelines.GetPipelines() {
-		s.Pipelines[pipeline.Name] = pipeline
+		s.upsertPipelineLocked(pipeline)
 	}
 
 	websites, err := s.Rpc.ListWebsites(context.Background(), &clientpb.Listener{})
@@ -404,7 +491,7 @@ func (s *ServerState) updatePipelineLocked() error {
 				web.Contents[content.Path] = content
 			}
 		}
-		s.Pipelines[website.Name] = website
+		s.upsertPipelineLocked(website)
 	}
 	return nil
 }
