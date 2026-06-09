@@ -35,6 +35,10 @@ type MaliceRPCClient interface {
 	GetSessionHistory(ctx context.Context, in *clientpb.Int, opts ...grpc.CallOption) (*clientpb.TasksContext, error)
 	SessionManage(ctx context.Context, in *clientpb.BasicUpdateSession, opts ...grpc.CallOption) (*clientpb.Empty, error)
 	GetListeners(ctx context.Context, in *clientpb.Empty, opts ...grpc.CallOption) (*clientpb.Listeners, error)
+	ConnectForwardListener(ctx context.Context, in *clientpb.ForwardListenerConnect, opts ...grpc.CallOption) (*clientpb.ForwardListenerStatus, error)
+	DisconnectForwardListener(ctx context.Context, in *clientpb.Listener, opts ...grpc.CallOption) (*clientpb.ForwardListenerStatus, error)
+	GetForwardListenerStatus(ctx context.Context, in *clientpb.Listener, opts ...grpc.CallOption) (*clientpb.ForwardListenerStatus, error)
+	ListForwardListeners(ctx context.Context, in *clientpb.Empty, opts ...grpc.CallOption) (*clientpb.ForwardListenerStatuses, error)
 	GetJobs(ctx context.Context, in *clientpb.Empty, opts ...grpc.CallOption) (*clientpb.Jobs, error)
 	GetAudit(ctx context.Context, in *clientpb.SessionRequest, opts ...grpc.CallOption) (*clientpb.Audits, error)
 	// task
@@ -60,8 +64,8 @@ type MaliceRPCClient interface {
 	Suicide(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
 	ListModule(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
 	LoadModule(ctx context.Context, in *implantpb.LoadModule, opts ...grpc.CallOption) (*clientpb.Task, error)
-	UnloadModule(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
 	RefreshModule(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
+	UnloadModule(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
 	ExecuteModule(ctx context.Context, in *implantpb.ExecuteModuleRequest, opts ...grpc.CallOption) (*clientpb.Task, error)
 	BridgeAgentChat(ctx context.Context, in *implantpb.BridgeAgentRequest, opts ...grpc.CallOption) (*clientpb.Task, error)
 	ListAddon(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
@@ -81,10 +85,6 @@ type MaliceRPCClient interface {
 	Download(ctx context.Context, in *implantpb.DownloadRequest, opts ...grpc.CallOption) (*clientpb.Task, error)
 	DownloadDir(ctx context.Context, in *implantpb.DownloadRequest, opts ...grpc.CallOption) (*clientpb.Task, error)
 	Sync(ctx context.Context, in *clientpb.Sync, opts ...grpc.CallOption) (*clientpb.Context, error)
-	// SyncStream streams the Context content in chunks for faster delivery
-	// of large payloads over gRPC-Web. The first chunk carries metadata;
-	// subsequent chunks contain binary slices that concatenate to the full
-	// Context.content.
 	SyncStream(ctx context.Context, in *clientpb.Sync, opts ...grpc.CallOption) (MaliceRPC_SyncStreamClient, error)
 	// implant::fs
 	Pwd(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
@@ -295,6 +295,42 @@ func (c *maliceRPCClient) SessionManage(ctx context.Context, in *clientpb.BasicU
 func (c *maliceRPCClient) GetListeners(ctx context.Context, in *clientpb.Empty, opts ...grpc.CallOption) (*clientpb.Listeners, error) {
 	out := new(clientpb.Listeners)
 	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/GetListeners", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *maliceRPCClient) ConnectForwardListener(ctx context.Context, in *clientpb.ForwardListenerConnect, opts ...grpc.CallOption) (*clientpb.ForwardListenerStatus, error) {
+	out := new(clientpb.ForwardListenerStatus)
+	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/ConnectForwardListener", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *maliceRPCClient) DisconnectForwardListener(ctx context.Context, in *clientpb.Listener, opts ...grpc.CallOption) (*clientpb.ForwardListenerStatus, error) {
+	out := new(clientpb.ForwardListenerStatus)
+	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/DisconnectForwardListener", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *maliceRPCClient) GetForwardListenerStatus(ctx context.Context, in *clientpb.Listener, opts ...grpc.CallOption) (*clientpb.ForwardListenerStatus, error) {
+	out := new(clientpb.ForwardListenerStatus)
+	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/GetForwardListenerStatus", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *maliceRPCClient) ListForwardListeners(ctx context.Context, in *clientpb.Empty, opts ...grpc.CallOption) (*clientpb.ForwardListenerStatuses, error) {
+	out := new(clientpb.ForwardListenerStatuses)
+	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/ListForwardListeners", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -513,18 +549,18 @@ func (c *maliceRPCClient) LoadModule(ctx context.Context, in *implantpb.LoadModu
 	return out, nil
 }
 
-func (c *maliceRPCClient) UnloadModule(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error) {
+func (c *maliceRPCClient) RefreshModule(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error) {
 	out := new(clientpb.Task)
-	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/UnloadModule", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/RefreshModule", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *maliceRPCClient) RefreshModule(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error) {
+func (c *maliceRPCClient) UnloadModule(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error) {
 	out := new(clientpb.Task)
-	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/RefreshModule", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/UnloadModule", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1675,6 +1711,10 @@ type MaliceRPCServer interface {
 	GetSessionHistory(context.Context, *clientpb.Int) (*clientpb.TasksContext, error)
 	SessionManage(context.Context, *clientpb.BasicUpdateSession) (*clientpb.Empty, error)
 	GetListeners(context.Context, *clientpb.Empty) (*clientpb.Listeners, error)
+	ConnectForwardListener(context.Context, *clientpb.ForwardListenerConnect) (*clientpb.ForwardListenerStatus, error)
+	DisconnectForwardListener(context.Context, *clientpb.Listener) (*clientpb.ForwardListenerStatus, error)
+	GetForwardListenerStatus(context.Context, *clientpb.Listener) (*clientpb.ForwardListenerStatus, error)
+	ListForwardListeners(context.Context, *clientpb.Empty) (*clientpb.ForwardListenerStatuses, error)
 	GetJobs(context.Context, *clientpb.Empty) (*clientpb.Jobs, error)
 	GetAudit(context.Context, *clientpb.SessionRequest) (*clientpb.Audits, error)
 	// task
@@ -1700,8 +1740,8 @@ type MaliceRPCServer interface {
 	Suicide(context.Context, *implantpb.Request) (*clientpb.Task, error)
 	ListModule(context.Context, *implantpb.Request) (*clientpb.Task, error)
 	LoadModule(context.Context, *implantpb.LoadModule) (*clientpb.Task, error)
-	UnloadModule(context.Context, *implantpb.Request) (*clientpb.Task, error)
 	RefreshModule(context.Context, *implantpb.Request) (*clientpb.Task, error)
+	UnloadModule(context.Context, *implantpb.Request) (*clientpb.Task, error)
 	ExecuteModule(context.Context, *implantpb.ExecuteModuleRequest) (*clientpb.Task, error)
 	BridgeAgentChat(context.Context, *implantpb.BridgeAgentRequest) (*clientpb.Task, error)
 	ListAddon(context.Context, *implantpb.Request) (*clientpb.Task, error)
@@ -1721,10 +1761,6 @@ type MaliceRPCServer interface {
 	Download(context.Context, *implantpb.DownloadRequest) (*clientpb.Task, error)
 	DownloadDir(context.Context, *implantpb.DownloadRequest) (*clientpb.Task, error)
 	Sync(context.Context, *clientpb.Sync) (*clientpb.Context, error)
-	// SyncStream streams the Context content in chunks for faster delivery
-	// of large payloads over gRPC-Web. The first chunk carries metadata;
-	// subsequent chunks contain binary slices that concatenate to the full
-	// Context.content.
 	SyncStream(*clientpb.Sync, MaliceRPC_SyncStreamServer) error
 	// implant::fs
 	Pwd(context.Context, *implantpb.Request) (*clientpb.Task, error)
@@ -1884,6 +1920,18 @@ func (UnimplementedMaliceRPCServer) SessionManage(context.Context, *clientpb.Bas
 func (UnimplementedMaliceRPCServer) GetListeners(context.Context, *clientpb.Empty) (*clientpb.Listeners, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListeners not implemented")
 }
+func (UnimplementedMaliceRPCServer) ConnectForwardListener(context.Context, *clientpb.ForwardListenerConnect) (*clientpb.ForwardListenerStatus, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConnectForwardListener not implemented")
+}
+func (UnimplementedMaliceRPCServer) DisconnectForwardListener(context.Context, *clientpb.Listener) (*clientpb.ForwardListenerStatus, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DisconnectForwardListener not implemented")
+}
+func (UnimplementedMaliceRPCServer) GetForwardListenerStatus(context.Context, *clientpb.Listener) (*clientpb.ForwardListenerStatus, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetForwardListenerStatus not implemented")
+}
+func (UnimplementedMaliceRPCServer) ListForwardListeners(context.Context, *clientpb.Empty) (*clientpb.ForwardListenerStatuses, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListForwardListeners not implemented")
+}
 func (UnimplementedMaliceRPCServer) GetJobs(context.Context, *clientpb.Empty) (*clientpb.Jobs, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetJobs not implemented")
 }
@@ -1947,11 +1995,11 @@ func (UnimplementedMaliceRPCServer) ListModule(context.Context, *implantpb.Reque
 func (UnimplementedMaliceRPCServer) LoadModule(context.Context, *implantpb.LoadModule) (*clientpb.Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoadModule not implemented")
 }
-func (UnimplementedMaliceRPCServer) UnloadModule(context.Context, *implantpb.Request) (*clientpb.Task, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UnloadModule not implemented")
-}
 func (UnimplementedMaliceRPCServer) RefreshModule(context.Context, *implantpb.Request) (*clientpb.Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RefreshModule not implemented")
+}
+func (UnimplementedMaliceRPCServer) UnloadModule(context.Context, *implantpb.Request) (*clientpb.Task, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnloadModule not implemented")
 }
 func (UnimplementedMaliceRPCServer) ExecuteModule(context.Context, *implantpb.ExecuteModuleRequest) (*clientpb.Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExecuteModule not implemented")
@@ -2497,6 +2545,78 @@ func _MaliceRPC_GetListeners_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MaliceRPC_ConnectForwardListener_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.ForwardListenerConnect)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).ConnectForwardListener(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.MaliceRPC/ConnectForwardListener",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).ConnectForwardListener(ctx, req.(*clientpb.ForwardListenerConnect))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaliceRPC_DisconnectForwardListener_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.Listener)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).DisconnectForwardListener(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.MaliceRPC/DisconnectForwardListener",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).DisconnectForwardListener(ctx, req.(*clientpb.Listener))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaliceRPC_GetForwardListenerStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.Listener)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).GetForwardListenerStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.MaliceRPC/GetForwardListenerStatus",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).GetForwardListenerStatus(ctx, req.(*clientpb.Listener))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaliceRPC_ListForwardListeners_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).ListForwardListeners(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.MaliceRPC/ListForwardListeners",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).ListForwardListeners(ctx, req.(*clientpb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MaliceRPC_GetJobs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(clientpb.Empty)
 	if err := dec(in); err != nil {
@@ -2878,24 +2998,6 @@ func _MaliceRPC_LoadModule_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MaliceRPC_UnloadModule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(implantpb.Request)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MaliceRPCServer).UnloadModule(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/clientrpc.MaliceRPC/UnloadModule",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MaliceRPCServer).UnloadModule(ctx, req.(*implantpb.Request))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _MaliceRPC_RefreshModule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(implantpb.Request)
 	if err := dec(in); err != nil {
@@ -2910,6 +3012,24 @@ func _MaliceRPC_RefreshModule_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MaliceRPCServer).RefreshModule(ctx, req.(*implantpb.Request))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaliceRPC_UnloadModule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(implantpb.Request)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).UnloadModule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.MaliceRPC/UnloadModule",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).UnloadModule(ctx, req.(*implantpb.Request))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -5175,6 +5295,22 @@ var MaliceRPC_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MaliceRPC_GetListeners_Handler,
 		},
 		{
+			MethodName: "ConnectForwardListener",
+			Handler:    _MaliceRPC_ConnectForwardListener_Handler,
+		},
+		{
+			MethodName: "DisconnectForwardListener",
+			Handler:    _MaliceRPC_DisconnectForwardListener_Handler,
+		},
+		{
+			MethodName: "GetForwardListenerStatus",
+			Handler:    _MaliceRPC_GetForwardListenerStatus_Handler,
+		},
+		{
+			MethodName: "ListForwardListeners",
+			Handler:    _MaliceRPC_ListForwardListeners_Handler,
+		},
+		{
 			MethodName: "GetJobs",
 			Handler:    _MaliceRPC_GetJobs_Handler,
 		},
@@ -5255,12 +5391,12 @@ var MaliceRPC_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MaliceRPC_LoadModule_Handler,
 		},
 		{
-			MethodName: "UnloadModule",
-			Handler:    _MaliceRPC_UnloadModule_Handler,
-		},
-		{
 			MethodName: "RefreshModule",
 			Handler:    _MaliceRPC_RefreshModule_Handler,
+		},
+		{
+			MethodName: "UnloadModule",
+			Handler:    _MaliceRPC_UnloadModule_Handler,
 		},
 		{
 			MethodName: "ExecuteModule",
