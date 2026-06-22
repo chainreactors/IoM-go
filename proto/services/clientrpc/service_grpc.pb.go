@@ -39,6 +39,7 @@ type MaliceRPCClient interface {
 	DisconnectForwardListener(ctx context.Context, in *clientpb.Listener, opts ...grpc.CallOption) (*clientpb.ForwardListenerStatus, error)
 	GetForwardListenerStatus(ctx context.Context, in *clientpb.Listener, opts ...grpc.CallOption) (*clientpb.ForwardListenerStatus, error)
 	ListForwardListeners(ctx context.Context, in *clientpb.Empty, opts ...grpc.CallOption) (*clientpb.ForwardListenerStatuses, error)
+	RetireListener(ctx context.Context, in *clientpb.ListenerRetire, opts ...grpc.CallOption) (*clientpb.ForwardListenerStatus, error)
 	GetJobs(ctx context.Context, in *clientpb.Empty, opts ...grpc.CallOption) (*clientpb.Jobs, error)
 	GetAudit(ctx context.Context, in *clientpb.SessionRequest, opts ...grpc.CallOption) (*clientpb.Audits, error)
 	// task
@@ -331,6 +332,15 @@ func (c *maliceRPCClient) GetForwardListenerStatus(ctx context.Context, in *clie
 func (c *maliceRPCClient) ListForwardListeners(ctx context.Context, in *clientpb.Empty, opts ...grpc.CallOption) (*clientpb.ForwardListenerStatuses, error) {
 	out := new(clientpb.ForwardListenerStatuses)
 	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/ListForwardListeners", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *maliceRPCClient) RetireListener(ctx context.Context, in *clientpb.ListenerRetire, opts ...grpc.CallOption) (*clientpb.ForwardListenerStatus, error) {
+	out := new(clientpb.ForwardListenerStatus)
+	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/RetireListener", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1715,6 +1725,7 @@ type MaliceRPCServer interface {
 	DisconnectForwardListener(context.Context, *clientpb.Listener) (*clientpb.ForwardListenerStatus, error)
 	GetForwardListenerStatus(context.Context, *clientpb.Listener) (*clientpb.ForwardListenerStatus, error)
 	ListForwardListeners(context.Context, *clientpb.Empty) (*clientpb.ForwardListenerStatuses, error)
+	RetireListener(context.Context, *clientpb.ListenerRetire) (*clientpb.ForwardListenerStatus, error)
 	GetJobs(context.Context, *clientpb.Empty) (*clientpb.Jobs, error)
 	GetAudit(context.Context, *clientpb.SessionRequest) (*clientpb.Audits, error)
 	// task
@@ -1931,6 +1942,9 @@ func (UnimplementedMaliceRPCServer) GetForwardListenerStatus(context.Context, *c
 }
 func (UnimplementedMaliceRPCServer) ListForwardListeners(context.Context, *clientpb.Empty) (*clientpb.ForwardListenerStatuses, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListForwardListeners not implemented")
+}
+func (UnimplementedMaliceRPCServer) RetireListener(context.Context, *clientpb.ListenerRetire) (*clientpb.ForwardListenerStatus, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RetireListener not implemented")
 }
 func (UnimplementedMaliceRPCServer) GetJobs(context.Context, *clientpb.Empty) (*clientpb.Jobs, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetJobs not implemented")
@@ -2613,6 +2627,24 @@ func _MaliceRPC_ListForwardListeners_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MaliceRPCServer).ListForwardListeners(ctx, req.(*clientpb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaliceRPC_RetireListener_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.ListenerRetire)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).RetireListener(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.MaliceRPC/RetireListener",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).RetireListener(ctx, req.(*clientpb.ListenerRetire))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -5309,6 +5341,10 @@ var MaliceRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListForwardListeners",
 			Handler:    _MaliceRPC_ListForwardListeners_Handler,
+		},
+		{
+			MethodName: "RetireListener",
+			Handler:    _MaliceRPC_RetireListener_Handler,
 		},
 		{
 			MethodName: "GetJobs",

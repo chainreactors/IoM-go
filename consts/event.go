@@ -21,6 +21,7 @@ const (
 	CtrlWebUpload               = "web_upload"
 	CtrlListenerStart           = "listener_start"
 	CtrlListenerStop            = "listener_stop"
+	CtrlListenerRetire          = "listener_retire"
 	CtrlPipelineStart           = "pipeline_start"
 	CtrlPipelineStop            = "pipeline_stop"
 	CtrlPipelineSync            = "pipeline_sync"
