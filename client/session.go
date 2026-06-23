@@ -122,7 +122,7 @@ func (s *Session) Console(task *clientpb.Task, msg string) {
 		Message: []byte(msg),
 	})
 	if err != nil {
-		Log.Errorf(err.Error() + "\n")
+		Log.Errorf("%s\n", err.Error())
 	}
 }
 
@@ -136,7 +136,7 @@ func (s *Session) Error(task *clientpb.Task, err error) {
 		Err:     err.Error(),
 	})
 	if err != nil {
-		Log.Errorf(err.Error() + "\n")
+		Log.Errorf("%s\n", err.Error())
 	}
 }
 

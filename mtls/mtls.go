@@ -19,7 +19,7 @@ func VerifyCertificate(caCertificate []byte, rawCerts [][]byte) error {
 
 	cert, err := x509.ParseCertificate(rawCerts[0])
 	if err != nil {
-		log.Printf("Failed to parse certificate: " + err.Error())
+		log.Printf("Failed to parse certificate: %s", err.Error())
 		return err
 	}
 
@@ -31,7 +31,7 @@ func VerifyCertificate(caCertificate []byte, rawCerts [][]byte) error {
 		log.Printf("no root certificate")
 	}
 	if _, err := cert.Verify(options); err != nil {
-		log.Printf("Failed to verify certificate: " + err.Error())
+		log.Printf("Failed to verify certificate: %s", err.Error())
 		return err
 	}
 
