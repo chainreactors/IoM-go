@@ -184,6 +184,7 @@ type MaliceRPCClient interface {
 	ListArtifact(ctx context.Context, in *clientpb.Empty, opts ...grpc.CallOption) (*clientpb.Artifacts, error)
 	DownloadArtifact(ctx context.Context, in *clientpb.Artifact, opts ...grpc.CallOption) (*clientpb.Artifact, error)
 	UploadArtifact(ctx context.Context, in *clientpb.Artifact, opts ...grpc.CallOption) (*clientpb.Artifact, error)
+	UpdateArtifact(ctx context.Context, in *clientpb.Artifact, opts ...grpc.CallOption) (*clientpb.Artifact, error)
 	DeleteArtifact(ctx context.Context, in *clientpb.Artifact, opts ...grpc.CallOption) (*clientpb.Empty, error)
 	GetArtifactProfile(ctx context.Context, in *clientpb.Artifact, opts ...grpc.CallOption) (*clientpb.Artifact, error)
 	// License
@@ -1478,6 +1479,15 @@ func (c *maliceRPCClient) UploadArtifact(ctx context.Context, in *clientpb.Artif
 	return out, nil
 }
 
+func (c *maliceRPCClient) UpdateArtifact(ctx context.Context, in *clientpb.Artifact, opts ...grpc.CallOption) (*clientpb.Artifact, error) {
+	out := new(clientpb.Artifact)
+	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/UpdateArtifact", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *maliceRPCClient) DeleteArtifact(ctx context.Context, in *clientpb.Artifact, opts ...grpc.CallOption) (*clientpb.Empty, error) {
 	out := new(clientpb.Empty)
 	err := c.cc.Invoke(ctx, "/clientrpc.MaliceRPC/DeleteArtifact", in, out, opts...)
@@ -1884,6 +1894,7 @@ type MaliceRPCServer interface {
 	ListArtifact(context.Context, *clientpb.Empty) (*clientpb.Artifacts, error)
 	DownloadArtifact(context.Context, *clientpb.Artifact) (*clientpb.Artifact, error)
 	UploadArtifact(context.Context, *clientpb.Artifact) (*clientpb.Artifact, error)
+	UpdateArtifact(context.Context, *clientpb.Artifact) (*clientpb.Artifact, error)
 	DeleteArtifact(context.Context, *clientpb.Artifact) (*clientpb.Empty, error)
 	GetArtifactProfile(context.Context, *clientpb.Artifact) (*clientpb.Artifact, error)
 	// License
@@ -2324,6 +2335,9 @@ func (UnimplementedMaliceRPCServer) DownloadArtifact(context.Context, *clientpb.
 }
 func (UnimplementedMaliceRPCServer) UploadArtifact(context.Context, *clientpb.Artifact) (*clientpb.Artifact, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadArtifact not implemented")
+}
+func (UnimplementedMaliceRPCServer) UpdateArtifact(context.Context, *clientpb.Artifact) (*clientpb.Artifact, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateArtifact not implemented")
 }
 func (UnimplementedMaliceRPCServer) DeleteArtifact(context.Context, *clientpb.Artifact) (*clientpb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteArtifact not implemented")
@@ -4837,6 +4851,24 @@ func _MaliceRPC_UploadArtifact_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MaliceRPC_UpdateArtifact_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.Artifact)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).UpdateArtifact(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.MaliceRPC/UpdateArtifact",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).UpdateArtifact(ctx, req.(*clientpb.Artifact))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MaliceRPC_DeleteArtifact_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(clientpb.Artifact)
 	if err := dec(in); err != nil {
@@ -5857,6 +5889,10 @@ var MaliceRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UploadArtifact",
 			Handler:    _MaliceRPC_UploadArtifact_Handler,
+		},
+		{
+			MethodName: "UpdateArtifact",
+			Handler:    _MaliceRPC_UpdateArtifact_Handler,
 		},
 		{
 			MethodName: "DeleteArtifact",
