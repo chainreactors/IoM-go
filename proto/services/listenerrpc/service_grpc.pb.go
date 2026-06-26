@@ -43,6 +43,7 @@ type ListenerRPCClient interface {
 	RegisterWebsite(ctx context.Context, in *clientpb.Pipeline, opts ...grpc.CallOption) (*clientpb.Empty, error)
 	StartWebsite(ctx context.Context, in *clientpb.CtrlPipeline, opts ...grpc.CallOption) (*clientpb.Empty, error)
 	StopWebsite(ctx context.Context, in *clientpb.CtrlPipeline, opts ...grpc.CallOption) (*clientpb.Empty, error)
+	UpdateWebsiteTLS(ctx context.Context, in *clientpb.PipelineTLSUpdate, opts ...grpc.CallOption) (*clientpb.Pipeline, error)
 	DeleteWebsite(ctx context.Context, in *clientpb.CtrlPipeline, opts ...grpc.CallOption) (*clientpb.Empty, error)
 	ListWebsites(ctx context.Context, in *clientpb.Listener, opts ...grpc.CallOption) (*clientpb.Pipelines, error)
 	ListWebContent(ctx context.Context, in *clientpb.Website, opts ...grpc.CallOption) (*clientpb.WebContents, error)
@@ -264,6 +265,15 @@ func (c *listenerRPCClient) StartWebsite(ctx context.Context, in *clientpb.CtrlP
 func (c *listenerRPCClient) StopWebsite(ctx context.Context, in *clientpb.CtrlPipeline, opts ...grpc.CallOption) (*clientpb.Empty, error) {
 	out := new(clientpb.Empty)
 	err := c.cc.Invoke(ctx, "/listenerrpc.ListenerRPC/StopWebsite", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *listenerRPCClient) UpdateWebsiteTLS(ctx context.Context, in *clientpb.PipelineTLSUpdate, opts ...grpc.CallOption) (*clientpb.Pipeline, error) {
+	out := new(clientpb.Pipeline)
+	err := c.cc.Invoke(ctx, "/listenerrpc.ListenerRPC/UpdateWebsiteTLS", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -527,6 +537,7 @@ type ListenerRPCServer interface {
 	RegisterWebsite(context.Context, *clientpb.Pipeline) (*clientpb.Empty, error)
 	StartWebsite(context.Context, *clientpb.CtrlPipeline) (*clientpb.Empty, error)
 	StopWebsite(context.Context, *clientpb.CtrlPipeline) (*clientpb.Empty, error)
+	UpdateWebsiteTLS(context.Context, *clientpb.PipelineTLSUpdate) (*clientpb.Pipeline, error)
 	DeleteWebsite(context.Context, *clientpb.CtrlPipeline) (*clientpb.Empty, error)
 	ListWebsites(context.Context, *clientpb.Listener) (*clientpb.Pipelines, error)
 	ListWebContent(context.Context, *clientpb.Website) (*clientpb.WebContents, error)
@@ -610,6 +621,9 @@ func (UnimplementedListenerRPCServer) StartWebsite(context.Context, *clientpb.Ct
 }
 func (UnimplementedListenerRPCServer) StopWebsite(context.Context, *clientpb.CtrlPipeline) (*clientpb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StopWebsite not implemented")
+}
+func (UnimplementedListenerRPCServer) UpdateWebsiteTLS(context.Context, *clientpb.PipelineTLSUpdate) (*clientpb.Pipeline, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateWebsiteTLS not implemented")
 }
 func (UnimplementedListenerRPCServer) DeleteWebsite(context.Context, *clientpb.CtrlPipeline) (*clientpb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteWebsite not implemented")
@@ -1002,6 +1016,24 @@ func _ListenerRPC_StopWebsite_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ListenerRPCServer).StopWebsite(ctx, req.(*clientpb.CtrlPipeline))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ListenerRPC_UpdateWebsiteTLS_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.PipelineTLSUpdate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ListenerRPCServer).UpdateWebsiteTLS(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/listenerrpc.ListenerRPC/UpdateWebsiteTLS",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ListenerRPCServer).UpdateWebsiteTLS(ctx, req.(*clientpb.PipelineTLSUpdate))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1536,6 +1568,10 @@ var ListenerRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StopWebsite",
 			Handler:    _ListenerRPC_StopWebsite_Handler,
+		},
+		{
+			MethodName: "UpdateWebsiteTLS",
+			Handler:    _ListenerRPC_UpdateWebsiteTLS_Handler,
 		},
 		{
 			MethodName: "DeleteWebsite",
