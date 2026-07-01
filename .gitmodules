@@ -1,3 +1,4 @@
 [submodule "generate/proto"]
 	path = generate/proto
-	url = https://github.com/chainreactors/proto
+	url = https://github.com/AJDX3906/proto.git
+	branch = devx
