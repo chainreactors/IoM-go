@@ -316,6 +316,12 @@ const (
 	CommandCertSelfSigned = "self_signed"
 	CommandCertAcme       = "acme"
 	CommandCertAcmeConfig = "acme_config"
+
+	CommandProject       = "project"
+	CommandProjectCreate = "create"
+	CommandProjectGet    = "get"
+	CommandProjectUpdate = "update"
+	CommandProjectDelete = "delete"
 )
 
 const (
