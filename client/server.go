@@ -11,7 +11,9 @@ import (
 	"github.com/chainreactors/IoM-go/proto/client/clientpb"
 	"github.com/chainreactors/IoM-go/proto/services/clientrpc"
 	"github.com/chainreactors/IoM-go/proto/services/listenerrpc"
+	"github.com/chainreactors/IoM-go/types"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 )
 
 type TaskCallback func(resp *clientpb.TaskContext)
@@ -85,6 +87,147 @@ func PipelineCacheKey(pipeline *clientpb.Pipeline) string {
 		return pipeline.Name
 	}
 	return pipeline.ListenerId + ":" + pipeline.Name
+}
+
+// FindCachedPipeline returns a detached pipeline snapshot while holding the
+// state read lock. Bare names may fall back to a unique listener-scoped entry.
+func (s *ServerState) FindCachedPipeline(name string, accept func(*clientpb.Pipeline) bool) (*clientpb.Pipeline, error) {
+	if s == nil {
+		return nil, types.ErrNotFoundPipeline
+	}
+	if accept == nil {
+		accept = func(*clientpb.Pipeline) bool { return true }
+	}
+
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	if s.Pipelines == nil {
+		return nil, types.ErrNotFoundPipeline
+	}
+
+	if pipeline, ok := s.Pipelines[name]; ok && pipeline != nil {
+		candidate := proto.Clone(pipeline).(*clientpb.Pipeline)
+		if accept(candidate) {
+			return candidate, nil
+		}
+	}
+
+	var match *clientpb.Pipeline
+	var matchSource *clientpb.Pipeline
+	for key, pipeline := range s.Pipelines {
+		if key == name || pipeline == nil || pipeline.Name != name {
+			continue
+		}
+		candidate := proto.Clone(pipeline).(*clientpb.Pipeline)
+		if !accept(candidate) {
+			continue
+		}
+		if match != nil && matchSource != pipeline {
+			return nil, fmt.Errorf("pipeline %q is ambiguous; use listener:pipeline", name)
+		}
+		match = candidate
+		matchSource = pipeline
+	}
+	if match != nil {
+		return match, nil
+	}
+	return nil, types.ErrNotFoundPipeline
+}
+
+// SnapshotPipelines returns a detached copy of the pipeline cache.
+func (s *ServerState) SnapshotPipelines() map[string]*clientpb.Pipeline {
+	if s == nil {
+		return nil
+	}
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	pipelines := make(map[string]*clientpb.Pipeline, len(s.Pipelines))
+	for key, pipeline := range s.Pipelines {
+		if pipeline == nil {
+			continue
+		}
+		pipelines[key] = proto.Clone(pipeline).(*clientpb.Pipeline)
+	}
+	return pipelines
+}
+
+// SnapshotSessions returns detached session/protobuf snapshots for safe iteration.
+func (s *ServerState) SnapshotSessions() map[string]*Session {
+	if s == nil {
+		return nil
+	}
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	sessions := make(map[string]*Session, len(s.Sessions))
+	for key, session := range s.Sessions {
+		if session == nil {
+			continue
+		}
+		snapshot := *session
+		if session.Session != nil {
+			snapshot.Session = proto.Clone(session.Session).(*clientpb.Session)
+		}
+		sessions[key] = &snapshot
+	}
+	return sessions
+}
+
+// SnapshotListeners returns a detached copy of the listener cache.
+func (s *ServerState) SnapshotListeners() map[string]*clientpb.Listener {
+	if s == nil {
+		return nil
+	}
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	listeners := make(map[string]*clientpb.Listener, len(s.Listeners))
+	for key, listener := range s.Listeners {
+		if listener != nil {
+			listeners[key] = proto.Clone(listener).(*clientpb.Listener)
+		}
+	}
+	return listeners
+}
+
+// SnapshotClients returns detached client records for safe iteration.
+func (s *ServerState) SnapshotClients() []*clientpb.Client {
+	if s == nil {
+		return nil
+	}
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	clients := make([]*clientpb.Client, 0, len(s.Clients))
+	for _, cachedClient := range s.Clients {
+		if cachedClient != nil {
+			clients = append(clients, proto.Clone(cachedClient).(*clientpb.Client))
+		}
+	}
+	return clients
+}
+
+// SnapshotObservers returns detached observer session snapshots for safe iteration.
+func (s *ServerState) SnapshotObservers() map[string]*Session {
+	if s == nil {
+		return nil
+	}
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	observers := make(map[string]*Session, len(s.Observers))
+	for key, observer := range s.Observers {
+		if observer == nil {
+			continue
+		}
+		snapshot := *observer
+		if observer.Session != nil {
+			snapshot.Session = proto.Clone(observer.Session).(*clientpb.Session)
+		}
+		observers[key] = &snapshot
+	}
+	return observers
 }
 
 func (s *ServerState) findPipelineLocked(pipeline *clientpb.Pipeline) (*clientpb.Pipeline, bool) {
@@ -403,6 +546,15 @@ func (s *ServerState) GetLocalSession(sid string) (*Session, bool) {
 		return sess, true
 	}
 	return nil, false
+}
+
+func (s *ServerState) RemoveLocalSession(sid string) {
+	if s == nil {
+		return
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	delete(s.Sessions, sid)
 }
 
 func (s *ServerState) GetOrUpdateSession(sid string) (*Session, error) {
