@@ -356,7 +356,7 @@ func (s *ServerState) reconcilePipeline(event *clientpb.Event) {
 		s.upsertPipelineLocked(pipeline)
 	case consts.CtrlPipelineStop, consts.CtrlWebsiteStop, consts.CtrlRemStop:
 		s.removePipelineLocked(pipeline)
-	case consts.CtrlWebContentAdd, consts.CtrlWebContentAddArtifact:
+	case consts.CtrlWebContentAdd, consts.CtrlWebContentUpdate, consts.CtrlWebContentAddArtifact:
 		current, ok := s.findPipelineLocked(pipeline)
 		if !ok || current == nil {
 			s.upsertPipelineLocked(pipeline)

@@ -216,3 +216,38 @@ func TestFindPipelineLockedDoesNotFallbackToBareNameForDifferentListener(t *test
 		t.Fatalf("findPipelineLocked returned %#v, want miss for different listener", current)
 	}
 }
+
+func TestReconcileWebsiteContentUpdateRefreshesCachedContent(t *testing.T) {
+	state := &ServerState{Pipelines: map[string]*clientpb.Pipeline{
+		"site": {
+			Name:       "site",
+			ListenerId: "listener-a",
+			Type:       consts.WebsitePipeline,
+			Body: &clientpb.Pipeline_Web{Web: &clientpb.Website{
+				Contents: map[string]*clientpb.WebContent{
+					"/payload": {Path: "/payload", Comment: "old"},
+				},
+			}},
+		},
+	}}
+
+	state.ReconcileEvent(&clientpb.Event{
+		Type: consts.EventJob,
+		Op:   consts.CtrlWebContentUpdate,
+		Job: &clientpb.Job{
+			Pipeline: &clientpb.Pipeline{
+				Name:       "site",
+				ListenerId: "listener-a",
+				Type:       consts.WebsitePipeline,
+				Body:       &clientpb.Pipeline_Web{Web: &clientpb.Website{}},
+			},
+			Contents: map[string]*clientpb.WebContent{
+				"/payload": {Path: "/payload", Comment: "updated"},
+			},
+		},
+	})
+
+	if got := state.Pipelines["site"].GetWeb().GetContents()["/payload"].GetComment(); got != "updated" {
+		t.Fatalf("cached comment = %q, want updated", got)
+	}
+}
