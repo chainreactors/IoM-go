@@ -316,7 +316,7 @@ func (s *ServerState) ReconcileEvent(event *clientpb.Event) {
 	switch event.Type {
 	case consts.EventSession:
 		s.reconcileSession(event)
-	case consts.EventJob:
+	case consts.EventJob, consts.EventWebsite:
 		s.reconcilePipeline(event)
 	case consts.EventListener:
 		s.reconcileListener(event)
@@ -352,9 +352,11 @@ func (s *ServerState) reconcilePipeline(event *clientpb.Event) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	switch event.Op {
-	case consts.CtrlPipelineSync, consts.CtrlPipelineStart, consts.CtrlWebsiteStart, consts.CtrlRemStart:
+	case consts.CtrlPipelineSync, consts.CtrlPipelineRegister, consts.CtrlPipelineStart, consts.CtrlPipelineStop,
+		consts.CtrlWebsiteRegister, consts.CtrlWebsiteUpdate, consts.CtrlWebsiteStart, consts.CtrlWebsiteStop,
+		consts.CtrlRemRegister, consts.CtrlRemStart, consts.CtrlRemStop:
 		s.upsertPipelineLocked(pipeline)
-	case consts.CtrlPipelineStop, consts.CtrlWebsiteStop, consts.CtrlRemStop:
+	case consts.CtrlPipelineDelete, consts.CtrlWebsiteDelete, consts.CtrlRemDelete:
 		s.removePipelineLocked(pipeline)
 	case consts.CtrlWebContentAdd, consts.CtrlWebContentUpdate, consts.CtrlWebContentAddArtifact:
 		current, ok := s.findPipelineLocked(pipeline)
@@ -423,6 +425,11 @@ func (s *ServerState) reconcileListener(event *clientpb.Event) {
 		s.Listeners[listener.Id] = listener
 	case consts.CtrlListenerStop:
 		delete(s.Listeners, listener.Id)
+		for _, pipeline := range s.Pipelines {
+			if pipeline != nil && pipeline.GetListenerId() == listener.Id {
+				pipeline.Enable = false
+			}
+		}
 	}
 }
 

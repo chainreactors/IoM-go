@@ -7,6 +7,7 @@ import (
 
 	"github.com/chainreactors/IoM-go/consts"
 	"github.com/chainreactors/IoM-go/proto/client/clientpb"
+	"google.golang.org/protobuf/proto"
 )
 
 func remPipeline(name, listenerID, link string) *clientpb.Pipeline {
@@ -232,7 +233,7 @@ func TestReconcileWebsiteContentUpdateRefreshesCachedContent(t *testing.T) {
 	}}
 
 	state.ReconcileEvent(&clientpb.Event{
-		Type: consts.EventJob,
+		Type: consts.EventWebsite,
 		Op:   consts.CtrlWebContentUpdate,
 		Job: &clientpb.Job{
 			Pipeline: &clientpb.Pipeline{
@@ -249,5 +250,227 @@ func TestReconcileWebsiteContentUpdateRefreshesCachedContent(t *testing.T) {
 
 	if got := state.Pipelines["site"].GetWeb().GetContents()["/payload"].GetComment(); got != "updated" {
 		t.Fatalf("cached comment = %q, want updated", got)
+	}
+}
+
+func TestReconcileEventUpsertsManagementPipelineLifecycle(t *testing.T) {
+	tests := []struct {
+		name      string
+		eventType string
+		operation string
+		pipeline  *clientpb.Pipeline
+	}{
+		{
+			name:      "pipeline register",
+			eventType: consts.EventJob,
+			operation: consts.CtrlPipelineRegister,
+			pipeline:  &clientpb.Pipeline{Name: "tcp-register", ListenerId: "listener-a", Type: consts.TCPPipeline},
+		},
+		{
+			name:      "rem register",
+			eventType: consts.EventJob,
+			operation: consts.CtrlRemRegister,
+			pipeline:  remPipeline("rem-register", "listener-a", "tcp://127.0.0.1:19966"),
+		},
+		{
+			name:      "website register",
+			eventType: consts.EventWebsite,
+			operation: consts.CtrlWebsiteRegister,
+			pipeline: &clientpb.Pipeline{
+				Name:       "web-register",
+				ListenerId: "listener-a",
+				Type:       consts.WebsitePipeline,
+				Body:       &clientpb.Pipeline_Web{Web: &clientpb.Website{Name: "web-register"}},
+			},
+		},
+		{
+			name:      "website update",
+			eventType: consts.EventWebsite,
+			operation: consts.CtrlWebsiteUpdate,
+			pipeline: &clientpb.Pipeline{
+				Name:       "web-update",
+				ListenerId: "listener-a",
+				Type:       consts.WebsitePipeline,
+				Enable:     true,
+				Body:       &clientpb.Pipeline_Web{Web: &clientpb.Website{Name: "web-update"}},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			state := &ServerState{Pipelines: make(map[string]*clientpb.Pipeline)}
+			state.ReconcileEvent(&clientpb.Event{
+				Type: test.eventType,
+				Op:   test.operation,
+				Job:  &clientpb.Job{Pipeline: test.pipeline},
+			})
+
+			got, err := state.FindCachedPipeline(test.pipeline.Name, nil)
+			if err != nil {
+				t.Fatalf("FindCachedPipeline failed after %s: %v", test.operation, err)
+			}
+			if got.GetListenerId() != test.pipeline.GetListenerId() || got.GetType() != test.pipeline.GetType() {
+				t.Fatalf("cached pipeline = %#v, want listener %q type %q", got, test.pipeline.GetListenerId(), test.pipeline.GetType())
+			}
+			if test.operation == consts.CtrlWebsiteUpdate && !got.GetEnable() {
+				t.Fatal("website update did not replace the cached pipeline state")
+			}
+		})
+	}
+}
+
+func TestReconcileEventRemovesManagementPipelineLifecycle(t *testing.T) {
+	tests := []struct {
+		name      string
+		eventType string
+		operation string
+		pipeline  *clientpb.Pipeline
+	}{
+		{
+			name:      "pipeline delete",
+			eventType: consts.EventJob,
+			operation: consts.CtrlPipelineDelete,
+			pipeline:  &clientpb.Pipeline{Name: "tcp-delete", ListenerId: "listener-a", Type: consts.TCPPipeline},
+		},
+		{
+			name:      "rem delete",
+			eventType: consts.EventJob,
+			operation: consts.CtrlRemDelete,
+			pipeline:  remPipeline("rem-delete", "listener-a", "tcp://127.0.0.1:19966"),
+		},
+		{
+			name:      "website delete",
+			eventType: consts.EventWebsite,
+			operation: consts.CtrlWebsiteDelete,
+			pipeline: &clientpb.Pipeline{
+				Name:       "web-delete",
+				ListenerId: "listener-a",
+				Type:       consts.WebsitePipeline,
+				Body:       &clientpb.Pipeline_Web{Web: &clientpb.Website{Name: "web-delete"}},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			state := &ServerState{Pipelines: map[string]*clientpb.Pipeline{
+				test.pipeline.Name: test.pipeline,
+			}}
+			state.ReconcileEvent(&clientpb.Event{
+				Type: test.eventType,
+				Op:   test.operation,
+				Job:  &clientpb.Job{Pipeline: test.pipeline},
+			})
+
+			for key, cached := range state.SnapshotPipelines() {
+				if cached.GetName() == test.pipeline.GetName() && cached.GetListenerId() == test.pipeline.GetListenerId() {
+					t.Fatalf("pipeline remained cached at %q after %s", key, test.operation)
+				}
+			}
+		})
+	}
+}
+
+func TestReconcileEventKeepsStoppedPipelineAsDisabled(t *testing.T) {
+	tests := []struct {
+		name      string
+		eventType string
+		operation string
+		pipeline  *clientpb.Pipeline
+	}{
+		{
+			name:      "pipeline stop",
+			eventType: consts.EventJob,
+			operation: consts.CtrlPipelineStop,
+			pipeline:  &clientpb.Pipeline{Name: "tcp-stop", ListenerId: "listener-a", Type: consts.TCPPipeline},
+		},
+		{
+			name:      "rem stop",
+			eventType: consts.EventJob,
+			operation: consts.CtrlRemStop,
+			pipeline:  remPipeline("rem-stop", "listener-a", "tcp://127.0.0.1:19966"),
+		},
+		{
+			name:      "website stop",
+			eventType: consts.EventWebsite,
+			operation: consts.CtrlWebsiteStop,
+			pipeline: &clientpb.Pipeline{
+				Name:       "web-stop",
+				ListenerId: "listener-a",
+				Type:       consts.WebsitePipeline,
+				Body:       &clientpb.Pipeline_Web{Web: &clientpb.Website{Name: "web-stop"}},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			active := proto.Clone(test.pipeline).(*clientpb.Pipeline)
+			active.Enable = true
+			state := &ServerState{Pipelines: map[string]*clientpb.Pipeline{
+				active.GetName(): active,
+			}}
+			state.ReconcileEvent(&clientpb.Event{
+				Type: test.eventType,
+				Op:   test.operation,
+				Job:  &clientpb.Job{Pipeline: test.pipeline},
+			})
+
+			got, err := state.FindCachedPipeline(test.pipeline.GetName(), nil)
+			if err != nil {
+				t.Fatalf("FindCachedPipeline failed after %s: %v", test.operation, err)
+			}
+			if got.GetEnable() {
+				t.Fatalf("cached pipeline remained enabled after %s", test.operation)
+			}
+		})
+	}
+}
+
+func TestReconcileListenerStopDisablesOwnedPipelines(t *testing.T) {
+	state := &ServerState{
+		Listeners: map[string]*clientpb.Listener{
+			"listener-a": {Id: "listener-a"},
+			"listener-b": {Id: "listener-b"},
+		},
+		Pipelines: map[string]*clientpb.Pipeline{
+			"tcp-a": {
+				Name:       "tcp-a",
+				ListenerId: "listener-a",
+				Enable:     true,
+				Type:       consts.TCPPipeline,
+			},
+			"listener-a:shared": {
+				Name:       "shared",
+				ListenerId: "listener-a",
+				Enable:     true,
+				Type:       consts.TCPPipeline,
+			},
+			"listener-b:shared": {
+				Name:       "shared",
+				ListenerId: "listener-b",
+				Enable:     true,
+				Type:       consts.TCPPipeline,
+			},
+		},
+	}
+
+	state.ReconcileEvent(&clientpb.Event{
+		Type:     consts.EventListener,
+		Op:       consts.CtrlListenerStop,
+		Listener: &clientpb.Listener{Id: "listener-a"},
+	})
+
+	if _, ok := state.SnapshotListeners()["listener-a"]; ok {
+		t.Fatal("stopped listener remained cached")
+	}
+	for key, pipeline := range state.SnapshotPipelines() {
+		if pipeline.GetListenerId() == "listener-a" && pipeline.GetEnable() {
+			t.Fatalf("pipeline %q remained enabled after its listener stopped", key)
+		}
+		if pipeline.GetListenerId() == "listener-b" && !pipeline.GetEnable() {
+			t.Fatalf("pipeline %q from another listener was disabled", key)
+		}
 	}
 }

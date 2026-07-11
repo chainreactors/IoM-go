@@ -72,6 +72,7 @@ const (
 	CtrlContextFileCreate       = "file_create"
 	CtrlContextFileWrite        = "file_write"
 	CtrlContextFileClose        = "file_end"
+	CtrlContextDelete           = "context_delete"
 	CtrlAcme                    = "acme"
 	CtrlArtifactDownload        = "artifact_download"
 	CtrlArtifactUpload          = "artifact_upload"
