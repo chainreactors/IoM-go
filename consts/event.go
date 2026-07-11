@@ -1,5 +1,7 @@
 package consts
 
+const EventStreamReadyHeader = "x-malice-event-stream-ready"
+
 const (
 	CalleeCMD      = "cmd"
 	CalleeMal      = "mal"
