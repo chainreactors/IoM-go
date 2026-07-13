@@ -1,6 +1,10 @@
 package consts
 
-const EventStreamReadyHeader = "x-malice-event-stream-ready"
+const (
+	EventStreamReadyHeader         = "x-malice-event-stream-ready"
+	EventStreamHistoryCountHeader  = "x-malice-event-history-count"
+	EventStreamHistoryReplayHeader = "x-malice-event-history-replay"
+)
 
 const (
 	CalleeCMD      = "cmd"
