@@ -8508,6 +8508,85 @@ func (x *EventEnvelope) GetReady() bool {
 	return false
 }
 
+// ArtifactChunk is used by DownloadArtifactStream to deliver an Artifact
+// incrementally. The first chunk carries metadata with an empty bin field;
+// subsequent chunks carry binary content slices.
+type ArtifactChunk struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Header        *Artifact              `protobuf:"bytes,1,opt,name=header,proto3" json:"header,omitempty"`
+	Content       []byte                 `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"`
+	Offset        int64                  `protobuf:"varint,3,opt,name=offset,proto3" json:"offset,omitempty"`
+	TotalSize     int64                  `protobuf:"varint,4,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
+	Eof           bool                   `protobuf:"varint,5,opt,name=eof,proto3" json:"eof,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ArtifactChunk) Reset() {
+	*x = ArtifactChunk{}
+	mi := &file_client_clientpb_client_proto_msgTypes[112]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ArtifactChunk) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ArtifactChunk) ProtoMessage() {}
+
+func (x *ArtifactChunk) ProtoReflect() protoreflect.Message {
+	mi := &file_client_clientpb_client_proto_msgTypes[112]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ArtifactChunk.ProtoReflect.Descriptor instead.
+func (*ArtifactChunk) Descriptor() ([]byte, []int) {
+	return file_client_clientpb_client_proto_rawDescGZIP(), []int{112}
+}
+
+func (x *ArtifactChunk) GetHeader() *Artifact {
+	if x != nil {
+		return x.Header
+	}
+	return nil
+}
+
+func (x *ArtifactChunk) GetContent() []byte {
+	if x != nil {
+		return x.Content
+	}
+	return nil
+}
+
+func (x *ArtifactChunk) GetOffset() int64 {
+	if x != nil {
+		return x.Offset
+	}
+	return 0
+}
+
+func (x *ArtifactChunk) GetTotalSize() int64 {
+	if x != nil {
+		return x.TotalSize
+	}
+	return 0
+}
+
+func (x *ArtifactChunk) GetEof() bool {
+	if x != nil {
+		return x.Eof
+	}
+	return false
+}
+
 var File_client_clientpb_client_proto protoreflect.FileDescriptor
 
 var file_client_clientpb_client_proto_rawDesc = []byte{
@@ -9671,20 +9750,30 @@ var file_client_clientpb_client_proto_rawDesc = []byte{
 	0x65, 0x71, 0x75, 0x65, 0x6e, 0x63, 0x65, 0x18, 0x08, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0e, 0x6c,
 	0x61, 0x74, 0x65, 0x73, 0x74, 0x53, 0x65, 0x71, 0x75, 0x65, 0x6e, 0x63, 0x65, 0x12, 0x14, 0x0a,
 	0x05, 0x72, 0x65, 0x61, 0x64, 0x79, 0x18, 0x09, 0x20, 0x01, 0x28, 0x08, 0x52, 0x05, 0x72, 0x65,
-	0x61, 0x64, 0x79, 0x2a, 0x91, 0x01, 0x0a, 0x0d, 0x54, 0x4c, 0x53, 0x55, 0x70, 0x64, 0x61, 0x74,
-	0x65, 0x4d, 0x6f, 0x64, 0x65, 0x12, 0x1f, 0x0a, 0x1b, 0x54, 0x4c, 0x53, 0x5f, 0x55, 0x50, 0x44,
-	0x41, 0x54, 0x45, 0x5f, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49,
-	0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x1b, 0x0a, 0x17, 0x54, 0x4c, 0x53, 0x5f, 0x55, 0x50,
-	0x44, 0x41, 0x54, 0x45, 0x5f, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x44, 0x49, 0x53, 0x41, 0x42, 0x4c,
-	0x45, 0x10, 0x01, 0x12, 0x21, 0x0a, 0x1d, 0x54, 0x4c, 0x53, 0x5f, 0x55, 0x50, 0x44, 0x41, 0x54,
-	0x45, 0x5f, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x45, 0x58, 0x49, 0x53, 0x54, 0x49, 0x4e, 0x47, 0x5f,
-	0x43, 0x45, 0x52, 0x54, 0x10, 0x02, 0x12, 0x1f, 0x0a, 0x1b, 0x54, 0x4c, 0x53, 0x5f, 0x55, 0x50,
-	0x44, 0x41, 0x54, 0x45, 0x5f, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x49, 0x4e, 0x4c, 0x49, 0x4e, 0x45,
-	0x5f, 0x43, 0x45, 0x52, 0x54, 0x10, 0x03, 0x42, 0x37, 0x5a, 0x35, 0x67, 0x69, 0x74, 0x68, 0x75,
-	0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x72, 0x65, 0x61, 0x63, 0x74,
-	0x6f, 0x72, 0x73, 0x2f, 0x49, 0x6f, 0x4d, 0x2d, 0x67, 0x6f, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x2f, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x2f, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x70, 0x62,
-	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x61, 0x64, 0x79, 0x22, 0x9e, 0x01, 0x0a, 0x0d, 0x41, 0x72, 0x74, 0x69, 0x66, 0x61, 0x63, 0x74,
+	0x43, 0x68, 0x75, 0x6e, 0x6b, 0x12, 0x2a, 0x0a, 0x06, 0x68, 0x65, 0x61, 0x64, 0x65, 0x72, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x70, 0x62,
+	0x2e, 0x41, 0x72, 0x74, 0x69, 0x66, 0x61, 0x63, 0x74, 0x52, 0x06, 0x68, 0x65, 0x61, 0x64, 0x65,
+	0x72, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0c, 0x52, 0x07, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x6f,
+	0x66, 0x66, 0x73, 0x65, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x06, 0x6f, 0x66, 0x66,
+	0x73, 0x65, 0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x5f, 0x73, 0x69, 0x7a,
+	0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x52, 0x09, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x53, 0x69,
+	0x7a, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x65, 0x6f, 0x66, 0x18, 0x05, 0x20, 0x01, 0x28, 0x08, 0x52,
+	0x03, 0x65, 0x6f, 0x66, 0x2a, 0x91, 0x01, 0x0a, 0x0d, 0x54, 0x4c, 0x53, 0x55, 0x70, 0x64, 0x61,
+	0x74, 0x65, 0x4d, 0x6f, 0x64, 0x65, 0x12, 0x1f, 0x0a, 0x1b, 0x54, 0x4c, 0x53, 0x5f, 0x55, 0x50,
+	0x44, 0x41, 0x54, 0x45, 0x5f, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43,
+	0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x1b, 0x0a, 0x17, 0x54, 0x4c, 0x53, 0x5f, 0x55,
+	0x50, 0x44, 0x41, 0x54, 0x45, 0x5f, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x44, 0x49, 0x53, 0x41, 0x42,
+	0x4c, 0x45, 0x10, 0x01, 0x12, 0x21, 0x0a, 0x1d, 0x54, 0x4c, 0x53, 0x5f, 0x55, 0x50, 0x44, 0x41,
+	0x54, 0x45, 0x5f, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x45, 0x58, 0x49, 0x53, 0x54, 0x49, 0x4e, 0x47,
+	0x5f, 0x43, 0x45, 0x52, 0x54, 0x10, 0x02, 0x12, 0x1f, 0x0a, 0x1b, 0x54, 0x4c, 0x53, 0x5f, 0x55,
+	0x50, 0x44, 0x41, 0x54, 0x45, 0x5f, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x49, 0x4e, 0x4c, 0x49, 0x4e,
+	0x45, 0x5f, 0x43, 0x45, 0x52, 0x54, 0x10, 0x03, 0x42, 0x37, 0x5a, 0x35, 0x67, 0x69, 0x74, 0x68,
+	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x72, 0x65, 0x61, 0x63,
+	0x74, 0x6f, 0x72, 0x73, 0x2f, 0x49, 0x6f, 0x4d, 0x2d, 0x67, 0x6f, 0x2f, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x2f, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x2f, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x70,
+	0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -9700,7 +9789,7 @@ func file_client_clientpb_client_proto_rawDescGZIP() []byte {
 }
 
 var file_client_clientpb_client_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_client_clientpb_client_proto_msgTypes = make([]protoimpl.MessageInfo, 121)
+var file_client_clientpb_client_proto_msgTypes = make([]protoimpl.MessageInfo, 122)
 var file_client_clientpb_client_proto_goTypes = []any{
 	(TLSUpdateMode)(0),              // 0: clientpb.TLSUpdateMode
 	(*Empty)(nil),                   // 1: clientpb.Empty
@@ -9815,39 +9904,40 @@ var file_client_clientpb_client_proto_goTypes = []any{
 	(*DeleteProjectRequest)(nil),    // 110: clientpb.DeleteProjectRequest
 	(*EventSubscription)(nil),       // 111: clientpb.EventSubscription
 	(*EventEnvelope)(nil),           // 112: clientpb.EventEnvelope
-	nil,                             // 113: clientpb.Session.ArgueEntry
-	nil,                             // 114: clientpb.Session.LootEntry
-	nil,                             // 115: clientpb.Job.ContentsEntry
-	nil,                             // 116: clientpb.AcmeConfig.CredentialsEntry
-	nil,                             // 117: clientpb.AcmeRequest.CredentialsEntry
-	nil,                             // 118: clientpb.REM.AgentsEntry
-	nil,                             // 119: clientpb.Website.ContentsEntry
-	nil,                             // 120: clientpb.GithubActionBuildConfig.InputsEntry
-	nil,                             // 121: clientpb.SaasBuildConfig.HeadersEntry
-	(*implantpb.Os)(nil),            // 122: modulepb.Os
-	(*implantpb.Process)(nil),       // 123: modulepb.Process
-	(*implantpb.Timer)(nil),         // 124: modulepb.Timer
-	(*implantpb.Addon)(nil),         // 125: modulepb.Addon
-	(*implantpb.Spite)(nil),         // 126: implantpb.Spite
-	(*implantpb.Register)(nil),      // 127: modulepb.Register
+	(*ArtifactChunk)(nil),           // 113: clientpb.ArtifactChunk
+	nil,                             // 114: clientpb.Session.ArgueEntry
+	nil,                             // 115: clientpb.Session.LootEntry
+	nil,                             // 116: clientpb.Job.ContentsEntry
+	nil,                             // 117: clientpb.AcmeConfig.CredentialsEntry
+	nil,                             // 118: clientpb.AcmeRequest.CredentialsEntry
+	nil,                             // 119: clientpb.REM.AgentsEntry
+	nil,                             // 120: clientpb.Website.ContentsEntry
+	nil,                             // 121: clientpb.GithubActionBuildConfig.InputsEntry
+	nil,                             // 122: clientpb.SaasBuildConfig.HeadersEntry
+	(*implantpb.Os)(nil),            // 123: modulepb.Os
+	(*implantpb.Process)(nil),       // 124: modulepb.Process
+	(*implantpb.Timer)(nil),         // 125: modulepb.Timer
+	(*implantpb.Addon)(nil),         // 126: modulepb.Addon
+	(*implantpb.Spite)(nil),         // 127: implantpb.Spite
+	(*implantpb.Register)(nil),      // 128: modulepb.Register
 }
 var file_client_clientpb_client_proto_depIdxs = []int32{
 	35,  // 0: clientpb.Session.tasks:type_name -> clientpb.Tasks
-	122, // 1: clientpb.Session.os:type_name -> modulepb.Os
-	123, // 2: clientpb.Session.process:type_name -> modulepb.Process
-	124, // 3: clientpb.Session.timer:type_name -> modulepb.Timer
-	125, // 4: clientpb.Session.addons:type_name -> modulepb.Addon
+	123, // 1: clientpb.Session.os:type_name -> modulepb.Os
+	124, // 2: clientpb.Session.process:type_name -> modulepb.Process
+	125, // 3: clientpb.Session.timer:type_name -> modulepb.Timer
+	126, // 4: clientpb.Session.addons:type_name -> modulepb.Addon
 	103, // 5: clientpb.Session.key_pair:type_name -> clientpb.KeyPair
-	113, // 6: clientpb.Session.argue:type_name -> clientpb.Session.ArgueEntry
-	114, // 7: clientpb.Session.loot:type_name -> clientpb.Session.LootEntry
+	114, // 6: clientpb.Session.argue:type_name -> clientpb.Session.ArgueEntry
+	115, // 7: clientpb.Session.loot:type_name -> clientpb.Session.LootEntry
 	31,  // 8: clientpb.Audit.context:type_name -> clientpb.TaskContext
-	126, // 9: clientpb.Audit.request:type_name -> implantpb.Spite
+	127, // 9: clientpb.Audit.request:type_name -> implantpb.Spite
 	8,   // 10: clientpb.Audits.audit:type_name -> clientpb.Audit
 	4,   // 11: clientpb.Sessions.sessions:type_name -> clientpb.Session
 	13,  // 12: clientpb.SpiteCache.items:type_name -> clientpb.SpiteCacheItem
-	126, // 13: clientpb.SpiteCacheItem.spite:type_name -> implantpb.Spite
+	127, // 13: clientpb.SpiteCacheItem.spite:type_name -> implantpb.Spite
 	64,  // 14: clientpb.Job.pipeline:type_name -> clientpb.Pipeline
-	115, // 15: clientpb.Job.contents:type_name -> clientpb.Job.ContentsEntry
+	116, // 15: clientpb.Job.contents:type_name -> clientpb.Job.ContentsEntry
 	78,  // 16: clientpb.Job.rem_agent:type_name -> clientpb.REMAgent
 	79,  // 17: clientpb.Job.rem_log:type_name -> clientpb.RemLog
 	14,  // 18: clientpb.Jobs.job:type_name -> clientpb.Job
@@ -9865,20 +9955,20 @@ var file_client_clientpb_client_proto_depIdxs = []int32{
 	14,  // 30: clientpb.Event.job:type_name -> clientpb.Job
 	23,  // 31: clientpb.Event.client:type_name -> clientpb.Client
 	34,  // 32: clientpb.Event.task:type_name -> clientpb.Task
-	126, // 33: clientpb.Event.spite:type_name -> implantpb.Spite
+	127, // 33: clientpb.Event.spite:type_name -> implantpb.Spite
 	18,  // 34: clientpb.Event.listener:type_name -> clientpb.Listener
 	25,  // 35: clientpb.Events.events:type_name -> clientpb.Event
 	34,  // 36: clientpb.TaskContext.task:type_name -> clientpb.Task
 	4,   // 37: clientpb.TaskContext.session:type_name -> clientpb.Session
-	126, // 38: clientpb.TaskContext.spite:type_name -> implantpb.Spite
+	127, // 38: clientpb.TaskContext.spite:type_name -> implantpb.Spite
 	34,  // 39: clientpb.TaskContexts.task:type_name -> clientpb.Task
 	4,   // 40: clientpb.TaskContexts.session:type_name -> clientpb.Session
-	126, // 41: clientpb.TaskContexts.spites:type_name -> implantpb.Spite
+	127, // 41: clientpb.TaskContexts.spites:type_name -> implantpb.Spite
 	31,  // 42: clientpb.TasksContext.contexts:type_name -> clientpb.TaskContext
 	34,  // 43: clientpb.Tasks.tasks:type_name -> clientpb.Task
 	34,  // 44: clientpb.TaskDetail.task:type_name -> clientpb.Task
-	126, // 45: clientpb.TaskDetail.raw_request:type_name -> implantpb.Spite
-	126, // 46: clientpb.TaskDetail.results:type_name -> implantpb.Spite
+	127, // 45: clientpb.TaskDetail.raw_request:type_name -> implantpb.Spite
+	127, // 46: clientpb.TaskDetail.results:type_name -> implantpb.Spite
 	37,  // 47: clientpb.TaskDetails.tasks:type_name -> clientpb.TaskDetail
 	42,  // 48: clientpb.TaskDescs.tasks:type_name -> clientpb.TaskDesc
 	40,  // 49: clientpb.Files.files:type_name -> clientpb.File
@@ -9888,12 +9978,12 @@ var file_client_clientpb_client_proto_depIdxs = []int32{
 	55,  // 53: clientpb.Artifacts.artifacts:type_name -> clientpb.Artifact
 	89,  // 54: clientpb.Profile.resources:type_name -> clientpb.BuildResources
 	57,  // 55: clientpb.Profiles.profiles:type_name -> clientpb.Profile
-	127, // 56: clientpb.RegisterSession.register_data:type_name -> modulepb.Register
+	128, // 56: clientpb.RegisterSession.register_data:type_name -> modulepb.Register
 	63,  // 57: clientpb.RegisterListener.pipelines:type_name -> clientpb.Pipelines
 	4,   // 58: clientpb.SpiteRequest.session:type_name -> clientpb.Session
 	34,  // 59: clientpb.SpiteRequest.task:type_name -> clientpb.Task
-	126, // 60: clientpb.SpiteRequest.spite:type_name -> implantpb.Spite
-	126, // 61: clientpb.SpiteResponse.spite:type_name -> implantpb.Spite
+	127, // 60: clientpb.SpiteRequest.spite:type_name -> implantpb.Spite
+	127, // 61: clientpb.SpiteResponse.spite:type_name -> implantpb.Spite
 	64,  // 62: clientpb.Pipelines.pipelines:type_name -> clientpb.Pipeline
 	68,  // 63: clientpb.Pipeline.tls:type_name -> clientpb.TLS
 	74,  // 64: clientpb.Pipeline.encryption:type_name -> clientpb.Encryption
@@ -9911,11 +10001,11 @@ var file_client_clientpb_client_proto_depIdxs = []int32{
 	70,  // 76: clientpb.TLS.ca:type_name -> clientpb.Cert
 	71,  // 77: clientpb.TLS.cert_subject:type_name -> clientpb.CertificateSubject
 	68,  // 78: clientpb.Certs.certs:type_name -> clientpb.TLS
-	116, // 79: clientpb.AcmeConfig.credentials:type_name -> clientpb.AcmeConfig.CredentialsEntry
-	117, // 80: clientpb.AcmeRequest.credentials:type_name -> clientpb.AcmeRequest.CredentialsEntry
-	118, // 81: clientpb.REM.agents:type_name -> clientpb.REM.AgentsEntry
+	117, // 79: clientpb.AcmeConfig.credentials:type_name -> clientpb.AcmeConfig.CredentialsEntry
+	118, // 80: clientpb.AcmeRequest.credentials:type_name -> clientpb.AcmeRequest.CredentialsEntry
+	119, // 81: clientpb.REM.agents:type_name -> clientpb.REM.AgentsEntry
 	78,  // 82: clientpb.REMAgents.agents:type_name -> clientpb.REMAgent
-	119, // 83: clientpb.Website.contents:type_name -> clientpb.Website.ContentsEntry
+	120, // 83: clientpb.Website.contents:type_name -> clientpb.Website.ContentsEntry
 	83,  // 84: clientpb.Websites.websites:type_name -> clientpb.Website
 	82,  // 85: clientpb.WebContents.contents:type_name -> clientpb.WebContent
 	89,  // 86: clientpb.BuildConfig.resources:type_name -> clientpb.BuildResources
@@ -9923,8 +10013,8 @@ var file_client_clientpb_client_proto_depIdxs = []int32{
 	92,  // 88: clientpb.BuildConfig.github_action:type_name -> clientpb.GithubActionBuildConfig
 	93,  // 89: clientpb.BuildConfig.saas:type_name -> clientpb.SaasBuildConfig
 	90,  // 90: clientpb.BuildResources.entries:type_name -> clientpb.ResourceEntry
-	120, // 91: clientpb.GithubActionBuildConfig.inputs:type_name -> clientpb.GithubActionBuildConfig.InputsEntry
-	121, // 92: clientpb.SaasBuildConfig.headers:type_name -> clientpb.SaasBuildConfig.HeadersEntry
+	121, // 91: clientpb.GithubActionBuildConfig.inputs:type_name -> clientpb.GithubActionBuildConfig.InputsEntry
+	122, // 92: clientpb.SaasBuildConfig.headers:type_name -> clientpb.SaasBuildConfig.HeadersEntry
 	97,  // 93: clientpb.GithubWorkflows.workflows:type_name -> clientpb.GithubWorkflow
 	4,   // 94: clientpb.Context.session:type_name -> clientpb.Session
 	34,  // 95: clientpb.Context.task:type_name -> clientpb.Task
@@ -9936,14 +10026,15 @@ var file_client_clientpb_client_proto_depIdxs = []int32{
 	103, // 101: clientpb.Secure.implant_keypair:type_name -> clientpb.KeyPair
 	106, // 102: clientpb.Projects.projects:type_name -> clientpb.Project
 	25,  // 103: clientpb.EventEnvelope.event:type_name -> clientpb.Event
-	82,  // 104: clientpb.Job.ContentsEntry.value:type_name -> clientpb.WebContent
-	78,  // 105: clientpb.REM.AgentsEntry.value:type_name -> clientpb.REMAgent
-	82,  // 106: clientpb.Website.ContentsEntry.value:type_name -> clientpb.WebContent
-	107, // [107:107] is the sub-list for method output_type
-	107, // [107:107] is the sub-list for method input_type
-	107, // [107:107] is the sub-list for extension type_name
-	107, // [107:107] is the sub-list for extension extendee
-	0,   // [0:107] is the sub-list for field type_name
+	55,  // 104: clientpb.ArtifactChunk.header:type_name -> clientpb.Artifact
+	82,  // 105: clientpb.Job.ContentsEntry.value:type_name -> clientpb.WebContent
+	78,  // 106: clientpb.REM.AgentsEntry.value:type_name -> clientpb.REMAgent
+	82,  // 107: clientpb.Website.ContentsEntry.value:type_name -> clientpb.WebContent
+	108, // [108:108] is the sub-list for method output_type
+	108, // [108:108] is the sub-list for method input_type
+	108, // [108:108] is the sub-list for extension type_name
+	108, // [108:108] is the sub-list for extension extendee
+	0,   // [0:108] is the sub-list for field type_name
 }
 
 func init() { file_client_clientpb_client_proto_init() }
@@ -9974,7 +10065,7 @@ func file_client_clientpb_client_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_client_clientpb_client_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   121,
+			NumMessages:   122,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

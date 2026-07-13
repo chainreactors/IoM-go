@@ -155,6 +155,7 @@ const (
 	MaliceRPC_UpdateProfile_FullMethodName             = "/clientrpc.MaliceRPC/UpdateProfile"
 	MaliceRPC_ListArtifact_FullMethodName              = "/clientrpc.MaliceRPC/ListArtifact"
 	MaliceRPC_DownloadArtifact_FullMethodName          = "/clientrpc.MaliceRPC/DownloadArtifact"
+	MaliceRPC_DownloadArtifactStream_FullMethodName    = "/clientrpc.MaliceRPC/DownloadArtifactStream"
 	MaliceRPC_UploadArtifact_FullMethodName            = "/clientrpc.MaliceRPC/UploadArtifact"
 	MaliceRPC_UpdateArtifact_FullMethodName            = "/clientrpc.MaliceRPC/UpdateArtifact"
 	MaliceRPC_DeleteArtifact_FullMethodName            = "/clientrpc.MaliceRPC/DeleteArtifact"
@@ -354,6 +355,7 @@ type MaliceRPCClient interface {
 	UpdateProfile(ctx context.Context, in *clientpb.Profile, opts ...grpc.CallOption) (*clientpb.Empty, error)
 	ListArtifact(ctx context.Context, in *clientpb.Empty, opts ...grpc.CallOption) (*clientpb.Artifacts, error)
 	DownloadArtifact(ctx context.Context, in *clientpb.Artifact, opts ...grpc.CallOption) (*clientpb.Artifact, error)
+	DownloadArtifactStream(ctx context.Context, in *clientpb.Artifact, opts ...grpc.CallOption) (grpc.ServerStreamingClient[clientpb.ArtifactChunk], error)
 	UploadArtifact(ctx context.Context, in *clientpb.Artifact, opts ...grpc.CallOption) (*clientpb.Artifact, error)
 	UpdateArtifact(ctx context.Context, in *clientpb.Artifact, opts ...grpc.CallOption) (*clientpb.Artifact, error)
 	DeleteArtifact(ctx context.Context, in *clientpb.Artifact, opts ...grpc.CallOption) (*clientpb.Empty, error)
@@ -1754,6 +1756,25 @@ func (c *maliceRPCClient) DownloadArtifact(ctx context.Context, in *clientpb.Art
 	return out, nil
 }
 
+func (c *maliceRPCClient) DownloadArtifactStream(ctx context.Context, in *clientpb.Artifact, opts ...grpc.CallOption) (grpc.ServerStreamingClient[clientpb.ArtifactChunk], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &MaliceRPC_ServiceDesc.Streams[2], MaliceRPC_DownloadArtifactStream_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[clientpb.Artifact, clientpb.ArtifactChunk]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type MaliceRPC_DownloadArtifactStreamClient = grpc.ServerStreamingClient[clientpb.ArtifactChunk]
+
 func (c *maliceRPCClient) UploadArtifact(ctx context.Context, in *clientpb.Artifact, opts ...grpc.CallOption) (*clientpb.Artifact, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(clientpb.Artifact)
@@ -2096,7 +2117,7 @@ func (c *maliceRPCClient) DeleteProject(ctx context.Context, in *clientpb.Delete
 
 func (c *maliceRPCClient) EventsV2(ctx context.Context, in *clientpb.EventSubscription, opts ...grpc.CallOption) (grpc.ServerStreamingClient[clientpb.EventEnvelope], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &MaliceRPC_ServiceDesc.Streams[2], MaliceRPC_EventsV2_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &MaliceRPC_ServiceDesc.Streams[3], MaliceRPC_EventsV2_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2275,6 +2296,7 @@ type MaliceRPCServer interface {
 	UpdateProfile(context.Context, *clientpb.Profile) (*clientpb.Empty, error)
 	ListArtifact(context.Context, *clientpb.Empty) (*clientpb.Artifacts, error)
 	DownloadArtifact(context.Context, *clientpb.Artifact) (*clientpb.Artifact, error)
+	DownloadArtifactStream(*clientpb.Artifact, grpc.ServerStreamingServer[clientpb.ArtifactChunk]) error
 	UploadArtifact(context.Context, *clientpb.Artifact) (*clientpb.Artifact, error)
 	UpdateArtifact(context.Context, *clientpb.Artifact) (*clientpb.Artifact, error)
 	DeleteArtifact(context.Context, *clientpb.Artifact) (*clientpb.Empty, error)
@@ -2725,6 +2747,9 @@ func (UnimplementedMaliceRPCServer) ListArtifact(context.Context, *clientpb.Empt
 }
 func (UnimplementedMaliceRPCServer) DownloadArtifact(context.Context, *clientpb.Artifact) (*clientpb.Artifact, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DownloadArtifact not implemented")
+}
+func (UnimplementedMaliceRPCServer) DownloadArtifactStream(*clientpb.Artifact, grpc.ServerStreamingServer[clientpb.ArtifactChunk]) error {
+	return status.Errorf(codes.Unimplemented, "method DownloadArtifactStream not implemented")
 }
 func (UnimplementedMaliceRPCServer) UploadArtifact(context.Context, *clientpb.Artifact) (*clientpb.Artifact, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadArtifact not implemented")
@@ -5232,6 +5257,17 @@ func _MaliceRPC_DownloadArtifact_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MaliceRPC_DownloadArtifactStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(clientpb.Artifact)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(MaliceRPCServer).DownloadArtifactStream(m, &grpc.GenericServerStream[clientpb.Artifact, clientpb.ArtifactChunk]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type MaliceRPC_DownloadArtifactStreamServer = grpc.ServerStreamingServer[clientpb.ArtifactChunk]
+
 func _MaliceRPC_UploadArtifact_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(clientpb.Artifact)
 	if err := dec(in); err != nil {
@@ -6532,6 +6568,11 @@ var MaliceRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "SyncStream",
 			Handler:       _MaliceRPC_SyncStream_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "DownloadArtifactStream",
+			Handler:       _MaliceRPC_DownloadArtifactStream_Handler,
 			ServerStreams: true,
 		},
 		{
