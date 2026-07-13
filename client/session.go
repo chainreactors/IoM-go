@@ -178,37 +178,53 @@ func (s *Session) HasTask(taskId uint32) bool {
 }
 
 type ActiveTarget struct {
+	mu      sync.RWMutex
 	Session *Session
 }
 
 func (s *ActiveTarget) GetInteractive() *Session {
-	if s.Session == nil {
+	session := s.Get()
+	if session == nil {
 		logs.Log.Warn("Please select a session or beacon via `use`\n")
 		return nil
 	}
-	return s.Session
+	return session
 }
 
 // GetSessionInteractive - Get the active target(s)
 func (s *ActiveTarget) Get() *Session {
+	if s == nil {
+		return nil
+	}
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	return s.Session
 }
 
 func (s *ActiveTarget) Context() context.Context {
-	if s.Session != nil {
-		return s.Session.Context()
-	} else {
+	session := s.Get()
+	if session == nil {
 		return nil
 	}
+	return session.Context()
 }
 
 // Set - Change the active session
 func (s *ActiveTarget) Set(session *Session) {
+	if s == nil {
+		return
+	}
+	s.mu.Lock()
 	s.Session = session
-	return
+	s.mu.Unlock()
 }
 
 // Background - Background the active session
 func (s *ActiveTarget) Background() {
+	if s == nil {
+		return
+	}
+	s.mu.Lock()
 	s.Session = nil
+	s.mu.Unlock()
 }

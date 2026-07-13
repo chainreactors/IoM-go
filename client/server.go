@@ -79,6 +79,32 @@ type ServerState struct {
 	EventCallback   map[string]func(*clientpb.Event)
 }
 
+func (s *ServerState) SetEventCallback(op string, callback func(*clientpb.Event)) {
+	if s == nil {
+		return
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if callback == nil {
+		delete(s.EventCallback, op)
+		return
+	}
+	if s.EventCallback == nil {
+		s.EventCallback = make(map[string]func(*clientpb.Event))
+	}
+	s.EventCallback[op] = callback
+}
+
+func (s *ServerState) GetEventCallback(op string) (func(*clientpb.Event), bool) {
+	if s == nil {
+		return nil, false
+	}
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	callback, ok := s.EventCallback[op]
+	return callback, ok
+}
+
 func PipelineCacheKey(pipeline *clientpb.Pipeline) string {
 	if pipeline == nil {
 		return ""
@@ -668,8 +694,8 @@ func (s *ServerState) RemoveObserver(observerID string) {
 func (s *ServerState) ObserverLog(sessionId string) *Logger {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	if s.Session != nil && s.Session.SessionId == sessionId {
-		return s.Session.Log
+	if session := s.Get(); session != nil && session.SessionId == sessionId {
+		return session.Log
 	}
 
 	if observer, ok := s.Observers[sessionId]; ok {

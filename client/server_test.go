@@ -216,3 +216,33 @@ func TestFindPipelineLockedDoesNotFallbackToBareNameForDifferentListener(t *test
 		t.Fatalf("findPipelineLocked returned %#v, want miss for different listener", current)
 	}
 }
+
+func TestEventCallbackConcurrentAccess(t *testing.T) {
+	state := &ServerState{EventCallback: make(map[string]func(*clientpb.Event))}
+	callback := func(*clientpb.Event) {}
+	const iterations = 2000
+
+	start := make(chan struct{})
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		<-start
+		for i := 0; i < iterations; i++ {
+			state.SetEventCallback("test", callback)
+		}
+	}()
+	go func() {
+		defer wg.Done()
+		<-start
+		for i := 0; i < iterations; i++ {
+			_, _ = state.GetEventCallback("test")
+		}
+	}()
+
+	close(start)
+	wg.Wait()
+	if _, ok := state.GetEventCallback("test"); !ok {
+		t.Fatal("event callback was not registered")
+	}
+}
