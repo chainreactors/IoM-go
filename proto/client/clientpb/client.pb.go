@@ -8320,6 +8320,194 @@ func (x *DeleteProjectRequest) GetHard() bool {
 	return false
 }
 
+// EventSubscription configures the resumable EventsV2 stream.
+// topics match Event.type values. An empty topic list subscribes to all events.
+type EventSubscription struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	StreamId          string                 `protobuf:"bytes,1,opt,name=stream_id,json=streamId,proto3" json:"stream_id,omitempty"`
+	AfterSequence     uint64                 `protobuf:"varint,2,opt,name=after_sequence,json=afterSequence,proto3" json:"after_sequence,omitempty"`
+	Replay            bool                   `protobuf:"varint,3,opt,name=replay,proto3" json:"replay,omitempty"`
+	Topics            []string               `protobuf:"bytes,4,rep,name=topics,proto3" json:"topics,omitempty"`
+	IncludeHeartbeats bool                   `protobuf:"varint,5,opt,name=include_heartbeats,json=includeHeartbeats,proto3" json:"include_heartbeats,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *EventSubscription) Reset() {
+	*x = EventSubscription{}
+	mi := &file_client_clientpb_client_proto_msgTypes[110]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EventSubscription) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventSubscription) ProtoMessage() {}
+
+func (x *EventSubscription) ProtoReflect() protoreflect.Message {
+	mi := &file_client_clientpb_client_proto_msgTypes[110]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EventSubscription.ProtoReflect.Descriptor instead.
+func (*EventSubscription) Descriptor() ([]byte, []int) {
+	return file_client_clientpb_client_proto_rawDescGZIP(), []int{110}
+}
+
+func (x *EventSubscription) GetStreamId() string {
+	if x != nil {
+		return x.StreamId
+	}
+	return ""
+}
+
+func (x *EventSubscription) GetAfterSequence() uint64 {
+	if x != nil {
+		return x.AfterSequence
+	}
+	return 0
+}
+
+func (x *EventSubscription) GetReplay() bool {
+	if x != nil {
+		return x.Replay
+	}
+	return false
+}
+
+func (x *EventSubscription) GetTopics() []string {
+	if x != nil {
+		return x.Topics
+	}
+	return nil
+}
+
+func (x *EventSubscription) GetIncludeHeartbeats() bool {
+	if x != nil {
+		return x.IncludeHeartbeats
+	}
+	return false
+}
+
+// EventEnvelope adds ordering and replay metadata without changing the legacy
+// Event message used by Events and GetEvent.
+type EventEnvelope struct {
+	state               protoimpl.MessageState `protogen:"open.v1"`
+	StreamId            string                 `protobuf:"bytes,1,opt,name=stream_id,json=streamId,proto3" json:"stream_id,omitempty"`
+	Sequence            uint64                 `protobuf:"varint,2,opt,name=sequence,proto3" json:"sequence,omitempty"`
+	OccurredAtUnixMilli int64                  `protobuf:"varint,3,opt,name=occurred_at_unix_milli,json=occurredAtUnixMilli,proto3" json:"occurred_at_unix_milli,omitempty"`
+	Event               *Event                 `protobuf:"bytes,4,opt,name=event,proto3" json:"event,omitempty"`
+	Replayed            bool                   `protobuf:"varint,5,opt,name=replayed,proto3" json:"replayed,omitempty"`
+	ResetRequired       bool                   `protobuf:"varint,6,opt,name=reset_required,json=resetRequired,proto3" json:"reset_required,omitempty"`
+	OldestSequence      uint64                 `protobuf:"varint,7,opt,name=oldest_sequence,json=oldestSequence,proto3" json:"oldest_sequence,omitempty"`
+	LatestSequence      uint64                 `protobuf:"varint,8,opt,name=latest_sequence,json=latestSequence,proto3" json:"latest_sequence,omitempty"`
+	Ready               bool                   `protobuf:"varint,9,opt,name=ready,proto3" json:"ready,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *EventEnvelope) Reset() {
+	*x = EventEnvelope{}
+	mi := &file_client_clientpb_client_proto_msgTypes[111]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EventEnvelope) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventEnvelope) ProtoMessage() {}
+
+func (x *EventEnvelope) ProtoReflect() protoreflect.Message {
+	mi := &file_client_clientpb_client_proto_msgTypes[111]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EventEnvelope.ProtoReflect.Descriptor instead.
+func (*EventEnvelope) Descriptor() ([]byte, []int) {
+	return file_client_clientpb_client_proto_rawDescGZIP(), []int{111}
+}
+
+func (x *EventEnvelope) GetStreamId() string {
+	if x != nil {
+		return x.StreamId
+	}
+	return ""
+}
+
+func (x *EventEnvelope) GetSequence() uint64 {
+	if x != nil {
+		return x.Sequence
+	}
+	return 0
+}
+
+func (x *EventEnvelope) GetOccurredAtUnixMilli() int64 {
+	if x != nil {
+		return x.OccurredAtUnixMilli
+	}
+	return 0
+}
+
+func (x *EventEnvelope) GetEvent() *Event {
+	if x != nil {
+		return x.Event
+	}
+	return nil
+}
+
+func (x *EventEnvelope) GetReplayed() bool {
+	if x != nil {
+		return x.Replayed
+	}
+	return false
+}
+
+func (x *EventEnvelope) GetResetRequired() bool {
+	if x != nil {
+		return x.ResetRequired
+	}
+	return false
+}
+
+func (x *EventEnvelope) GetOldestSequence() uint64 {
+	if x != nil {
+		return x.OldestSequence
+	}
+	return 0
+}
+
+func (x *EventEnvelope) GetLatestSequence() uint64 {
+	if x != nil {
+		return x.LatestSequence
+	}
+	return 0
+}
+
+func (x *EventEnvelope) GetReady() bool {
+	if x != nil {
+		return x.Ready
+	}
+	return false
+}
+
 var File_client_clientpb_client_proto protoreflect.FileDescriptor
 
 var file_client_clientpb_client_proto_rawDesc = []byte{
@@ -9450,20 +9638,53 @@ var file_client_clientpb_client_proto_rawDesc = []byte{
 	0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x65, 0x71,
 	0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
 	0x52, 0x02, 0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x68, 0x61, 0x72, 0x64, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x08, 0x52, 0x04, 0x68, 0x61, 0x72, 0x64, 0x2a, 0x91, 0x01, 0x0a, 0x0d, 0x54, 0x4c, 0x53,
-	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4d, 0x6f, 0x64, 0x65, 0x12, 0x1f, 0x0a, 0x1b, 0x54, 0x4c,
-	0x53, 0x5f, 0x55, 0x50, 0x44, 0x41, 0x54, 0x45, 0x5f, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x55, 0x4e,
-	0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x1b, 0x0a, 0x17, 0x54,
-	0x4c, 0x53, 0x5f, 0x55, 0x50, 0x44, 0x41, 0x54, 0x45, 0x5f, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x44,
-	0x49, 0x53, 0x41, 0x42, 0x4c, 0x45, 0x10, 0x01, 0x12, 0x21, 0x0a, 0x1d, 0x54, 0x4c, 0x53, 0x5f,
-	0x55, 0x50, 0x44, 0x41, 0x54, 0x45, 0x5f, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x45, 0x58, 0x49, 0x53,
-	0x54, 0x49, 0x4e, 0x47, 0x5f, 0x43, 0x45, 0x52, 0x54, 0x10, 0x02, 0x12, 0x1f, 0x0a, 0x1b, 0x54,
-	0x4c, 0x53, 0x5f, 0x55, 0x50, 0x44, 0x41, 0x54, 0x45, 0x5f, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x49,
-	0x4e, 0x4c, 0x49, 0x4e, 0x45, 0x5f, 0x43, 0x45, 0x52, 0x54, 0x10, 0x03, 0x42, 0x37, 0x5a, 0x35,
-	0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x68, 0x61, 0x69, 0x6e,
-	0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x2f, 0x49, 0x6f, 0x4d, 0x2d, 0x67, 0x6f, 0x2f,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x2f, 0x63, 0x6c, 0x69,
-	0x65, 0x6e, 0x74, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x28, 0x08, 0x52, 0x04, 0x68, 0x61, 0x72, 0x64, 0x22, 0xb6, 0x01, 0x0a, 0x11, 0x45, 0x76, 0x65,
+	0x6e, 0x74, 0x53, 0x75, 0x62, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1b,
+	0x0a, 0x09, 0x73, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x08, 0x73, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x49, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x61,
+	0x66, 0x74, 0x65, 0x72, 0x5f, 0x73, 0x65, 0x71, 0x75, 0x65, 0x6e, 0x63, 0x65, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x04, 0x52, 0x0d, 0x61, 0x66, 0x74, 0x65, 0x72, 0x53, 0x65, 0x71, 0x75, 0x65, 0x6e,
+	0x63, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x72, 0x65, 0x70, 0x6c, 0x61, 0x79, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x08, 0x52, 0x06, 0x72, 0x65, 0x70, 0x6c, 0x61, 0x79, 0x12, 0x16, 0x0a, 0x06, 0x74, 0x6f,
+	0x70, 0x69, 0x63, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x09, 0x52, 0x06, 0x74, 0x6f, 0x70, 0x69,
+	0x63, 0x73, 0x12, 0x2d, 0x0a, 0x12, 0x69, 0x6e, 0x63, 0x6c, 0x75, 0x64, 0x65, 0x5f, 0x68, 0x65,
+	0x61, 0x72, 0x74, 0x62, 0x65, 0x61, 0x74, 0x73, 0x18, 0x05, 0x20, 0x01, 0x28, 0x08, 0x52, 0x11,
+	0x69, 0x6e, 0x63, 0x6c, 0x75, 0x64, 0x65, 0x48, 0x65, 0x61, 0x72, 0x74, 0x62, 0x65, 0x61, 0x74,
+	0x73, 0x22, 0xcf, 0x02, 0x0a, 0x0d, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x45, 0x6e, 0x76, 0x65, 0x6c,
+	0x6f, 0x70, 0x65, 0x12, 0x1b, 0x0a, 0x09, 0x73, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x5f, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x73, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x49, 0x64,
+	0x12, 0x1a, 0x0a, 0x08, 0x73, 0x65, 0x71, 0x75, 0x65, 0x6e, 0x63, 0x65, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x04, 0x52, 0x08, 0x73, 0x65, 0x71, 0x75, 0x65, 0x6e, 0x63, 0x65, 0x12, 0x33, 0x0a, 0x16,
+	0x6f, 0x63, 0x63, 0x75, 0x72, 0x72, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x5f, 0x75, 0x6e, 0x69, 0x78,
+	0x5f, 0x6d, 0x69, 0x6c, 0x6c, 0x69, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x13, 0x6f, 0x63,
+	0x63, 0x75, 0x72, 0x72, 0x65, 0x64, 0x41, 0x74, 0x55, 0x6e, 0x69, 0x78, 0x4d, 0x69, 0x6c, 0x6c,
+	0x69, 0x12, 0x25, 0x0a, 0x05, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x0f, 0x2e, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x70, 0x62, 0x2e, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x52, 0x05, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x72, 0x65, 0x70, 0x6c,
+	0x61, 0x79, 0x65, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x72, 0x65, 0x70, 0x6c,
+	0x61, 0x79, 0x65, 0x64, 0x12, 0x25, 0x0a, 0x0e, 0x72, 0x65, 0x73, 0x65, 0x74, 0x5f, 0x72, 0x65,
+	0x71, 0x75, 0x69, 0x72, 0x65, 0x64, 0x18, 0x06, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0d, 0x72, 0x65,
+	0x73, 0x65, 0x74, 0x52, 0x65, 0x71, 0x75, 0x69, 0x72, 0x65, 0x64, 0x12, 0x27, 0x0a, 0x0f, 0x6f,
+	0x6c, 0x64, 0x65, 0x73, 0x74, 0x5f, 0x73, 0x65, 0x71, 0x75, 0x65, 0x6e, 0x63, 0x65, 0x18, 0x07,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x0e, 0x6f, 0x6c, 0x64, 0x65, 0x73, 0x74, 0x53, 0x65, 0x71, 0x75,
+	0x65, 0x6e, 0x63, 0x65, 0x12, 0x27, 0x0a, 0x0f, 0x6c, 0x61, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x73,
+	0x65, 0x71, 0x75, 0x65, 0x6e, 0x63, 0x65, 0x18, 0x08, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0e, 0x6c,
+	0x61, 0x74, 0x65, 0x73, 0x74, 0x53, 0x65, 0x71, 0x75, 0x65, 0x6e, 0x63, 0x65, 0x12, 0x14, 0x0a,
+	0x05, 0x72, 0x65, 0x61, 0x64, 0x79, 0x18, 0x09, 0x20, 0x01, 0x28, 0x08, 0x52, 0x05, 0x72, 0x65,
+	0x61, 0x64, 0x79, 0x2a, 0x91, 0x01, 0x0a, 0x0d, 0x54, 0x4c, 0x53, 0x55, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x4d, 0x6f, 0x64, 0x65, 0x12, 0x1f, 0x0a, 0x1b, 0x54, 0x4c, 0x53, 0x5f, 0x55, 0x50, 0x44,
+	0x41, 0x54, 0x45, 0x5f, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49,
+	0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x1b, 0x0a, 0x17, 0x54, 0x4c, 0x53, 0x5f, 0x55, 0x50,
+	0x44, 0x41, 0x54, 0x45, 0x5f, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x44, 0x49, 0x53, 0x41, 0x42, 0x4c,
+	0x45, 0x10, 0x01, 0x12, 0x21, 0x0a, 0x1d, 0x54, 0x4c, 0x53, 0x5f, 0x55, 0x50, 0x44, 0x41, 0x54,
+	0x45, 0x5f, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x45, 0x58, 0x49, 0x53, 0x54, 0x49, 0x4e, 0x47, 0x5f,
+	0x43, 0x45, 0x52, 0x54, 0x10, 0x02, 0x12, 0x1f, 0x0a, 0x1b, 0x54, 0x4c, 0x53, 0x5f, 0x55, 0x50,
+	0x44, 0x41, 0x54, 0x45, 0x5f, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x49, 0x4e, 0x4c, 0x49, 0x4e, 0x45,
+	0x5f, 0x43, 0x45, 0x52, 0x54, 0x10, 0x03, 0x42, 0x37, 0x5a, 0x35, 0x67, 0x69, 0x74, 0x68, 0x75,
+	0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x72, 0x65, 0x61, 0x63, 0x74,
+	0x6f, 0x72, 0x73, 0x2f, 0x49, 0x6f, 0x4d, 0x2d, 0x67, 0x6f, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x2f, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x2f, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x70, 0x62,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -9479,7 +9700,7 @@ func file_client_clientpb_client_proto_rawDescGZIP() []byte {
 }
 
 var file_client_clientpb_client_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_client_clientpb_client_proto_msgTypes = make([]protoimpl.MessageInfo, 119)
+var file_client_clientpb_client_proto_msgTypes = make([]protoimpl.MessageInfo, 121)
 var file_client_clientpb_client_proto_goTypes = []any{
 	(TLSUpdateMode)(0),              // 0: clientpb.TLSUpdateMode
 	(*Empty)(nil),                   // 1: clientpb.Empty
@@ -9592,39 +9813,41 @@ var file_client_clientpb_client_proto_goTypes = []any{
 	(*CreateProjectRequest)(nil),    // 108: clientpb.CreateProjectRequest
 	(*UpdateProjectRequest)(nil),    // 109: clientpb.UpdateProjectRequest
 	(*DeleteProjectRequest)(nil),    // 110: clientpb.DeleteProjectRequest
-	nil,                             // 111: clientpb.Session.ArgueEntry
-	nil,                             // 112: clientpb.Session.LootEntry
-	nil,                             // 113: clientpb.Job.ContentsEntry
-	nil,                             // 114: clientpb.AcmeConfig.CredentialsEntry
-	nil,                             // 115: clientpb.AcmeRequest.CredentialsEntry
-	nil,                             // 116: clientpb.REM.AgentsEntry
-	nil,                             // 117: clientpb.Website.ContentsEntry
-	nil,                             // 118: clientpb.GithubActionBuildConfig.InputsEntry
-	nil,                             // 119: clientpb.SaasBuildConfig.HeadersEntry
-	(*implantpb.Os)(nil),            // 120: modulepb.Os
-	(*implantpb.Process)(nil),       // 121: modulepb.Process
-	(*implantpb.Timer)(nil),         // 122: modulepb.Timer
-	(*implantpb.Addon)(nil),         // 123: modulepb.Addon
-	(*implantpb.Spite)(nil),         // 124: implantpb.Spite
-	(*implantpb.Register)(nil),      // 125: modulepb.Register
+	(*EventSubscription)(nil),       // 111: clientpb.EventSubscription
+	(*EventEnvelope)(nil),           // 112: clientpb.EventEnvelope
+	nil,                             // 113: clientpb.Session.ArgueEntry
+	nil,                             // 114: clientpb.Session.LootEntry
+	nil,                             // 115: clientpb.Job.ContentsEntry
+	nil,                             // 116: clientpb.AcmeConfig.CredentialsEntry
+	nil,                             // 117: clientpb.AcmeRequest.CredentialsEntry
+	nil,                             // 118: clientpb.REM.AgentsEntry
+	nil,                             // 119: clientpb.Website.ContentsEntry
+	nil,                             // 120: clientpb.GithubActionBuildConfig.InputsEntry
+	nil,                             // 121: clientpb.SaasBuildConfig.HeadersEntry
+	(*implantpb.Os)(nil),            // 122: modulepb.Os
+	(*implantpb.Process)(nil),       // 123: modulepb.Process
+	(*implantpb.Timer)(nil),         // 124: modulepb.Timer
+	(*implantpb.Addon)(nil),         // 125: modulepb.Addon
+	(*implantpb.Spite)(nil),         // 126: implantpb.Spite
+	(*implantpb.Register)(nil),      // 127: modulepb.Register
 }
 var file_client_clientpb_client_proto_depIdxs = []int32{
 	35,  // 0: clientpb.Session.tasks:type_name -> clientpb.Tasks
-	120, // 1: clientpb.Session.os:type_name -> modulepb.Os
-	121, // 2: clientpb.Session.process:type_name -> modulepb.Process
-	122, // 3: clientpb.Session.timer:type_name -> modulepb.Timer
-	123, // 4: clientpb.Session.addons:type_name -> modulepb.Addon
+	122, // 1: clientpb.Session.os:type_name -> modulepb.Os
+	123, // 2: clientpb.Session.process:type_name -> modulepb.Process
+	124, // 3: clientpb.Session.timer:type_name -> modulepb.Timer
+	125, // 4: clientpb.Session.addons:type_name -> modulepb.Addon
 	103, // 5: clientpb.Session.key_pair:type_name -> clientpb.KeyPair
-	111, // 6: clientpb.Session.argue:type_name -> clientpb.Session.ArgueEntry
-	112, // 7: clientpb.Session.loot:type_name -> clientpb.Session.LootEntry
+	113, // 6: clientpb.Session.argue:type_name -> clientpb.Session.ArgueEntry
+	114, // 7: clientpb.Session.loot:type_name -> clientpb.Session.LootEntry
 	31,  // 8: clientpb.Audit.context:type_name -> clientpb.TaskContext
-	124, // 9: clientpb.Audit.request:type_name -> implantpb.Spite
+	126, // 9: clientpb.Audit.request:type_name -> implantpb.Spite
 	8,   // 10: clientpb.Audits.audit:type_name -> clientpb.Audit
 	4,   // 11: clientpb.Sessions.sessions:type_name -> clientpb.Session
 	13,  // 12: clientpb.SpiteCache.items:type_name -> clientpb.SpiteCacheItem
-	124, // 13: clientpb.SpiteCacheItem.spite:type_name -> implantpb.Spite
+	126, // 13: clientpb.SpiteCacheItem.spite:type_name -> implantpb.Spite
 	64,  // 14: clientpb.Job.pipeline:type_name -> clientpb.Pipeline
-	113, // 15: clientpb.Job.contents:type_name -> clientpb.Job.ContentsEntry
+	115, // 15: clientpb.Job.contents:type_name -> clientpb.Job.ContentsEntry
 	78,  // 16: clientpb.Job.rem_agent:type_name -> clientpb.REMAgent
 	79,  // 17: clientpb.Job.rem_log:type_name -> clientpb.RemLog
 	14,  // 18: clientpb.Jobs.job:type_name -> clientpb.Job
@@ -9642,20 +9865,20 @@ var file_client_clientpb_client_proto_depIdxs = []int32{
 	14,  // 30: clientpb.Event.job:type_name -> clientpb.Job
 	23,  // 31: clientpb.Event.client:type_name -> clientpb.Client
 	34,  // 32: clientpb.Event.task:type_name -> clientpb.Task
-	124, // 33: clientpb.Event.spite:type_name -> implantpb.Spite
+	126, // 33: clientpb.Event.spite:type_name -> implantpb.Spite
 	18,  // 34: clientpb.Event.listener:type_name -> clientpb.Listener
 	25,  // 35: clientpb.Events.events:type_name -> clientpb.Event
 	34,  // 36: clientpb.TaskContext.task:type_name -> clientpb.Task
 	4,   // 37: clientpb.TaskContext.session:type_name -> clientpb.Session
-	124, // 38: clientpb.TaskContext.spite:type_name -> implantpb.Spite
+	126, // 38: clientpb.TaskContext.spite:type_name -> implantpb.Spite
 	34,  // 39: clientpb.TaskContexts.task:type_name -> clientpb.Task
 	4,   // 40: clientpb.TaskContexts.session:type_name -> clientpb.Session
-	124, // 41: clientpb.TaskContexts.spites:type_name -> implantpb.Spite
+	126, // 41: clientpb.TaskContexts.spites:type_name -> implantpb.Spite
 	31,  // 42: clientpb.TasksContext.contexts:type_name -> clientpb.TaskContext
 	34,  // 43: clientpb.Tasks.tasks:type_name -> clientpb.Task
 	34,  // 44: clientpb.TaskDetail.task:type_name -> clientpb.Task
-	124, // 45: clientpb.TaskDetail.raw_request:type_name -> implantpb.Spite
-	124, // 46: clientpb.TaskDetail.results:type_name -> implantpb.Spite
+	126, // 45: clientpb.TaskDetail.raw_request:type_name -> implantpb.Spite
+	126, // 46: clientpb.TaskDetail.results:type_name -> implantpb.Spite
 	37,  // 47: clientpb.TaskDetails.tasks:type_name -> clientpb.TaskDetail
 	42,  // 48: clientpb.TaskDescs.tasks:type_name -> clientpb.TaskDesc
 	40,  // 49: clientpb.Files.files:type_name -> clientpb.File
@@ -9665,12 +9888,12 @@ var file_client_clientpb_client_proto_depIdxs = []int32{
 	55,  // 53: clientpb.Artifacts.artifacts:type_name -> clientpb.Artifact
 	89,  // 54: clientpb.Profile.resources:type_name -> clientpb.BuildResources
 	57,  // 55: clientpb.Profiles.profiles:type_name -> clientpb.Profile
-	125, // 56: clientpb.RegisterSession.register_data:type_name -> modulepb.Register
+	127, // 56: clientpb.RegisterSession.register_data:type_name -> modulepb.Register
 	63,  // 57: clientpb.RegisterListener.pipelines:type_name -> clientpb.Pipelines
 	4,   // 58: clientpb.SpiteRequest.session:type_name -> clientpb.Session
 	34,  // 59: clientpb.SpiteRequest.task:type_name -> clientpb.Task
-	124, // 60: clientpb.SpiteRequest.spite:type_name -> implantpb.Spite
-	124, // 61: clientpb.SpiteResponse.spite:type_name -> implantpb.Spite
+	126, // 60: clientpb.SpiteRequest.spite:type_name -> implantpb.Spite
+	126, // 61: clientpb.SpiteResponse.spite:type_name -> implantpb.Spite
 	64,  // 62: clientpb.Pipelines.pipelines:type_name -> clientpb.Pipeline
 	68,  // 63: clientpb.Pipeline.tls:type_name -> clientpb.TLS
 	74,  // 64: clientpb.Pipeline.encryption:type_name -> clientpb.Encryption
@@ -9688,11 +9911,11 @@ var file_client_clientpb_client_proto_depIdxs = []int32{
 	70,  // 76: clientpb.TLS.ca:type_name -> clientpb.Cert
 	71,  // 77: clientpb.TLS.cert_subject:type_name -> clientpb.CertificateSubject
 	68,  // 78: clientpb.Certs.certs:type_name -> clientpb.TLS
-	114, // 79: clientpb.AcmeConfig.credentials:type_name -> clientpb.AcmeConfig.CredentialsEntry
-	115, // 80: clientpb.AcmeRequest.credentials:type_name -> clientpb.AcmeRequest.CredentialsEntry
-	116, // 81: clientpb.REM.agents:type_name -> clientpb.REM.AgentsEntry
+	116, // 79: clientpb.AcmeConfig.credentials:type_name -> clientpb.AcmeConfig.CredentialsEntry
+	117, // 80: clientpb.AcmeRequest.credentials:type_name -> clientpb.AcmeRequest.CredentialsEntry
+	118, // 81: clientpb.REM.agents:type_name -> clientpb.REM.AgentsEntry
 	78,  // 82: clientpb.REMAgents.agents:type_name -> clientpb.REMAgent
-	117, // 83: clientpb.Website.contents:type_name -> clientpb.Website.ContentsEntry
+	119, // 83: clientpb.Website.contents:type_name -> clientpb.Website.ContentsEntry
 	83,  // 84: clientpb.Websites.websites:type_name -> clientpb.Website
 	82,  // 85: clientpb.WebContents.contents:type_name -> clientpb.WebContent
 	89,  // 86: clientpb.BuildConfig.resources:type_name -> clientpb.BuildResources
@@ -9700,8 +9923,8 @@ var file_client_clientpb_client_proto_depIdxs = []int32{
 	92,  // 88: clientpb.BuildConfig.github_action:type_name -> clientpb.GithubActionBuildConfig
 	93,  // 89: clientpb.BuildConfig.saas:type_name -> clientpb.SaasBuildConfig
 	90,  // 90: clientpb.BuildResources.entries:type_name -> clientpb.ResourceEntry
-	118, // 91: clientpb.GithubActionBuildConfig.inputs:type_name -> clientpb.GithubActionBuildConfig.InputsEntry
-	119, // 92: clientpb.SaasBuildConfig.headers:type_name -> clientpb.SaasBuildConfig.HeadersEntry
+	120, // 91: clientpb.GithubActionBuildConfig.inputs:type_name -> clientpb.GithubActionBuildConfig.InputsEntry
+	121, // 92: clientpb.SaasBuildConfig.headers:type_name -> clientpb.SaasBuildConfig.HeadersEntry
 	97,  // 93: clientpb.GithubWorkflows.workflows:type_name -> clientpb.GithubWorkflow
 	4,   // 94: clientpb.Context.session:type_name -> clientpb.Session
 	34,  // 95: clientpb.Context.task:type_name -> clientpb.Task
@@ -9712,14 +9935,15 @@ var file_client_clientpb_client_proto_depIdxs = []int32{
 	103, // 100: clientpb.Secure.server_keypair:type_name -> clientpb.KeyPair
 	103, // 101: clientpb.Secure.implant_keypair:type_name -> clientpb.KeyPair
 	106, // 102: clientpb.Projects.projects:type_name -> clientpb.Project
-	82,  // 103: clientpb.Job.ContentsEntry.value:type_name -> clientpb.WebContent
-	78,  // 104: clientpb.REM.AgentsEntry.value:type_name -> clientpb.REMAgent
-	82,  // 105: clientpb.Website.ContentsEntry.value:type_name -> clientpb.WebContent
-	106, // [106:106] is the sub-list for method output_type
-	106, // [106:106] is the sub-list for method input_type
-	106, // [106:106] is the sub-list for extension type_name
-	106, // [106:106] is the sub-list for extension extendee
-	0,   // [0:106] is the sub-list for field type_name
+	25,  // 103: clientpb.EventEnvelope.event:type_name -> clientpb.Event
+	82,  // 104: clientpb.Job.ContentsEntry.value:type_name -> clientpb.WebContent
+	78,  // 105: clientpb.REM.AgentsEntry.value:type_name -> clientpb.REMAgent
+	82,  // 106: clientpb.Website.ContentsEntry.value:type_name -> clientpb.WebContent
+	107, // [107:107] is the sub-list for method output_type
+	107, // [107:107] is the sub-list for method input_type
+	107, // [107:107] is the sub-list for extension type_name
+	107, // [107:107] is the sub-list for extension extendee
+	0,   // [0:107] is the sub-list for field type_name
 }
 
 func init() { file_client_clientpb_client_proto_init() }
@@ -9750,7 +9974,7 @@ func file_client_clientpb_client_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_client_clientpb_client_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   119,
+			NumMessages:   121,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

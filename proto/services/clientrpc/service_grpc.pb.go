@@ -189,6 +189,7 @@ const (
 	MaliceRPC_ListProjects_FullMethodName              = "/clientrpc.MaliceRPC/ListProjects"
 	MaliceRPC_UpdateProject_FullMethodName             = "/clientrpc.MaliceRPC/UpdateProject"
 	MaliceRPC_DeleteProject_FullMethodName             = "/clientrpc.MaliceRPC/DeleteProject"
+	MaliceRPC_EventsV2_FullMethodName                  = "/clientrpc.MaliceRPC/EventsV2"
 )
 
 // MaliceRPCClient is the client API for MaliceRPC service.
@@ -393,6 +394,8 @@ type MaliceRPCClient interface {
 	ListProjects(ctx context.Context, in *clientpb.Empty, opts ...grpc.CallOption) (*clientpb.Projects, error)
 	UpdateProject(ctx context.Context, in *clientpb.UpdateProjectRequest, opts ...grpc.CallOption) (*clientpb.Project, error)
 	DeleteProject(ctx context.Context, in *clientpb.DeleteProjectRequest, opts ...grpc.CallOption) (*clientpb.Empty, error)
+	// resumable event stream; appended to preserve legacy method ordering
+	EventsV2(ctx context.Context, in *clientpb.EventSubscription, opts ...grpc.CallOption) (grpc.ServerStreamingClient[clientpb.EventEnvelope], error)
 }
 
 type maliceRPCClient struct {
@@ -2091,6 +2094,25 @@ func (c *maliceRPCClient) DeleteProject(ctx context.Context, in *clientpb.Delete
 	return out, nil
 }
 
+func (c *maliceRPCClient) EventsV2(ctx context.Context, in *clientpb.EventSubscription, opts ...grpc.CallOption) (grpc.ServerStreamingClient[clientpb.EventEnvelope], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &MaliceRPC_ServiceDesc.Streams[2], MaliceRPC_EventsV2_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[clientpb.EventSubscription, clientpb.EventEnvelope]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type MaliceRPC_EventsV2Client = grpc.ServerStreamingClient[clientpb.EventEnvelope]
+
 // MaliceRPCServer is the server API for MaliceRPC service.
 // All implementations must embed UnimplementedMaliceRPCServer
 // for forward compatibility.
@@ -2293,6 +2315,8 @@ type MaliceRPCServer interface {
 	ListProjects(context.Context, *clientpb.Empty) (*clientpb.Projects, error)
 	UpdateProject(context.Context, *clientpb.UpdateProjectRequest) (*clientpb.Project, error)
 	DeleteProject(context.Context, *clientpb.DeleteProjectRequest) (*clientpb.Empty, error)
+	// resumable event stream; appended to preserve legacy method ordering
+	EventsV2(*clientpb.EventSubscription, grpc.ServerStreamingServer[clientpb.EventEnvelope]) error
 	mustEmbedUnimplementedMaliceRPCServer()
 }
 
@@ -2803,6 +2827,9 @@ func (UnimplementedMaliceRPCServer) UpdateProject(context.Context, *clientpb.Upd
 }
 func (UnimplementedMaliceRPCServer) DeleteProject(context.Context, *clientpb.DeleteProjectRequest) (*clientpb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteProject not implemented")
+}
+func (UnimplementedMaliceRPCServer) EventsV2(*clientpb.EventSubscription, grpc.ServerStreamingServer[clientpb.EventEnvelope]) error {
+	return status.Errorf(codes.Unimplemented, "method EventsV2 not implemented")
 }
 func (UnimplementedMaliceRPCServer) mustEmbedUnimplementedMaliceRPCServer() {}
 func (UnimplementedMaliceRPCServer) testEmbeddedByValue()                   {}
@@ -5817,6 +5844,17 @@ func _MaliceRPC_DeleteProject_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MaliceRPC_EventsV2_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(clientpb.EventSubscription)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(MaliceRPCServer).EventsV2(m, &grpc.GenericServerStream[clientpb.EventSubscription, clientpb.EventEnvelope]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type MaliceRPC_EventsV2Server = grpc.ServerStreamingServer[clientpb.EventEnvelope]
+
 // MaliceRPC_ServiceDesc is the grpc.ServiceDesc for MaliceRPC service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -6494,6 +6532,11 @@ var MaliceRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "SyncStream",
 			Handler:       _MaliceRPC_SyncStream_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "EventsV2",
+			Handler:       _MaliceRPC_EventsV2_Handler,
 			ServerStreams: true,
 		},
 	},
