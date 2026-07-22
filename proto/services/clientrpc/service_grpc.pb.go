@@ -141,6 +141,10 @@ const (
 	MaliceRPC_ExecuteLocal_FullMethodName              = "/clientrpc.MaliceRPC/ExecuteLocal"
 	MaliceRPC_InlineLocal_FullMethodName               = "/clientrpc.MaliceRPC/InlineLocal"
 	MaliceRPC_RemDial_FullMethodName                   = "/clientrpc.MaliceRPC/RemDial"
+	MaliceRPC_TcpRelay_FullMethodName                  = "/clientrpc.MaliceRPC/TcpRelay"
+	MaliceRPC_TunnelOpen_FullMethodName                = "/clientrpc.MaliceRPC/TunnelOpen"
+	MaliceRPC_TunnelData_FullMethodName                = "/clientrpc.MaliceRPC/TunnelData"
+	MaliceRPC_TunnelClose_FullMethodName               = "/clientrpc.MaliceRPC/TunnelClose"
 	MaliceRPC_FFmpeg_FullMethodName                    = "/clientrpc.MaliceRPC/FFmpeg"
 	MaliceRPC_EXE2Shellcode_FullMethodName             = "/clientrpc.MaliceRPC/EXE2Shellcode"
 	MaliceRPC_DLL2Shellcode_FullMethodName             = "/clientrpc.MaliceRPC/DLL2Shellcode"
@@ -340,6 +344,11 @@ type MaliceRPCClient interface {
 	InlineLocal(ctx context.Context, in *implantpb.ExecuteBinary, opts ...grpc.CallOption) (*clientpb.Task, error)
 	// implant: 3rd
 	RemDial(ctx context.Context, in *implantpb.Request, opts ...grpc.CallOption) (*clientpb.Task, error)
+	// native socks/tcp relay (no REM)
+	TcpRelay(ctx context.Context, in *implantpb.TunnelCtrl, opts ...grpc.CallOption) (*clientpb.Task, error)
+	TunnelOpen(ctx context.Context, in *implantpb.TunnelOpen, opts ...grpc.CallOption) (*clientpb.Task, error)
+	TunnelData(ctx context.Context, in *implantpb.TunnelData, opts ...grpc.CallOption) (*clientpb.Task, error)
+	TunnelClose(ctx context.Context, in *implantpb.TunnelClose, opts ...grpc.CallOption) (*clientpb.Task, error)
 	FFmpeg(ctx context.Context, in *implantpb.FFmpegRequest, opts ...grpc.CallOption) (*clientpb.Task, error)
 	// shellcode
 	EXE2Shellcode(ctx context.Context, in *clientpb.EXE2Shellcode, opts ...grpc.CallOption) (*clientpb.Bin, error)
@@ -1620,6 +1629,46 @@ func (c *maliceRPCClient) RemDial(ctx context.Context, in *implantpb.Request, op
 	return out, nil
 }
 
+func (c *maliceRPCClient) TcpRelay(ctx context.Context, in *implantpb.TunnelCtrl, opts ...grpc.CallOption) (*clientpb.Task, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(clientpb.Task)
+	err := c.cc.Invoke(ctx, MaliceRPC_TcpRelay_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *maliceRPCClient) TunnelOpen(ctx context.Context, in *implantpb.TunnelOpen, opts ...grpc.CallOption) (*clientpb.Task, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(clientpb.Task)
+	err := c.cc.Invoke(ctx, MaliceRPC_TunnelOpen_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *maliceRPCClient) TunnelData(ctx context.Context, in *implantpb.TunnelData, opts ...grpc.CallOption) (*clientpb.Task, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(clientpb.Task)
+	err := c.cc.Invoke(ctx, MaliceRPC_TunnelData_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *maliceRPCClient) TunnelClose(ctx context.Context, in *implantpb.TunnelClose, opts ...grpc.CallOption) (*clientpb.Task, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(clientpb.Task)
+	err := c.cc.Invoke(ctx, MaliceRPC_TunnelClose_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *maliceRPCClient) FFmpeg(ctx context.Context, in *implantpb.FFmpegRequest, opts ...grpc.CallOption) (*clientpb.Task, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(clientpb.Task)
@@ -2294,6 +2343,11 @@ type MaliceRPCServer interface {
 	InlineLocal(context.Context, *implantpb.ExecuteBinary) (*clientpb.Task, error)
 	// implant: 3rd
 	RemDial(context.Context, *implantpb.Request) (*clientpb.Task, error)
+	// native socks/tcp relay (no REM)
+	TcpRelay(context.Context, *implantpb.TunnelCtrl) (*clientpb.Task, error)
+	TunnelOpen(context.Context, *implantpb.TunnelOpen) (*clientpb.Task, error)
+	TunnelData(context.Context, *implantpb.TunnelData) (*clientpb.Task, error)
+	TunnelClose(context.Context, *implantpb.TunnelClose) (*clientpb.Task, error)
 	FFmpeg(context.Context, *implantpb.FFmpegRequest) (*clientpb.Task, error)
 	// shellcode
 	EXE2Shellcode(context.Context, *clientpb.EXE2Shellcode) (*clientpb.Bin, error)
@@ -2722,6 +2776,18 @@ func (UnimplementedMaliceRPCServer) InlineLocal(context.Context, *implantpb.Exec
 }
 func (UnimplementedMaliceRPCServer) RemDial(context.Context, *implantpb.Request) (*clientpb.Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemDial not implemented")
+}
+func (UnimplementedMaliceRPCServer) TcpRelay(context.Context, *implantpb.TunnelCtrl) (*clientpb.Task, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TcpRelay not implemented")
+}
+func (UnimplementedMaliceRPCServer) TunnelOpen(context.Context, *implantpb.TunnelOpen) (*clientpb.Task, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TunnelOpen not implemented")
+}
+func (UnimplementedMaliceRPCServer) TunnelData(context.Context, *implantpb.TunnelData) (*clientpb.Task, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TunnelData not implemented")
+}
+func (UnimplementedMaliceRPCServer) TunnelClose(context.Context, *implantpb.TunnelClose) (*clientpb.Task, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TunnelClose not implemented")
 }
 func (UnimplementedMaliceRPCServer) FFmpeg(context.Context, *implantpb.FFmpegRequest) (*clientpb.Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FFmpeg not implemented")
@@ -5025,6 +5091,78 @@ func _MaliceRPC_RemDial_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MaliceRPC_TcpRelay_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(implantpb.TunnelCtrl)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).TcpRelay(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MaliceRPC_TcpRelay_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).TcpRelay(ctx, req.(*implantpb.TunnelCtrl))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaliceRPC_TunnelOpen_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(implantpb.TunnelOpen)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).TunnelOpen(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MaliceRPC_TunnelOpen_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).TunnelOpen(ctx, req.(*implantpb.TunnelOpen))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaliceRPC_TunnelData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(implantpb.TunnelData)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).TunnelData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MaliceRPC_TunnelData_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).TunnelData(ctx, req.(*implantpb.TunnelData))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaliceRPC_TunnelClose_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(implantpb.TunnelClose)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).TunnelClose(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MaliceRPC_TunnelClose_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).TunnelClose(ctx, req.(*implantpb.TunnelClose))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MaliceRPC_FFmpeg_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(implantpb.FFmpegRequest)
 	if err := dec(in); err != nil {
@@ -6403,6 +6541,22 @@ var MaliceRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RemDial",
 			Handler:    _MaliceRPC_RemDial_Handler,
+		},
+		{
+			MethodName: "TcpRelay",
+			Handler:    _MaliceRPC_TcpRelay_Handler,
+		},
+		{
+			MethodName: "TunnelOpen",
+			Handler:    _MaliceRPC_TunnelOpen_Handler,
+		},
+		{
+			MethodName: "TunnelData",
+			Handler:    _MaliceRPC_TunnelData_Handler,
+		},
+		{
+			MethodName: "TunnelClose",
+			Handler:    _MaliceRPC_TunnelClose_Handler,
 		},
 		{
 			MethodName: "FFmpeg",

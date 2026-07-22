@@ -69,6 +69,58 @@ func (SwitchAction) EnumDescriptor() ([]byte, []int) {
 	return file_implant_implantpb_module_proto_rawDescGZIP(), []int{0}
 }
 
+type TunnelCtrl_Action int32
+
+const (
+	TunnelCtrl_ACTION_UNSPECIFIED TunnelCtrl_Action = 0
+	TunnelCtrl_START              TunnelCtrl_Action = 1
+	TunnelCtrl_STOP               TunnelCtrl_Action = 2
+	TunnelCtrl_LIST               TunnelCtrl_Action = 3
+)
+
+// Enum value maps for TunnelCtrl_Action.
+var (
+	TunnelCtrl_Action_name = map[int32]string{
+		0: "ACTION_UNSPECIFIED",
+		1: "START",
+		2: "STOP",
+		3: "LIST",
+	}
+	TunnelCtrl_Action_value = map[string]int32{
+		"ACTION_UNSPECIFIED": 0,
+		"START":              1,
+		"STOP":               2,
+		"LIST":               3,
+	}
+)
+
+func (x TunnelCtrl_Action) Enum() *TunnelCtrl_Action {
+	p := new(TunnelCtrl_Action)
+	*p = x
+	return p
+}
+
+func (x TunnelCtrl_Action) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (TunnelCtrl_Action) Descriptor() protoreflect.EnumDescriptor {
+	return file_implant_implantpb_module_proto_enumTypes[1].Descriptor()
+}
+
+func (TunnelCtrl_Action) Type() protoreflect.EnumType {
+	return &file_implant_implantpb_module_proto_enumTypes[1]
+}
+
+func (x TunnelCtrl_Action) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use TunnelCtrl_Action.Descriptor instead.
+func (TunnelCtrl_Action) EnumDescriptor() ([]byte, []int) {
+	return file_implant_implantpb_module_proto_rawDescGZIP(), []int{87, 0}
+}
+
 type Ping struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Nonce         int32                  `protobuf:"varint,1,opt,name=nonce,proto3" json:"nonce,omitempty"`
@@ -5697,6 +5749,390 @@ func (x *BridgeLlmResponse) GetError() string {
 	return ""
 }
 
+type TunnelOpen struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ConnId        uint32                 `protobuf:"varint,1,opt,name=conn_id,json=connId,proto3" json:"conn_id,omitempty"`
+	Host          string                 `protobuf:"bytes,2,opt,name=host,proto3" json:"host,omitempty"`
+	Port          uint32                 `protobuf:"varint,3,opt,name=port,proto3" json:"port,omitempty"`
+	TimeoutMs     uint32                 `protobuf:"varint,4,opt,name=timeout_ms,json=timeoutMs,proto3" json:"timeout_ms,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TunnelOpen) Reset() {
+	*x = TunnelOpen{}
+	mi := &file_implant_implantpb_module_proto_msgTypes[83]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TunnelOpen) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TunnelOpen) ProtoMessage() {}
+
+func (x *TunnelOpen) ProtoReflect() protoreflect.Message {
+	mi := &file_implant_implantpb_module_proto_msgTypes[83]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TunnelOpen.ProtoReflect.Descriptor instead.
+func (*TunnelOpen) Descriptor() ([]byte, []int) {
+	return file_implant_implantpb_module_proto_rawDescGZIP(), []int{83}
+}
+
+func (x *TunnelOpen) GetConnId() uint32 {
+	if x != nil {
+		return x.ConnId
+	}
+	return 0
+}
+
+func (x *TunnelOpen) GetHost() string {
+	if x != nil {
+		return x.Host
+	}
+	return ""
+}
+
+func (x *TunnelOpen) GetPort() uint32 {
+	if x != nil {
+		return x.Port
+	}
+	return 0
+}
+
+func (x *TunnelOpen) GetTimeoutMs() uint32 {
+	if x != nil {
+		return x.TimeoutMs
+	}
+	return 0
+}
+
+type TunnelOpenResult struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ConnId        uint32                 `protobuf:"varint,1,opt,name=conn_id,json=connId,proto3" json:"conn_id,omitempty"`
+	Success       bool                   `protobuf:"varint,2,opt,name=success,proto3" json:"success,omitempty"`
+	Error         string                 `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
+	LocalAddr     string                 `protobuf:"bytes,4,opt,name=local_addr,json=localAddr,proto3" json:"local_addr,omitempty"`
+	RemoteAddr    string                 `protobuf:"bytes,5,opt,name=remote_addr,json=remoteAddr,proto3" json:"remote_addr,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TunnelOpenResult) Reset() {
+	*x = TunnelOpenResult{}
+	mi := &file_implant_implantpb_module_proto_msgTypes[84]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TunnelOpenResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TunnelOpenResult) ProtoMessage() {}
+
+func (x *TunnelOpenResult) ProtoReflect() protoreflect.Message {
+	mi := &file_implant_implantpb_module_proto_msgTypes[84]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TunnelOpenResult.ProtoReflect.Descriptor instead.
+func (*TunnelOpenResult) Descriptor() ([]byte, []int) {
+	return file_implant_implantpb_module_proto_rawDescGZIP(), []int{84}
+}
+
+func (x *TunnelOpenResult) GetConnId() uint32 {
+	if x != nil {
+		return x.ConnId
+	}
+	return 0
+}
+
+func (x *TunnelOpenResult) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *TunnelOpenResult) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+func (x *TunnelOpenResult) GetLocalAddr() string {
+	if x != nil {
+		return x.LocalAddr
+	}
+	return ""
+}
+
+func (x *TunnelOpenResult) GetRemoteAddr() string {
+	if x != nil {
+		return x.RemoteAddr
+	}
+	return ""
+}
+
+type TunnelData struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ConnId        uint32                 `protobuf:"varint,1,opt,name=conn_id,json=connId,proto3" json:"conn_id,omitempty"`
+	Seq           uint32                 `protobuf:"varint,2,opt,name=seq,proto3" json:"seq,omitempty"`
+	Data          []byte                 `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
+	Fin           bool                   `protobuf:"varint,4,opt,name=fin,proto3" json:"fin,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TunnelData) Reset() {
+	*x = TunnelData{}
+	mi := &file_implant_implantpb_module_proto_msgTypes[85]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TunnelData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TunnelData) ProtoMessage() {}
+
+func (x *TunnelData) ProtoReflect() protoreflect.Message {
+	mi := &file_implant_implantpb_module_proto_msgTypes[85]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TunnelData.ProtoReflect.Descriptor instead.
+func (*TunnelData) Descriptor() ([]byte, []int) {
+	return file_implant_implantpb_module_proto_rawDescGZIP(), []int{85}
+}
+
+func (x *TunnelData) GetConnId() uint32 {
+	if x != nil {
+		return x.ConnId
+	}
+	return 0
+}
+
+func (x *TunnelData) GetSeq() uint32 {
+	if x != nil {
+		return x.Seq
+	}
+	return 0
+}
+
+func (x *TunnelData) GetData() []byte {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+func (x *TunnelData) GetFin() bool {
+	if x != nil {
+		return x.Fin
+	}
+	return false
+}
+
+type TunnelClose struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ConnId        uint32                 `protobuf:"varint,1,opt,name=conn_id,json=connId,proto3" json:"conn_id,omitempty"`
+	Reason        string                 `protobuf:"bytes,2,opt,name=reason,proto3" json:"reason,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TunnelClose) Reset() {
+	*x = TunnelClose{}
+	mi := &file_implant_implantpb_module_proto_msgTypes[86]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TunnelClose) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TunnelClose) ProtoMessage() {}
+
+func (x *TunnelClose) ProtoReflect() protoreflect.Message {
+	mi := &file_implant_implantpb_module_proto_msgTypes[86]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TunnelClose.ProtoReflect.Descriptor instead.
+func (*TunnelClose) Descriptor() ([]byte, []int) {
+	return file_implant_implantpb_module_proto_rawDescGZIP(), []int{86}
+}
+
+func (x *TunnelClose) GetConnId() uint32 {
+	if x != nil {
+		return x.ConnId
+	}
+	return 0
+}
+
+func (x *TunnelClose) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+type TunnelCtrl struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Action          TunnelCtrl_Action      `protobuf:"varint,1,opt,name=action,proto3,enum=modulepb.TunnelCtrl_Action" json:"action,omitempty"`
+	MaxConns        uint32                 `protobuf:"varint,2,opt,name=max_conns,json=maxConns,proto3" json:"max_conns,omitempty"`
+	ReadBuf         uint32                 `protobuf:"varint,3,opt,name=read_buf,json=readBuf,proto3" json:"read_buf,omitempty"`
+	MaxPendingBytes uint32                 `protobuf:"varint,4,opt,name=max_pending_bytes,json=maxPendingBytes,proto3" json:"max_pending_bytes,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *TunnelCtrl) Reset() {
+	*x = TunnelCtrl{}
+	mi := &file_implant_implantpb_module_proto_msgTypes[87]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TunnelCtrl) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TunnelCtrl) ProtoMessage() {}
+
+func (x *TunnelCtrl) ProtoReflect() protoreflect.Message {
+	mi := &file_implant_implantpb_module_proto_msgTypes[87]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TunnelCtrl.ProtoReflect.Descriptor instead.
+func (*TunnelCtrl) Descriptor() ([]byte, []int) {
+	return file_implant_implantpb_module_proto_rawDescGZIP(), []int{87}
+}
+
+func (x *TunnelCtrl) GetAction() TunnelCtrl_Action {
+	if x != nil {
+		return x.Action
+	}
+	return TunnelCtrl_ACTION_UNSPECIFIED
+}
+
+func (x *TunnelCtrl) GetMaxConns() uint32 {
+	if x != nil {
+		return x.MaxConns
+	}
+	return 0
+}
+
+func (x *TunnelCtrl) GetReadBuf() uint32 {
+	if x != nil {
+		return x.ReadBuf
+	}
+	return 0
+}
+
+func (x *TunnelCtrl) GetMaxPendingBytes() uint32 {
+	if x != nil {
+		return x.MaxPendingBytes
+	}
+	return 0
+}
+
+type TunnelListResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ConnIds       []uint32               `protobuf:"varint,1,rep,packed,name=conn_ids,json=connIds,proto3" json:"conn_ids,omitempty"`
+	Count         uint32                 `protobuf:"varint,2,opt,name=count,proto3" json:"count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TunnelListResponse) Reset() {
+	*x = TunnelListResponse{}
+	mi := &file_implant_implantpb_module_proto_msgTypes[88]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TunnelListResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TunnelListResponse) ProtoMessage() {}
+
+func (x *TunnelListResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_implant_implantpb_module_proto_msgTypes[88]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TunnelListResponse.ProtoReflect.Descriptor instead.
+func (*TunnelListResponse) Descriptor() ([]byte, []int) {
+	return file_implant_implantpb_module_proto_rawDescGZIP(), []int{88}
+}
+
+func (x *TunnelListResponse) GetConnIds() []uint32 {
+	if x != nil {
+		return x.ConnIds
+	}
+	return nil
+}
+
+func (x *TunnelListResponse) GetCount() uint32 {
+	if x != nil {
+		return x.Count
+	}
+	return 0
+}
+
 var File_implant_implantpb_module_proto protoreflect.FileDescriptor
 
 var file_implant_implantpb_module_proto_rawDesc = []byte{
@@ -6408,14 +6844,60 @@ var file_implant_implantpb_module_proto_rawDesc = []byte{
 	0x6c, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x64, 0x61,
 	0x74, 0x61, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x12, 0x14,
 	0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x65,
-	0x72, 0x72, 0x6f, 0x72, 0x2a, 0x30, 0x0a, 0x0c, 0x53, 0x77, 0x69, 0x74, 0x63, 0x68, 0x41, 0x63,
-	0x74, 0x69, 0x6f, 0x6e, 0x12, 0x0b, 0x0a, 0x07, 0x52, 0x45, 0x50, 0x4c, 0x41, 0x43, 0x45, 0x10,
-	0x00, 0x12, 0x07, 0x0a, 0x03, 0x41, 0x44, 0x44, 0x10, 0x01, 0x12, 0x0a, 0x0a, 0x06, 0x53, 0x57,
-	0x49, 0x54, 0x43, 0x48, 0x10, 0x02, 0x42, 0x39, 0x5a, 0x37, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
-	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f,
-	0x72, 0x73, 0x2f, 0x49, 0x6f, 0x4d, 0x2d, 0x67, 0x6f, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f,
-	0x69, 0x6d, 0x70, 0x6c, 0x61, 0x6e, 0x74, 0x2f, 0x69, 0x6d, 0x70, 0x6c, 0x61, 0x6e, 0x74, 0x70,
-	0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x72, 0x72, 0x6f, 0x72, 0x22, 0x6c, 0x0a, 0x0a, 0x54, 0x75, 0x6e, 0x6e, 0x65, 0x6c, 0x4f, 0x70,
+	0x65, 0x6e, 0x12, 0x17, 0x0a, 0x07, 0x63, 0x6f, 0x6e, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0d, 0x52, 0x06, 0x63, 0x6f, 0x6e, 0x6e, 0x49, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x68,
+	0x6f, 0x73, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x68, 0x6f, 0x73, 0x74, 0x12,
+	0x12, 0x0a, 0x04, 0x70, 0x6f, 0x72, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x04, 0x70,
+	0x6f, 0x72, 0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x74, 0x69, 0x6d, 0x65, 0x6f, 0x75, 0x74, 0x5f, 0x6d,
+	0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x6f, 0x75, 0x74,
+	0x4d, 0x73, 0x22, 0x9b, 0x01, 0x0a, 0x10, 0x54, 0x75, 0x6e, 0x6e, 0x65, 0x6c, 0x4f, 0x70, 0x65,
+	0x6e, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x12, 0x17, 0x0a, 0x07, 0x63, 0x6f, 0x6e, 0x6e, 0x5f,
+	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x06, 0x63, 0x6f, 0x6e, 0x6e, 0x49, 0x64,
+	0x12, 0x18, 0x0a, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x08, 0x52, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x72,
+	0x72, 0x6f, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72,
+	0x12, 0x1d, 0x0a, 0x0a, 0x6c, 0x6f, 0x63, 0x61, 0x6c, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x18, 0x04,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x6c, 0x6f, 0x63, 0x61, 0x6c, 0x41, 0x64, 0x64, 0x72, 0x12,
+	0x1f, 0x0a, 0x0b, 0x72, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x18, 0x05,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x72, 0x65, 0x6d, 0x6f, 0x74, 0x65, 0x41, 0x64, 0x64, 0x72,
+	0x22, 0x5d, 0x0a, 0x0a, 0x54, 0x75, 0x6e, 0x6e, 0x65, 0x6c, 0x44, 0x61, 0x74, 0x61, 0x12, 0x17,
+	0x0a, 0x07, 0x63, 0x6f, 0x6e, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x52,
+	0x06, 0x63, 0x6f, 0x6e, 0x6e, 0x49, 0x64, 0x12, 0x10, 0x0a, 0x03, 0x73, 0x65, 0x71, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x0d, 0x52, 0x03, 0x73, 0x65, 0x71, 0x12, 0x12, 0x0a, 0x04, 0x64, 0x61, 0x74,
+	0x61, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x12, 0x10, 0x0a,
+	0x03, 0x66, 0x69, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52, 0x03, 0x66, 0x69, 0x6e, 0x22,
+	0x3e, 0x0a, 0x0b, 0x54, 0x75, 0x6e, 0x6e, 0x65, 0x6c, 0x43, 0x6c, 0x6f, 0x73, 0x65, 0x12, 0x17,
+	0x0a, 0x07, 0x63, 0x6f, 0x6e, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x52,
+	0x06, 0x63, 0x6f, 0x6e, 0x6e, 0x49, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x72, 0x65, 0x61, 0x73, 0x6f,
+	0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x72, 0x65, 0x61, 0x73, 0x6f, 0x6e, 0x22,
+	0xe6, 0x01, 0x0a, 0x0a, 0x54, 0x75, 0x6e, 0x6e, 0x65, 0x6c, 0x43, 0x74, 0x72, 0x6c, 0x12, 0x33,
+	0x0a, 0x06, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b,
+	0x2e, 0x6d, 0x6f, 0x64, 0x75, 0x6c, 0x65, 0x70, 0x62, 0x2e, 0x54, 0x75, 0x6e, 0x6e, 0x65, 0x6c,
+	0x43, 0x74, 0x72, 0x6c, 0x2e, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x06, 0x61, 0x63, 0x74,
+	0x69, 0x6f, 0x6e, 0x12, 0x1b, 0x0a, 0x09, 0x6d, 0x61, 0x78, 0x5f, 0x63, 0x6f, 0x6e, 0x6e, 0x73,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x08, 0x6d, 0x61, 0x78, 0x43, 0x6f, 0x6e, 0x6e, 0x73,
+	0x12, 0x19, 0x0a, 0x08, 0x72, 0x65, 0x61, 0x64, 0x5f, 0x62, 0x75, 0x66, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x0d, 0x52, 0x07, 0x72, 0x65, 0x61, 0x64, 0x42, 0x75, 0x66, 0x12, 0x2a, 0x0a, 0x11, 0x6d,
+	0x61, 0x78, 0x5f, 0x70, 0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x5f, 0x62, 0x79, 0x74, 0x65, 0x73,
+	0x18, 0x04, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x0f, 0x6d, 0x61, 0x78, 0x50, 0x65, 0x6e, 0x64, 0x69,
+	0x6e, 0x67, 0x42, 0x79, 0x74, 0x65, 0x73, 0x22, 0x3f, 0x0a, 0x06, 0x41, 0x63, 0x74, 0x69, 0x6f,
+	0x6e, 0x12, 0x16, 0x0a, 0x12, 0x41, 0x43, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x55, 0x4e, 0x53, 0x50,
+	0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x09, 0x0a, 0x05, 0x53, 0x54, 0x41,
+	0x52, 0x54, 0x10, 0x01, 0x12, 0x08, 0x0a, 0x04, 0x53, 0x54, 0x4f, 0x50, 0x10, 0x02, 0x12, 0x08,
+	0x0a, 0x04, 0x4c, 0x49, 0x53, 0x54, 0x10, 0x03, 0x22, 0x45, 0x0a, 0x12, 0x54, 0x75, 0x6e, 0x6e,
+	0x65, 0x6c, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x19,
+	0x0a, 0x08, 0x63, 0x6f, 0x6e, 0x6e, 0x5f, 0x69, 0x64, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0d,
+	0x52, 0x07, 0x63, 0x6f, 0x6e, 0x6e, 0x49, 0x64, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x63, 0x6f, 0x75,
+	0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x05, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x2a,
+	0x30, 0x0a, 0x0c, 0x53, 0x77, 0x69, 0x74, 0x63, 0x68, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12,
+	0x0b, 0x0a, 0x07, 0x52, 0x45, 0x50, 0x4c, 0x41, 0x43, 0x45, 0x10, 0x00, 0x12, 0x07, 0x0a, 0x03,
+	0x41, 0x44, 0x44, 0x10, 0x01, 0x12, 0x0a, 0x0a, 0x06, 0x53, 0x57, 0x49, 0x54, 0x43, 0x48, 0x10,
+	0x02, 0x42, 0x39, 0x5a, 0x37, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
+	0x63, 0x68, 0x61, 0x69, 0x6e, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x2f, 0x49, 0x6f,
+	0x4d, 0x2d, 0x67, 0x6f, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x69, 0x6d, 0x70, 0x6c, 0x61,
+	0x6e, 0x74, 0x2f, 0x69, 0x6d, 0x70, 0x6c, 0x61, 0x6e, 0x74, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -6430,154 +6912,162 @@ func file_implant_implantpb_module_proto_rawDescGZIP() []byte {
 	return file_implant_implantpb_module_proto_rawDescData
 }
 
-var file_implant_implantpb_module_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_implant_implantpb_module_proto_msgTypes = make([]protoimpl.MessageInfo, 92)
+var file_implant_implantpb_module_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_implant_implantpb_module_proto_msgTypes = make([]protoimpl.MessageInfo, 98)
 var file_implant_implantpb_module_proto_goTypes = []any{
 	(SwitchAction)(0),             // 0: modulepb.SwitchAction
-	(*Ping)(nil),                  // 1: modulepb.Ping
-	(*Register)(nil),              // 2: modulepb.Register
-	(*Secure)(nil),                // 3: modulepb.Secure
-	(*KeyExchangeRequest)(nil),    // 4: modulepb.KeyExchangeRequest
-	(*KeyExchangeResponse)(nil),   // 5: modulepb.KeyExchangeResponse
-	(*Init)(nil),                  // 6: modulepb.Init
-	(*SysInfo)(nil),               // 7: modulepb.SysInfo
-	(*Suicide)(nil),               // 8: modulepb.Suicide
-	(*Request)(nil),               // 9: modulepb.Request
-	(*Response)(nil),              // 10: modulepb.Response
-	(*BypassRequest)(nil),         // 11: modulepb.BypassRequest
-	(*NetInterface)(nil),          // 12: modulepb.NetInterface
-	(*SockTabEntry)(nil),          // 13: modulepb.SockTabEntry
-	(*NetstatResponse)(nil),       // 14: modulepb.NetstatResponse
-	(*Block)(nil),                 // 15: modulepb.Block
-	(*ACK)(nil),                   // 16: modulepb.ACK
-	(*Os)(nil),                    // 17: modulepb.Os
-	(*Process)(nil),               // 18: modulepb.Process
-	(*Timer)(nil),                 // 19: modulepb.Timer
-	(*FileInfo)(nil),              // 20: modulepb.FileInfo
-	(*SacrificeProcess)(nil),      // 21: modulepb.SacrificeProcess
-	(*LsResponse)(nil),            // 22: modulepb.LsResponse
-	(*DriveInfo)(nil),             // 23: modulepb.DriveInfo
-	(*EnumDriversResponse)(nil),   // 24: modulepb.EnumDriversResponse
-	(*PsResponse)(nil),            // 25: modulepb.PsResponse
-	(*ExecRequest)(nil),           // 26: modulepb.ExecRequest
-	(*ExecResponse)(nil),          // 27: modulepb.ExecResponse
-	(*BinaryResponse)(nil),        // 28: modulepb.BinaryResponse
-	(*Modules)(nil),               // 29: modulepb.Modules
-	(*Addons)(nil),                // 30: modulepb.Addons
-	(*Addon)(nil),                 // 31: modulepb.Addon
-	(*LoadModule)(nil),            // 32: modulepb.LoadModule
-	(*LoadAddon)(nil),             // 33: modulepb.LoadAddon
-	(*ExecuteAddon)(nil),          // 34: modulepb.ExecuteAddon
-	(*ExecuteBinary)(nil),         // 35: modulepb.ExecuteBinary
-	(*ExecuteCommand)(nil),        // 36: modulepb.ExecuteCommand
-	(*UploadRequest)(nil),         // 37: modulepb.UploadRequest
-	(*DownloadRequest)(nil),       // 38: modulepb.DownloadRequest
-	(*DownloadResponse)(nil),      // 39: modulepb.DownloadResponse
-	(*CurlRequest)(nil),           // 40: modulepb.CurlRequest
-	(*ChownRequest)(nil),          // 41: modulepb.ChownRequest
-	(*IfconfigResponse)(nil),      // 42: modulepb.IfconfigResponse
-	(*RegistryRequest)(nil),       // 43: modulepb.RegistryRequest
-	(*Registry)(nil),              // 44: modulepb.Registry
-	(*RegistryWriteRequest)(nil),  // 45: modulepb.RegistryWriteRequest
-	(*TaskScheduleRequest)(nil),   // 46: modulepb.TaskScheduleRequest
-	(*TaskSchedule)(nil),          // 47: modulepb.TaskSchedule
-	(*TaskSchedulesResponse)(nil), // 48: modulepb.TaskSchedulesResponse
-	(*ServiceRequest)(nil),        // 49: modulepb.ServiceRequest
-	(*ServiceConfig)(nil),         // 50: modulepb.ServiceConfig
-	(*ServiceStatus)(nil),         // 51: modulepb.ServiceStatus
-	(*Service)(nil),               // 52: modulepb.Service
-	(*ServicesResponse)(nil),      // 53: modulepb.ServicesResponse
-	(*WmiQueryRequest)(nil),       // 54: modulepb.WmiQueryRequest
-	(*WmiMethodRequest)(nil),      // 55: modulepb.WmiMethodRequest
-	(*RunAsRequest)(nil),          // 56: modulepb.RunAsRequest
-	(*GetSystem)(nil),             // 57: modulepb.GetSystem
-	(*Inject)(nil),                // 58: modulepb.Inject
-	(*Pipe)(nil),                  // 59: modulepb.Pipe
-	(*PipeRequest)(nil),           // 60: modulepb.PipeRequest
-	(*TargetTlsConfig)(nil),       // 61: modulepb.TargetTlsConfig
-	(*TargetProxyConfig)(nil),     // 62: modulepb.TargetProxyConfig
-	(*TargetHttpConfig)(nil),      // 63: modulepb.TargetHttpConfig
-	(*TargetRemConfig)(nil),       // 64: modulepb.TargetRemConfig
-	(*Target)(nil),                // 65: modulepb.Target
-	(*Switch)(nil),                // 66: modulepb.Switch
-	(*TaskCtrl)(nil),              // 67: modulepb.TaskCtrl
-	(*TaskInfo)(nil),              // 68: modulepb.TaskInfo
-	(*TaskListResponse)(nil),      // 69: modulepb.TaskListResponse
-	(*FFmpegRequest)(nil),         // 70: modulepb.FFmpegRequest
-	(*PtyRequest)(nil),            // 71: modulepb.PtyRequest
-	(*PtyResponse)(nil),           // 72: modulepb.PtyResponse
-	(*CommonBody)(nil),            // 73: modulepb.CommonBody
-	(*LLMMessage)(nil),            // 74: modulepb.LLMMessage
-	(*LLMToolCall)(nil),           // 75: modulepb.LLMToolCall
-	(*LLMToolResult)(nil),         // 76: modulepb.LLMToolResult
-	(*LLMEvent)(nil),              // 77: modulepb.LLMEvent
-	(*BridgeToolParam)(nil),       // 78: modulepb.BridgeToolParam
-	(*BridgeToolDef)(nil),         // 79: modulepb.BridgeToolDef
-	(*BridgeAgentRequest)(nil),    // 80: modulepb.BridgeAgentRequest
-	(*BridgeAgentResponse)(nil),   // 81: modulepb.BridgeAgentResponse
-	(*BridgeLlmRequest)(nil),      // 82: modulepb.BridgeLlmRequest
-	(*BridgeLlmResponse)(nil),     // 83: modulepb.BridgeLlmResponse
-	nil,                           // 84: modulepb.Request.ParamsEntry
-	nil,                           // 85: modulepb.Response.KvEntry
-	nil,                           // 86: modulepb.Modules.BundleMapEntry
-	nil,                           // 87: modulepb.ExecuteBinary.ParamEntry
-	nil,                           // 88: modulepb.CurlRequest.HeaderEntry
-	nil,                           // 89: modulepb.WmiMethodRequest.ParamsEntry
-	nil,                           // 90: modulepb.TargetHttpConfig.HeadersEntry
-	nil,                           // 91: modulepb.PtyRequest.ParamsEntry
-	nil,                           // 92: modulepb.PtyResponse.MetadataEntry
+	(TunnelCtrl_Action)(0),        // 1: modulepb.TunnelCtrl.Action
+	(*Ping)(nil),                  // 2: modulepb.Ping
+	(*Register)(nil),              // 3: modulepb.Register
+	(*Secure)(nil),                // 4: modulepb.Secure
+	(*KeyExchangeRequest)(nil),    // 5: modulepb.KeyExchangeRequest
+	(*KeyExchangeResponse)(nil),   // 6: modulepb.KeyExchangeResponse
+	(*Init)(nil),                  // 7: modulepb.Init
+	(*SysInfo)(nil),               // 8: modulepb.SysInfo
+	(*Suicide)(nil),               // 9: modulepb.Suicide
+	(*Request)(nil),               // 10: modulepb.Request
+	(*Response)(nil),              // 11: modulepb.Response
+	(*BypassRequest)(nil),         // 12: modulepb.BypassRequest
+	(*NetInterface)(nil),          // 13: modulepb.NetInterface
+	(*SockTabEntry)(nil),          // 14: modulepb.SockTabEntry
+	(*NetstatResponse)(nil),       // 15: modulepb.NetstatResponse
+	(*Block)(nil),                 // 16: modulepb.Block
+	(*ACK)(nil),                   // 17: modulepb.ACK
+	(*Os)(nil),                    // 18: modulepb.Os
+	(*Process)(nil),               // 19: modulepb.Process
+	(*Timer)(nil),                 // 20: modulepb.Timer
+	(*FileInfo)(nil),              // 21: modulepb.FileInfo
+	(*SacrificeProcess)(nil),      // 22: modulepb.SacrificeProcess
+	(*LsResponse)(nil),            // 23: modulepb.LsResponse
+	(*DriveInfo)(nil),             // 24: modulepb.DriveInfo
+	(*EnumDriversResponse)(nil),   // 25: modulepb.EnumDriversResponse
+	(*PsResponse)(nil),            // 26: modulepb.PsResponse
+	(*ExecRequest)(nil),           // 27: modulepb.ExecRequest
+	(*ExecResponse)(nil),          // 28: modulepb.ExecResponse
+	(*BinaryResponse)(nil),        // 29: modulepb.BinaryResponse
+	(*Modules)(nil),               // 30: modulepb.Modules
+	(*Addons)(nil),                // 31: modulepb.Addons
+	(*Addon)(nil),                 // 32: modulepb.Addon
+	(*LoadModule)(nil),            // 33: modulepb.LoadModule
+	(*LoadAddon)(nil),             // 34: modulepb.LoadAddon
+	(*ExecuteAddon)(nil),          // 35: modulepb.ExecuteAddon
+	(*ExecuteBinary)(nil),         // 36: modulepb.ExecuteBinary
+	(*ExecuteCommand)(nil),        // 37: modulepb.ExecuteCommand
+	(*UploadRequest)(nil),         // 38: modulepb.UploadRequest
+	(*DownloadRequest)(nil),       // 39: modulepb.DownloadRequest
+	(*DownloadResponse)(nil),      // 40: modulepb.DownloadResponse
+	(*CurlRequest)(nil),           // 41: modulepb.CurlRequest
+	(*ChownRequest)(nil),          // 42: modulepb.ChownRequest
+	(*IfconfigResponse)(nil),      // 43: modulepb.IfconfigResponse
+	(*RegistryRequest)(nil),       // 44: modulepb.RegistryRequest
+	(*Registry)(nil),              // 45: modulepb.Registry
+	(*RegistryWriteRequest)(nil),  // 46: modulepb.RegistryWriteRequest
+	(*TaskScheduleRequest)(nil),   // 47: modulepb.TaskScheduleRequest
+	(*TaskSchedule)(nil),          // 48: modulepb.TaskSchedule
+	(*TaskSchedulesResponse)(nil), // 49: modulepb.TaskSchedulesResponse
+	(*ServiceRequest)(nil),        // 50: modulepb.ServiceRequest
+	(*ServiceConfig)(nil),         // 51: modulepb.ServiceConfig
+	(*ServiceStatus)(nil),         // 52: modulepb.ServiceStatus
+	(*Service)(nil),               // 53: modulepb.Service
+	(*ServicesResponse)(nil),      // 54: modulepb.ServicesResponse
+	(*WmiQueryRequest)(nil),       // 55: modulepb.WmiQueryRequest
+	(*WmiMethodRequest)(nil),      // 56: modulepb.WmiMethodRequest
+	(*RunAsRequest)(nil),          // 57: modulepb.RunAsRequest
+	(*GetSystem)(nil),             // 58: modulepb.GetSystem
+	(*Inject)(nil),                // 59: modulepb.Inject
+	(*Pipe)(nil),                  // 60: modulepb.Pipe
+	(*PipeRequest)(nil),           // 61: modulepb.PipeRequest
+	(*TargetTlsConfig)(nil),       // 62: modulepb.TargetTlsConfig
+	(*TargetProxyConfig)(nil),     // 63: modulepb.TargetProxyConfig
+	(*TargetHttpConfig)(nil),      // 64: modulepb.TargetHttpConfig
+	(*TargetRemConfig)(nil),       // 65: modulepb.TargetRemConfig
+	(*Target)(nil),                // 66: modulepb.Target
+	(*Switch)(nil),                // 67: modulepb.Switch
+	(*TaskCtrl)(nil),              // 68: modulepb.TaskCtrl
+	(*TaskInfo)(nil),              // 69: modulepb.TaskInfo
+	(*TaskListResponse)(nil),      // 70: modulepb.TaskListResponse
+	(*FFmpegRequest)(nil),         // 71: modulepb.FFmpegRequest
+	(*PtyRequest)(nil),            // 72: modulepb.PtyRequest
+	(*PtyResponse)(nil),           // 73: modulepb.PtyResponse
+	(*CommonBody)(nil),            // 74: modulepb.CommonBody
+	(*LLMMessage)(nil),            // 75: modulepb.LLMMessage
+	(*LLMToolCall)(nil),           // 76: modulepb.LLMToolCall
+	(*LLMToolResult)(nil),         // 77: modulepb.LLMToolResult
+	(*LLMEvent)(nil),              // 78: modulepb.LLMEvent
+	(*BridgeToolParam)(nil),       // 79: modulepb.BridgeToolParam
+	(*BridgeToolDef)(nil),         // 80: modulepb.BridgeToolDef
+	(*BridgeAgentRequest)(nil),    // 81: modulepb.BridgeAgentRequest
+	(*BridgeAgentResponse)(nil),   // 82: modulepb.BridgeAgentResponse
+	(*BridgeLlmRequest)(nil),      // 83: modulepb.BridgeLlmRequest
+	(*BridgeLlmResponse)(nil),     // 84: modulepb.BridgeLlmResponse
+	(*TunnelOpen)(nil),            // 85: modulepb.TunnelOpen
+	(*TunnelOpenResult)(nil),      // 86: modulepb.TunnelOpenResult
+	(*TunnelData)(nil),            // 87: modulepb.TunnelData
+	(*TunnelClose)(nil),           // 88: modulepb.TunnelClose
+	(*TunnelCtrl)(nil),            // 89: modulepb.TunnelCtrl
+	(*TunnelListResponse)(nil),    // 90: modulepb.TunnelListResponse
+	nil,                           // 91: modulepb.Request.ParamsEntry
+	nil,                           // 92: modulepb.Response.KvEntry
+	nil,                           // 93: modulepb.Modules.BundleMapEntry
+	nil,                           // 94: modulepb.ExecuteBinary.ParamEntry
+	nil,                           // 95: modulepb.CurlRequest.HeaderEntry
+	nil,                           // 96: modulepb.WmiMethodRequest.ParamsEntry
+	nil,                           // 97: modulepb.TargetHttpConfig.HeadersEntry
+	nil,                           // 98: modulepb.PtyRequest.ParamsEntry
+	nil,                           // 99: modulepb.PtyResponse.MetadataEntry
 }
 var file_implant_implantpb_module_proto_depIdxs = []int32{
-	31, // 0: modulepb.Register.addons:type_name -> modulepb.Addon
-	19, // 1: modulepb.Register.timer:type_name -> modulepb.Timer
-	7,  // 2: modulepb.Register.sysinfo:type_name -> modulepb.SysInfo
-	3,  // 3: modulepb.Register.secure:type_name -> modulepb.Secure
-	17, // 4: modulepb.SysInfo.os:type_name -> modulepb.Os
-	18, // 5: modulepb.SysInfo.process:type_name -> modulepb.Process
-	84, // 6: modulepb.Request.params:type_name -> modulepb.Request.ParamsEntry
-	85, // 7: modulepb.Response.kv:type_name -> modulepb.Response.KvEntry
-	13, // 8: modulepb.NetstatResponse.socks:type_name -> modulepb.SockTabEntry
-	20, // 9: modulepb.LsResponse.Files:type_name -> modulepb.FileInfo
-	23, // 10: modulepb.EnumDriversResponse.drives:type_name -> modulepb.DriveInfo
-	18, // 11: modulepb.PsResponse.processes:type_name -> modulepb.Process
-	86, // 12: modulepb.Modules.bundle_map:type_name -> modulepb.Modules.BundleMapEntry
-	31, // 13: modulepb.Addons.addons:type_name -> modulepb.Addon
-	35, // 14: modulepb.ExecuteAddon.execute_binary:type_name -> modulepb.ExecuteBinary
-	87, // 15: modulepb.ExecuteBinary.param:type_name -> modulepb.ExecuteBinary.ParamEntry
-	21, // 16: modulepb.ExecuteBinary.sacrifice:type_name -> modulepb.SacrificeProcess
-	21, // 17: modulepb.ExecuteCommand.sacrifice:type_name -> modulepb.SacrificeProcess
-	88, // 18: modulepb.CurlRequest.header:type_name -> modulepb.CurlRequest.HeaderEntry
-	12, // 19: modulepb.IfconfigResponse.net_interfaces:type_name -> modulepb.NetInterface
-	44, // 20: modulepb.RegistryRequest.registry:type_name -> modulepb.Registry
-	47, // 21: modulepb.TaskScheduleRequest.taskschd:type_name -> modulepb.TaskSchedule
-	47, // 22: modulepb.TaskSchedulesResponse.schedules:type_name -> modulepb.TaskSchedule
-	50, // 23: modulepb.ServiceRequest.service:type_name -> modulepb.ServiceConfig
-	50, // 24: modulepb.Service.config:type_name -> modulepb.ServiceConfig
-	51, // 25: modulepb.Service.status:type_name -> modulepb.ServiceStatus
-	52, // 26: modulepb.ServicesResponse.services:type_name -> modulepb.Service
-	89, // 27: modulepb.WmiMethodRequest.params:type_name -> modulepb.WmiMethodRequest.ParamsEntry
-	59, // 28: modulepb.PipeRequest.pipe:type_name -> modulepb.Pipe
-	90, // 29: modulepb.TargetHttpConfig.headers:type_name -> modulepb.TargetHttpConfig.HeadersEntry
-	61, // 30: modulepb.Target.tls_config:type_name -> modulepb.TargetTlsConfig
-	62, // 31: modulepb.Target.proxy_config:type_name -> modulepb.TargetProxyConfig
-	63, // 32: modulepb.Target.http_config:type_name -> modulepb.TargetHttpConfig
-	64, // 33: modulepb.Target.rem_config:type_name -> modulepb.TargetRemConfig
-	65, // 34: modulepb.Switch.targets:type_name -> modulepb.Target
+	32, // 0: modulepb.Register.addons:type_name -> modulepb.Addon
+	20, // 1: modulepb.Register.timer:type_name -> modulepb.Timer
+	8,  // 2: modulepb.Register.sysinfo:type_name -> modulepb.SysInfo
+	4,  // 3: modulepb.Register.secure:type_name -> modulepb.Secure
+	18, // 4: modulepb.SysInfo.os:type_name -> modulepb.Os
+	19, // 5: modulepb.SysInfo.process:type_name -> modulepb.Process
+	91, // 6: modulepb.Request.params:type_name -> modulepb.Request.ParamsEntry
+	92, // 7: modulepb.Response.kv:type_name -> modulepb.Response.KvEntry
+	14, // 8: modulepb.NetstatResponse.socks:type_name -> modulepb.SockTabEntry
+	21, // 9: modulepb.LsResponse.Files:type_name -> modulepb.FileInfo
+	24, // 10: modulepb.EnumDriversResponse.drives:type_name -> modulepb.DriveInfo
+	19, // 11: modulepb.PsResponse.processes:type_name -> modulepb.Process
+	93, // 12: modulepb.Modules.bundle_map:type_name -> modulepb.Modules.BundleMapEntry
+	32, // 13: modulepb.Addons.addons:type_name -> modulepb.Addon
+	36, // 14: modulepb.ExecuteAddon.execute_binary:type_name -> modulepb.ExecuteBinary
+	94, // 15: modulepb.ExecuteBinary.param:type_name -> modulepb.ExecuteBinary.ParamEntry
+	22, // 16: modulepb.ExecuteBinary.sacrifice:type_name -> modulepb.SacrificeProcess
+	22, // 17: modulepb.ExecuteCommand.sacrifice:type_name -> modulepb.SacrificeProcess
+	95, // 18: modulepb.CurlRequest.header:type_name -> modulepb.CurlRequest.HeaderEntry
+	13, // 19: modulepb.IfconfigResponse.net_interfaces:type_name -> modulepb.NetInterface
+	45, // 20: modulepb.RegistryRequest.registry:type_name -> modulepb.Registry
+	48, // 21: modulepb.TaskScheduleRequest.taskschd:type_name -> modulepb.TaskSchedule
+	48, // 22: modulepb.TaskSchedulesResponse.schedules:type_name -> modulepb.TaskSchedule
+	51, // 23: modulepb.ServiceRequest.service:type_name -> modulepb.ServiceConfig
+	51, // 24: modulepb.Service.config:type_name -> modulepb.ServiceConfig
+	52, // 25: modulepb.Service.status:type_name -> modulepb.ServiceStatus
+	53, // 26: modulepb.ServicesResponse.services:type_name -> modulepb.Service
+	96, // 27: modulepb.WmiMethodRequest.params:type_name -> modulepb.WmiMethodRequest.ParamsEntry
+	60, // 28: modulepb.PipeRequest.pipe:type_name -> modulepb.Pipe
+	97, // 29: modulepb.TargetHttpConfig.headers:type_name -> modulepb.TargetHttpConfig.HeadersEntry
+	62, // 30: modulepb.Target.tls_config:type_name -> modulepb.TargetTlsConfig
+	63, // 31: modulepb.Target.proxy_config:type_name -> modulepb.TargetProxyConfig
+	64, // 32: modulepb.Target.http_config:type_name -> modulepb.TargetHttpConfig
+	65, // 33: modulepb.Target.rem_config:type_name -> modulepb.TargetRemConfig
+	66, // 34: modulepb.Switch.targets:type_name -> modulepb.Target
 	0,  // 35: modulepb.Switch.action:type_name -> modulepb.SwitchAction
-	68, // 36: modulepb.TaskListResponse.tasks:type_name -> modulepb.TaskInfo
-	91, // 37: modulepb.PtyRequest.params:type_name -> modulepb.PtyRequest.ParamsEntry
-	92, // 38: modulepb.PtyResponse.metadata:type_name -> modulepb.PtyResponse.MetadataEntry
-	74, // 39: modulepb.LLMEvent.messages:type_name -> modulepb.LLMMessage
-	75, // 40: modulepb.LLMEvent.tool_calls:type_name -> modulepb.LLMToolCall
-	76, // 41: modulepb.LLMEvent.tool_results:type_name -> modulepb.LLMToolResult
-	78, // 42: modulepb.BridgeToolDef.params:type_name -> modulepb.BridgeToolParam
-	79, // 43: modulepb.BridgeAgentRequest.extra_tools:type_name -> modulepb.BridgeToolDef
-	79, // 44: modulepb.BridgeAgentResponse.available_tools:type_name -> modulepb.BridgeToolDef
-	45, // [45:45] is the sub-list for method output_type
-	45, // [45:45] is the sub-list for method input_type
-	45, // [45:45] is the sub-list for extension type_name
-	45, // [45:45] is the sub-list for extension extendee
-	0,  // [0:45] is the sub-list for field type_name
+	69, // 36: modulepb.TaskListResponse.tasks:type_name -> modulepb.TaskInfo
+	98, // 37: modulepb.PtyRequest.params:type_name -> modulepb.PtyRequest.ParamsEntry
+	99, // 38: modulepb.PtyResponse.metadata:type_name -> modulepb.PtyResponse.MetadataEntry
+	75, // 39: modulepb.LLMEvent.messages:type_name -> modulepb.LLMMessage
+	76, // 40: modulepb.LLMEvent.tool_calls:type_name -> modulepb.LLMToolCall
+	77, // 41: modulepb.LLMEvent.tool_results:type_name -> modulepb.LLMToolResult
+	79, // 42: modulepb.BridgeToolDef.params:type_name -> modulepb.BridgeToolParam
+	80, // 43: modulepb.BridgeAgentRequest.extra_tools:type_name -> modulepb.BridgeToolDef
+	80, // 44: modulepb.BridgeAgentResponse.available_tools:type_name -> modulepb.BridgeToolDef
+	1,  // 45: modulepb.TunnelCtrl.action:type_name -> modulepb.TunnelCtrl.Action
+	46, // [46:46] is the sub-list for method output_type
+	46, // [46:46] is the sub-list for method input_type
+	46, // [46:46] is the sub-list for extension type_name
+	46, // [46:46] is the sub-list for extension extendee
+	0,  // [0:46] is the sub-list for field type_name
 }
 
 func init() { file_implant_implantpb_module_proto_init() }
@@ -6590,8 +7080,8 @@ func file_implant_implantpb_module_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_implant_implantpb_module_proto_rawDesc,
-			NumEnums:      1,
-			NumMessages:   92,
+			NumEnums:      2,
+			NumMessages:   98,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

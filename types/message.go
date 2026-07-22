@@ -65,6 +65,12 @@ const (
 	MsgPtyRequest        MsgName = consts.ModulePtyRequest
 	MsgPtyResponse       MsgName = consts.ModulePtyResponse
 	MsgLlmEvent          MsgName = "llm_event"
+	MsgTcpRelay          MsgName = consts.ModuleTcpRelay
+	MsgTunnelOpen        MsgName = "tunnel_open"
+	MsgTunnelOpenResult  MsgName = "tunnel_open_result"
+	MsgTunnelData        MsgName = "tunnel_data"
+	MsgTunnelClose       MsgName = "tunnel_close"
+	MsgTunnelList        MsgName = "tunnel_list"
 )
 
 func (r MsgName) String() string {
@@ -149,6 +155,18 @@ func MessageType(message *implantpb.Spite) MsgName {
 		*implantpb.Spite_BridgeLlmRequest,
 		*implantpb.Spite_BridgeLlmResponse:
 		return MsgChat
+	case *implantpb.Spite_TunnelOpen:
+		return MsgTunnelOpen
+	case *implantpb.Spite_TunnelOpenResult:
+		return MsgTunnelOpenResult
+	case *implantpb.Spite_TunnelData:
+		return MsgTunnelData
+	case *implantpb.Spite_TunnelClose:
+		return MsgTunnelClose
+	case *implantpb.Spite_TunnelCtrl:
+		return MsgTcpRelay
+	case *implantpb.Spite_TunnelList:
+		return MsgTunnelList
 	default:
 		return MsgUnknown
 	}

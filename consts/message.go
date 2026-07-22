@@ -141,6 +141,9 @@ const (
 	ModuleRemDial = "rem_dial"
 	ModuleRem     = "rem"
 
+	// native socks5 / tcp relay (no REM)
+	ModuleTcpRelay = "tcp_relay"
+
 	ModuleClientPty   = "interactive"
 	ModulePty         = "pty"
 	ModulePtyStart    = "start"
@@ -300,6 +303,7 @@ const (
 	CommandRemDial                 = "rem_dial"
 	CommandPivot                   = "pivot"
 	CommandProxy                   = "proxy"
+	CommandSocks5                  = "socks5"
 	CommandReverse                 = "reverse"
 	CommandPortForward             = "portfwd"
 	CommandReversePortForward      = "rportfwd"

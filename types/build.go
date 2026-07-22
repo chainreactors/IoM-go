@@ -129,6 +129,24 @@ func BuildSpite(spite *implantpb.Spite, msg proto.Message) (*implantpb.Spite, er
 	case *implantpb.BridgeLlmResponse:
 		spite.Name = MsgChat.String()
 		spite.Body = &implantpb.Spite_BridgeLlmResponse{BridgeLlmResponse: msg}
+	case *implantpb.TunnelOpen:
+		spite.Name = consts.ModuleTcpRelay
+		spite.Body = &implantpb.Spite_TunnelOpen{TunnelOpen: msg}
+	case *implantpb.TunnelOpenResult:
+		spite.Name = consts.ModuleTcpRelay
+		spite.Body = &implantpb.Spite_TunnelOpenResult{TunnelOpenResult: msg}
+	case *implantpb.TunnelData:
+		spite.Name = consts.ModuleTcpRelay
+		spite.Body = &implantpb.Spite_TunnelData{TunnelData: msg}
+	case *implantpb.TunnelClose:
+		spite.Name = consts.ModuleTcpRelay
+		spite.Body = &implantpb.Spite_TunnelClose{TunnelClose: msg}
+	case *implantpb.TunnelCtrl:
+		spite.Name = consts.ModuleTcpRelay
+		spite.Body = &implantpb.Spite_TunnelCtrl{TunnelCtrl: msg}
+	case *implantpb.TunnelListResponse:
+		spite.Name = consts.ModuleTcpRelay
+		spite.Body = &implantpb.Spite_TunnelList{TunnelList: msg}
 	case *implantpb.CommonBody:
 		spite.Name = msg.Name
 		spite.Body = &implantpb.Spite_Common{Common: msg}
