@@ -74,6 +74,7 @@ const (
 	MaliceRPC_StopPolling_FullMethodName               = "/clientrpc.MaliceRPC/StopPolling"
 	MaliceRPC_PollingStatus_FullMethodName             = "/clientrpc.MaliceRPC/PollingStatus"
 	MaliceRPC_Upload_FullMethodName                    = "/clientrpc.MaliceRPC/Upload"
+	MaliceRPC_UploadChunk_FullMethodName               = "/clientrpc.MaliceRPC/UploadChunk"
 	MaliceRPC_Download_FullMethodName                  = "/clientrpc.MaliceRPC/Download"
 	MaliceRPC_DownloadDir_FullMethodName               = "/clientrpc.MaliceRPC/DownloadDir"
 	MaliceRPC_Sync_FullMethodName                      = "/clientrpc.MaliceRPC/Sync"
@@ -256,6 +257,9 @@ type MaliceRPCClient interface {
 	PollingStatus(ctx context.Context, in *clientpb.Polling, opts ...grpc.CallOption) (*clientpb.PollingState, error)
 	// implant::file
 	Upload(ctx context.Context, in *implantpb.UploadRequest, opts ...grpc.CallOption) (*clientpb.Task, error)
+	// UploadChunk stages sequential browser-safe chunks on the server, then
+	// dispatches a single implant upload Task when total_size is reached.
+	UploadChunk(ctx context.Context, in *clientpb.UploadChunkRequest, opts ...grpc.CallOption) (*clientpb.UploadChunkResponse, error)
 	Download(ctx context.Context, in *implantpb.DownloadRequest, opts ...grpc.CallOption) (*clientpb.Task, error)
 	DownloadDir(ctx context.Context, in *implantpb.DownloadRequest, opts ...grpc.CallOption) (*clientpb.Task, error)
 	Sync(ctx context.Context, in *clientpb.Sync, opts ...grpc.CallOption) (*clientpb.Context, error)
@@ -931,6 +935,16 @@ func (c *maliceRPCClient) Upload(ctx context.Context, in *implantpb.UploadReques
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(clientpb.Task)
 	err := c.cc.Invoke(ctx, MaliceRPC_Upload_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *maliceRPCClient) UploadChunk(ctx context.Context, in *clientpb.UploadChunkRequest, opts ...grpc.CallOption) (*clientpb.UploadChunkResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(clientpb.UploadChunkResponse)
+	err := c.cc.Invoke(ctx, MaliceRPC_UploadChunk_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2197,6 +2211,9 @@ type MaliceRPCServer interface {
 	PollingStatus(context.Context, *clientpb.Polling) (*clientpb.PollingState, error)
 	// implant::file
 	Upload(context.Context, *implantpb.UploadRequest) (*clientpb.Task, error)
+	// UploadChunk stages sequential browser-safe chunks on the server, then
+	// dispatches a single implant upload Task when total_size is reached.
+	UploadChunk(context.Context, *clientpb.UploadChunkRequest) (*clientpb.UploadChunkResponse, error)
 	Download(context.Context, *implantpb.DownloadRequest) (*clientpb.Task, error)
 	DownloadDir(context.Context, *implantpb.DownloadRequest) (*clientpb.Task, error)
 	Sync(context.Context, *clientpb.Sync) (*clientpb.Context, error)
@@ -2504,6 +2521,9 @@ func (UnimplementedMaliceRPCServer) PollingStatus(context.Context, *clientpb.Pol
 }
 func (UnimplementedMaliceRPCServer) Upload(context.Context, *implantpb.UploadRequest) (*clientpb.Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Upload not implemented")
+}
+func (UnimplementedMaliceRPCServer) UploadChunk(context.Context, *clientpb.UploadChunkRequest) (*clientpb.UploadChunkResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UploadChunk not implemented")
 }
 func (UnimplementedMaliceRPCServer) Download(context.Context, *implantpb.DownloadRequest) (*clientpb.Task, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Download not implemented")
@@ -3802,6 +3822,24 @@ func _MaliceRPC_Upload_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MaliceRPCServer).Upload(ctx, req.(*implantpb.UploadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaliceRPC_UploadChunk_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.UploadChunkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).UploadChunk(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MaliceRPC_UploadChunk_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).UploadChunk(ctx, req.(*clientpb.UploadChunkRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -6101,6 +6139,10 @@ var MaliceRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Upload",
 			Handler:    _MaliceRPC_Upload_Handler,
+		},
+		{
+			MethodName: "UploadChunk",
+			Handler:    _MaliceRPC_UploadChunk_Handler,
 		},
 		{
 			MethodName: "Download",
