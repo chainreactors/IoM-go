@@ -34,6 +34,7 @@ const (
 	ListenerRPC_DeletePipeline_FullMethodName               = "/listenerrpc.ListenerRPC/DeletePipeline"
 	ListenerRPC_ListPipelines_FullMethodName                = "/listenerrpc.ListenerRPC/ListPipelines"
 	ListenerRPC_SyncPipeline_FullMethodName                 = "/listenerrpc.ListenerRPC/SyncPipeline"
+	ListenerRPC_UpdatePipelineTLS_FullMethodName            = "/listenerrpc.ListenerRPC/UpdatePipelineTLS"
 	ListenerRPC_RegisterWebsite_FullMethodName              = "/listenerrpc.ListenerRPC/RegisterWebsite"
 	ListenerRPC_StartWebsite_FullMethodName                 = "/listenerrpc.ListenerRPC/StartWebsite"
 	ListenerRPC_StopWebsite_FullMethodName                  = "/listenerrpc.ListenerRPC/StopWebsite"
@@ -85,6 +86,7 @@ type ListenerRPCClient interface {
 	DeletePipeline(ctx context.Context, in *clientpb.CtrlPipeline, opts ...grpc.CallOption) (*clientpb.Empty, error)
 	ListPipelines(ctx context.Context, in *clientpb.Listener, opts ...grpc.CallOption) (*clientpb.Pipelines, error)
 	SyncPipeline(ctx context.Context, in *clientpb.Pipeline, opts ...grpc.CallOption) (*clientpb.Empty, error)
+	UpdatePipelineTLS(ctx context.Context, in *clientpb.PipelineTLSUpdate, opts ...grpc.CallOption) (*clientpb.Pipeline, error)
 	// website
 	RegisterWebsite(ctx context.Context, in *clientpb.Pipeline, opts ...grpc.CallOption) (*clientpb.Empty, error)
 	StartWebsite(ctx context.Context, in *clientpb.CtrlPipeline, opts ...grpc.CallOption) (*clientpb.Empty, error)
@@ -259,6 +261,16 @@ func (c *listenerRPCClient) SyncPipeline(ctx context.Context, in *clientpb.Pipel
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(clientpb.Empty)
 	err := c.cc.Invoke(ctx, ListenerRPC_SyncPipeline_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *listenerRPCClient) UpdatePipelineTLS(ctx context.Context, in *clientpb.PipelineTLSUpdate, opts ...grpc.CallOption) (*clientpb.Pipeline, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(clientpb.Pipeline)
+	err := c.cc.Invoke(ctx, ListenerRPC_UpdatePipelineTLS_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -584,6 +596,7 @@ type ListenerRPCServer interface {
 	DeletePipeline(context.Context, *clientpb.CtrlPipeline) (*clientpb.Empty, error)
 	ListPipelines(context.Context, *clientpb.Listener) (*clientpb.Pipelines, error)
 	SyncPipeline(context.Context, *clientpb.Pipeline) (*clientpb.Empty, error)
+	UpdatePipelineTLS(context.Context, *clientpb.PipelineTLSUpdate) (*clientpb.Pipeline, error)
 	// website
 	RegisterWebsite(context.Context, *clientpb.Pipeline) (*clientpb.Empty, error)
 	StartWebsite(context.Context, *clientpb.CtrlPipeline) (*clientpb.Empty, error)
@@ -666,6 +679,9 @@ func (UnimplementedListenerRPCServer) ListPipelines(context.Context, *clientpb.L
 }
 func (UnimplementedListenerRPCServer) SyncPipeline(context.Context, *clientpb.Pipeline) (*clientpb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SyncPipeline not implemented")
+}
+func (UnimplementedListenerRPCServer) UpdatePipelineTLS(context.Context, *clientpb.PipelineTLSUpdate) (*clientpb.Pipeline, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePipelineTLS not implemented")
 }
 func (UnimplementedListenerRPCServer) RegisterWebsite(context.Context, *clientpb.Pipeline) (*clientpb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterWebsite not implemented")
@@ -986,6 +1002,24 @@ func _ListenerRPC_SyncPipeline_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ListenerRPCServer).SyncPipeline(ctx, req.(*clientpb.Pipeline))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ListenerRPC_UpdatePipelineTLS_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.PipelineTLSUpdate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ListenerRPCServer).UpdatePipelineTLS(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ListenerRPC_UpdatePipelineTLS_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ListenerRPCServer).UpdatePipelineTLS(ctx, req.(*clientpb.PipelineTLSUpdate))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1580,6 +1614,10 @@ var ListenerRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SyncPipeline",
 			Handler:    _ListenerRPC_SyncPipeline_Handler,
+		},
+		{
+			MethodName: "UpdatePipelineTLS",
+			Handler:    _ListenerRPC_UpdatePipelineTLS_Handler,
 		},
 		{
 			MethodName: "RegisterWebsite",
