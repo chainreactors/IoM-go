@@ -197,6 +197,9 @@ const (
 	MaliceRPC_UpdateProject_FullMethodName             = "/clientrpc.MaliceRPC/UpdateProject"
 	MaliceRPC_DeleteProject_FullMethodName             = "/clientrpc.MaliceRPC/DeleteProject"
 	MaliceRPC_EventsV2_FullMethodName                  = "/clientrpc.MaliceRPC/EventsV2"
+	MaliceRPC_ListSessionLinks_FullMethodName          = "/clientrpc.MaliceRPC/ListSessionLinks"
+	MaliceRPC_SetSessionLink_FullMethodName            = "/clientrpc.MaliceRPC/SetSessionLink"
+	MaliceRPC_RemoveSessionLink_FullMethodName         = "/clientrpc.MaliceRPC/RemoveSessionLink"
 )
 
 // MaliceRPCClient is the client API for MaliceRPC service.
@@ -413,6 +416,10 @@ type MaliceRPCClient interface {
 	DeleteProject(ctx context.Context, in *clientpb.DeleteProjectRequest, opts ...grpc.CallOption) (*clientpb.Empty, error)
 	// resumable event stream; appended to preserve legacy method ordering
 	EventsV2(ctx context.Context, in *clientpb.EventSubscription, opts ...grpc.CallOption) (grpc.ServerStreamingClient[clientpb.EventEnvelope], error)
+	// manual session topology; appended to preserve legacy method ordering
+	ListSessionLinks(ctx context.Context, in *clientpb.SessionLinkRequest, opts ...grpc.CallOption) (*clientpb.SessionLinks, error)
+	SetSessionLink(ctx context.Context, in *clientpb.SessionLinkRequest, opts ...grpc.CallOption) (*clientpb.SessionLink, error)
+	RemoveSessionLink(ctx context.Context, in *clientpb.SessionLinkRequest, opts ...grpc.CallOption) (*clientpb.Empty, error)
 }
 
 type maliceRPCClient struct {
@@ -2209,6 +2216,36 @@ func (c *maliceRPCClient) EventsV2(ctx context.Context, in *clientpb.EventSubscr
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type MaliceRPC_EventsV2Client = grpc.ServerStreamingClient[clientpb.EventEnvelope]
 
+func (c *maliceRPCClient) ListSessionLinks(ctx context.Context, in *clientpb.SessionLinkRequest, opts ...grpc.CallOption) (*clientpb.SessionLinks, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(clientpb.SessionLinks)
+	err := c.cc.Invoke(ctx, MaliceRPC_ListSessionLinks_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *maliceRPCClient) SetSessionLink(ctx context.Context, in *clientpb.SessionLinkRequest, opts ...grpc.CallOption) (*clientpb.SessionLink, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(clientpb.SessionLink)
+	err := c.cc.Invoke(ctx, MaliceRPC_SetSessionLink_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *maliceRPCClient) RemoveSessionLink(ctx context.Context, in *clientpb.SessionLinkRequest, opts ...grpc.CallOption) (*clientpb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(clientpb.Empty)
+	err := c.cc.Invoke(ctx, MaliceRPC_RemoveSessionLink_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MaliceRPCServer is the server API for MaliceRPC service.
 // All implementations must embed UnimplementedMaliceRPCServer
 // for forward compatibility.
@@ -2423,6 +2460,10 @@ type MaliceRPCServer interface {
 	DeleteProject(context.Context, *clientpb.DeleteProjectRequest) (*clientpb.Empty, error)
 	// resumable event stream; appended to preserve legacy method ordering
 	EventsV2(*clientpb.EventSubscription, grpc.ServerStreamingServer[clientpb.EventEnvelope]) error
+	// manual session topology; appended to preserve legacy method ordering
+	ListSessionLinks(context.Context, *clientpb.SessionLinkRequest) (*clientpb.SessionLinks, error)
+	SetSessionLink(context.Context, *clientpb.SessionLinkRequest) (*clientpb.SessionLink, error)
+	RemoveSessionLink(context.Context, *clientpb.SessionLinkRequest) (*clientpb.Empty, error)
 	mustEmbedUnimplementedMaliceRPCServer()
 }
 
@@ -2957,6 +2998,15 @@ func (UnimplementedMaliceRPCServer) DeleteProject(context.Context, *clientpb.Del
 }
 func (UnimplementedMaliceRPCServer) EventsV2(*clientpb.EventSubscription, grpc.ServerStreamingServer[clientpb.EventEnvelope]) error {
 	return status.Errorf(codes.Unimplemented, "method EventsV2 not implemented")
+}
+func (UnimplementedMaliceRPCServer) ListSessionLinks(context.Context, *clientpb.SessionLinkRequest) (*clientpb.SessionLinks, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListSessionLinks not implemented")
+}
+func (UnimplementedMaliceRPCServer) SetSessionLink(context.Context, *clientpb.SessionLinkRequest) (*clientpb.SessionLink, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetSessionLink not implemented")
+}
+func (UnimplementedMaliceRPCServer) RemoveSessionLink(context.Context, *clientpb.SessionLinkRequest) (*clientpb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveSessionLink not implemented")
 }
 func (UnimplementedMaliceRPCServer) mustEmbedUnimplementedMaliceRPCServer() {}
 func (UnimplementedMaliceRPCServer) testEmbeddedByValue()                   {}
@@ -6101,6 +6151,60 @@ func _MaliceRPC_EventsV2_Handler(srv interface{}, stream grpc.ServerStream) erro
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type MaliceRPC_EventsV2Server = grpc.ServerStreamingServer[clientpb.EventEnvelope]
 
+func _MaliceRPC_ListSessionLinks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.SessionLinkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).ListSessionLinks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MaliceRPC_ListSessionLinks_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).ListSessionLinks(ctx, req.(*clientpb.SessionLinkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaliceRPC_SetSessionLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.SessionLinkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).SetSessionLink(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MaliceRPC_SetSessionLink_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).SetSessionLink(ctx, req.(*clientpb.SessionLinkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MaliceRPC_RemoveSessionLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(clientpb.SessionLinkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MaliceRPCServer).RemoveSessionLink(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MaliceRPC_RemoveSessionLink_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MaliceRPCServer).RemoveSessionLink(ctx, req.(*clientpb.SessionLinkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MaliceRPC_ServiceDesc is the grpc.ServiceDesc for MaliceRPC service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -6791,6 +6895,18 @@ var MaliceRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteProject",
 			Handler:    _MaliceRPC_DeleteProject_Handler,
+		},
+		{
+			MethodName: "ListSessionLinks",
+			Handler:    _MaliceRPC_ListSessionLinks_Handler,
+		},
+		{
+			MethodName: "SetSessionLink",
+			Handler:    _MaliceRPC_SetSessionLink_Handler,
+		},
+		{
+			MethodName: "RemoveSessionLink",
+			Handler:    _MaliceRPC_RemoveSessionLink_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
