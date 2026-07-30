@@ -5,6 +5,7 @@ import "time"
 // Default config
 const (
 	MinTimeout                  = time.Duration(30 * time.Second)
+	TaskTimeout                 = time.Duration(60 * time.Second)
 	KB                          = 1024
 	MB                          = KB * 1024
 	GB                          = MB * 1024
