@@ -44,6 +44,7 @@ const (
 	CtrlJobStop                 = "job_stop"
 	CtrlSessionRegister         = "session_register"
 	CtrlSessionUpdate           = "session_update"
+	CtrlSessionDelete           = "session_delete"
 	CtrlSessionDead             = "session_dead"
 	CtrlSessionInit             = "session_init"
 	CtrlSessionReborn           = "session_reborn"
