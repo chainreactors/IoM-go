@@ -28,6 +28,8 @@ type ClientConfig struct {
 	CACertificate string `json:"ca" yaml:"ca"`
 	PrivateKey    string `json:"key" yaml:"key"`
 	Certificate   string `json:"cert" yaml:"cert"`
+	// ForwardControllerFingerprint pins the trusted controller's leaf certificate (SHA-256).
+	ForwardControllerFingerprint string `json:"forward_controller_fingerprint,omitempty" yaml:"forward_controller_fingerprint,omitempty"`
 }
 
 func (c *ClientConfig) Address() string {
