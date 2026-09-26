@@ -6866,6 +6866,8 @@ type RootRPCClient interface {
 	GetListenerRuntime(ctx context.Context, in *rootpb.ListenerRuntimeRequest, opts ...grpc.CallOption) (*rootpb.ListenerRuntime, error)
 	CloseListenerRuntimeAdmission(ctx context.Context, in *rootpb.CloseListenerRuntimeAdmissionRequest, opts ...grpc.CallOption) (*rootpb.ListenerRuntimeClosure, error)
 	GetListenerRuntimeClosure(ctx context.Context, in *rootpb.ListenerRuntimeOperationRequest, opts ...grpc.CallOption) (*rootpb.ListenerRuntimeClosure, error)
+	IssueListenerRuntimeCredential(ctx context.Context, in *rootpb.IssueListenerRuntimeCredentialRequest, opts ...grpc.CallOption) (*rootpb.ListenerRuntimeCredentialOperation, error)
+	GetListenerRuntimeCredentialOperation(ctx context.Context, in *rootpb.ListenerRuntimeOperationRequest, opts ...grpc.CallOption) (*rootpb.ListenerRuntimeCredentialOperation, error)
 }
 
 type rootRPCClient struct {
@@ -7029,6 +7031,24 @@ func (c *rootRPCClient) GetListenerRuntimeClosure(ctx context.Context, in *rootp
 	return out, nil
 }
 
+func (c *rootRPCClient) IssueListenerRuntimeCredential(ctx context.Context, in *rootpb.IssueListenerRuntimeCredentialRequest, opts ...grpc.CallOption) (*rootpb.ListenerRuntimeCredentialOperation, error) {
+	out := new(rootpb.ListenerRuntimeCredentialOperation)
+	err := c.cc.Invoke(ctx, "/clientrpc.RootRPC/IssueListenerRuntimeCredential", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rootRPCClient) GetListenerRuntimeCredentialOperation(ctx context.Context, in *rootpb.ListenerRuntimeOperationRequest, opts ...grpc.CallOption) (*rootpb.ListenerRuntimeCredentialOperation, error) {
+	out := new(rootpb.ListenerRuntimeCredentialOperation)
+	err := c.cc.Invoke(ctx, "/clientrpc.RootRPC/GetListenerRuntimeCredentialOperation", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RootRPCServer is the server API for RootRPC service.
 // All implementations must embed UnimplementedRootRPCServer
 // for forward compatibility
@@ -7051,6 +7071,8 @@ type RootRPCServer interface {
 	GetListenerRuntime(context.Context, *rootpb.ListenerRuntimeRequest) (*rootpb.ListenerRuntime, error)
 	CloseListenerRuntimeAdmission(context.Context, *rootpb.CloseListenerRuntimeAdmissionRequest) (*rootpb.ListenerRuntimeClosure, error)
 	GetListenerRuntimeClosure(context.Context, *rootpb.ListenerRuntimeOperationRequest) (*rootpb.ListenerRuntimeClosure, error)
+	IssueListenerRuntimeCredential(context.Context, *rootpb.IssueListenerRuntimeCredentialRequest) (*rootpb.ListenerRuntimeCredentialOperation, error)
+	GetListenerRuntimeCredentialOperation(context.Context, *rootpb.ListenerRuntimeOperationRequest) (*rootpb.ListenerRuntimeCredentialOperation, error)
 	mustEmbedUnimplementedRootRPCServer()
 }
 
@@ -7108,6 +7130,12 @@ func (UnimplementedRootRPCServer) CloseListenerRuntimeAdmission(context.Context,
 }
 func (UnimplementedRootRPCServer) GetListenerRuntimeClosure(context.Context, *rootpb.ListenerRuntimeOperationRequest) (*rootpb.ListenerRuntimeClosure, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListenerRuntimeClosure not implemented")
+}
+func (UnimplementedRootRPCServer) IssueListenerRuntimeCredential(context.Context, *rootpb.IssueListenerRuntimeCredentialRequest) (*rootpb.ListenerRuntimeCredentialOperation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method IssueListenerRuntimeCredential not implemented")
+}
+func (UnimplementedRootRPCServer) GetListenerRuntimeCredentialOperation(context.Context, *rootpb.ListenerRuntimeOperationRequest) (*rootpb.ListenerRuntimeCredentialOperation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetListenerRuntimeCredentialOperation not implemented")
 }
 func (UnimplementedRootRPCServer) mustEmbedUnimplementedRootRPCServer() {}
 
@@ -7428,6 +7456,42 @@ func _RootRPC_GetListenerRuntimeClosure_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RootRPC_IssueListenerRuntimeCredential_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(rootpb.IssueListenerRuntimeCredentialRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RootRPCServer).IssueListenerRuntimeCredential(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.RootRPC/IssueListenerRuntimeCredential",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RootRPCServer).IssueListenerRuntimeCredential(ctx, req.(*rootpb.IssueListenerRuntimeCredentialRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RootRPC_GetListenerRuntimeCredentialOperation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(rootpb.ListenerRuntimeOperationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RootRPCServer).GetListenerRuntimeCredentialOperation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.RootRPC/GetListenerRuntimeCredentialOperation",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RootRPCServer).GetListenerRuntimeCredentialOperation(ctx, req.(*rootpb.ListenerRuntimeOperationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RootRPC_ServiceDesc is the grpc.ServiceDesc for RootRPC service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -7502,6 +7566,14 @@ var RootRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetListenerRuntimeClosure",
 			Handler:    _RootRPC_GetListenerRuntimeClosure_Handler,
+		},
+		{
+			MethodName: "IssueListenerRuntimeCredential",
+			Handler:    _RootRPC_IssueListenerRuntimeCredential_Handler,
+		},
+		{
+			MethodName: "GetListenerRuntimeCredentialOperation",
+			Handler:    _RootRPC_GetListenerRuntimeCredentialOperation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
