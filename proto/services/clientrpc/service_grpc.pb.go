@@ -6861,6 +6861,11 @@ type RootRPCClient interface {
 	GetListenerIdentityConfig(ctx context.Context, in *rootpb.ListenerIdentityRequest, opts ...grpc.CallOption) (*rootpb.ListenerIdentityConfig, error)
 	RemoveListenerIdentity(ctx context.Context, in *rootpb.RemoveListenerIdentityRequest, opts ...grpc.CallOption) (*rootpb.ListenerIdentityRemoval, error)
 	GetListenerIdentityRemoval(ctx context.Context, in *rootpb.ListenerIdentityOperationRequest, opts ...grpc.CallOption) (*rootpb.ListenerIdentityRemoval, error)
+	PrepareListenerRuntime(ctx context.Context, in *rootpb.PrepareListenerRuntimeRequest, opts ...grpc.CallOption) (*rootpb.ListenerRuntimePreparation, error)
+	GetListenerRuntimePreparation(ctx context.Context, in *rootpb.ListenerRuntimeOperationRequest, opts ...grpc.CallOption) (*rootpb.ListenerRuntimePreparation, error)
+	GetListenerRuntime(ctx context.Context, in *rootpb.ListenerRuntimeRequest, opts ...grpc.CallOption) (*rootpb.ListenerRuntime, error)
+	CloseListenerRuntimeAdmission(ctx context.Context, in *rootpb.CloseListenerRuntimeAdmissionRequest, opts ...grpc.CallOption) (*rootpb.ListenerRuntimeClosure, error)
+	GetListenerRuntimeClosure(ctx context.Context, in *rootpb.ListenerRuntimeOperationRequest, opts ...grpc.CallOption) (*rootpb.ListenerRuntimeClosure, error)
 }
 
 type rootRPCClient struct {
@@ -6979,6 +6984,51 @@ func (c *rootRPCClient) GetListenerIdentityRemoval(ctx context.Context, in *root
 	return out, nil
 }
 
+func (c *rootRPCClient) PrepareListenerRuntime(ctx context.Context, in *rootpb.PrepareListenerRuntimeRequest, opts ...grpc.CallOption) (*rootpb.ListenerRuntimePreparation, error) {
+	out := new(rootpb.ListenerRuntimePreparation)
+	err := c.cc.Invoke(ctx, "/clientrpc.RootRPC/PrepareListenerRuntime", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rootRPCClient) GetListenerRuntimePreparation(ctx context.Context, in *rootpb.ListenerRuntimeOperationRequest, opts ...grpc.CallOption) (*rootpb.ListenerRuntimePreparation, error) {
+	out := new(rootpb.ListenerRuntimePreparation)
+	err := c.cc.Invoke(ctx, "/clientrpc.RootRPC/GetListenerRuntimePreparation", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rootRPCClient) GetListenerRuntime(ctx context.Context, in *rootpb.ListenerRuntimeRequest, opts ...grpc.CallOption) (*rootpb.ListenerRuntime, error) {
+	out := new(rootpb.ListenerRuntime)
+	err := c.cc.Invoke(ctx, "/clientrpc.RootRPC/GetListenerRuntime", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rootRPCClient) CloseListenerRuntimeAdmission(ctx context.Context, in *rootpb.CloseListenerRuntimeAdmissionRequest, opts ...grpc.CallOption) (*rootpb.ListenerRuntimeClosure, error) {
+	out := new(rootpb.ListenerRuntimeClosure)
+	err := c.cc.Invoke(ctx, "/clientrpc.RootRPC/CloseListenerRuntimeAdmission", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rootRPCClient) GetListenerRuntimeClosure(ctx context.Context, in *rootpb.ListenerRuntimeOperationRequest, opts ...grpc.CallOption) (*rootpb.ListenerRuntimeClosure, error) {
+	out := new(rootpb.ListenerRuntimeClosure)
+	err := c.cc.Invoke(ctx, "/clientrpc.RootRPC/GetListenerRuntimeClosure", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RootRPCServer is the server API for RootRPC service.
 // All implementations must embed UnimplementedRootRPCServer
 // for forward compatibility
@@ -6996,6 +7046,11 @@ type RootRPCServer interface {
 	GetListenerIdentityConfig(context.Context, *rootpb.ListenerIdentityRequest) (*rootpb.ListenerIdentityConfig, error)
 	RemoveListenerIdentity(context.Context, *rootpb.RemoveListenerIdentityRequest) (*rootpb.ListenerIdentityRemoval, error)
 	GetListenerIdentityRemoval(context.Context, *rootpb.ListenerIdentityOperationRequest) (*rootpb.ListenerIdentityRemoval, error)
+	PrepareListenerRuntime(context.Context, *rootpb.PrepareListenerRuntimeRequest) (*rootpb.ListenerRuntimePreparation, error)
+	GetListenerRuntimePreparation(context.Context, *rootpb.ListenerRuntimeOperationRequest) (*rootpb.ListenerRuntimePreparation, error)
+	GetListenerRuntime(context.Context, *rootpb.ListenerRuntimeRequest) (*rootpb.ListenerRuntime, error)
+	CloseListenerRuntimeAdmission(context.Context, *rootpb.CloseListenerRuntimeAdmissionRequest) (*rootpb.ListenerRuntimeClosure, error)
+	GetListenerRuntimeClosure(context.Context, *rootpb.ListenerRuntimeOperationRequest) (*rootpb.ListenerRuntimeClosure, error)
 	mustEmbedUnimplementedRootRPCServer()
 }
 
@@ -7038,6 +7093,21 @@ func (UnimplementedRootRPCServer) RemoveListenerIdentity(context.Context, *rootp
 }
 func (UnimplementedRootRPCServer) GetListenerIdentityRemoval(context.Context, *rootpb.ListenerIdentityOperationRequest) (*rootpb.ListenerIdentityRemoval, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListenerIdentityRemoval not implemented")
+}
+func (UnimplementedRootRPCServer) PrepareListenerRuntime(context.Context, *rootpb.PrepareListenerRuntimeRequest) (*rootpb.ListenerRuntimePreparation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PrepareListenerRuntime not implemented")
+}
+func (UnimplementedRootRPCServer) GetListenerRuntimePreparation(context.Context, *rootpb.ListenerRuntimeOperationRequest) (*rootpb.ListenerRuntimePreparation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetListenerRuntimePreparation not implemented")
+}
+func (UnimplementedRootRPCServer) GetListenerRuntime(context.Context, *rootpb.ListenerRuntimeRequest) (*rootpb.ListenerRuntime, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetListenerRuntime not implemented")
+}
+func (UnimplementedRootRPCServer) CloseListenerRuntimeAdmission(context.Context, *rootpb.CloseListenerRuntimeAdmissionRequest) (*rootpb.ListenerRuntimeClosure, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CloseListenerRuntimeAdmission not implemented")
+}
+func (UnimplementedRootRPCServer) GetListenerRuntimeClosure(context.Context, *rootpb.ListenerRuntimeOperationRequest) (*rootpb.ListenerRuntimeClosure, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetListenerRuntimeClosure not implemented")
 }
 func (UnimplementedRootRPCServer) mustEmbedUnimplementedRootRPCServer() {}
 
@@ -7268,6 +7338,96 @@ func _RootRPC_GetListenerIdentityRemoval_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RootRPC_PrepareListenerRuntime_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(rootpb.PrepareListenerRuntimeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RootRPCServer).PrepareListenerRuntime(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.RootRPC/PrepareListenerRuntime",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RootRPCServer).PrepareListenerRuntime(ctx, req.(*rootpb.PrepareListenerRuntimeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RootRPC_GetListenerRuntimePreparation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(rootpb.ListenerRuntimeOperationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RootRPCServer).GetListenerRuntimePreparation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.RootRPC/GetListenerRuntimePreparation",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RootRPCServer).GetListenerRuntimePreparation(ctx, req.(*rootpb.ListenerRuntimeOperationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RootRPC_GetListenerRuntime_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(rootpb.ListenerRuntimeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RootRPCServer).GetListenerRuntime(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.RootRPC/GetListenerRuntime",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RootRPCServer).GetListenerRuntime(ctx, req.(*rootpb.ListenerRuntimeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RootRPC_CloseListenerRuntimeAdmission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(rootpb.CloseListenerRuntimeAdmissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RootRPCServer).CloseListenerRuntimeAdmission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.RootRPC/CloseListenerRuntimeAdmission",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RootRPCServer).CloseListenerRuntimeAdmission(ctx, req.(*rootpb.CloseListenerRuntimeAdmissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RootRPC_GetListenerRuntimeClosure_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(rootpb.ListenerRuntimeOperationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RootRPCServer).GetListenerRuntimeClosure(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.RootRPC/GetListenerRuntimeClosure",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RootRPCServer).GetListenerRuntimeClosure(ctx, req.(*rootpb.ListenerRuntimeOperationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RootRPC_ServiceDesc is the grpc.ServiceDesc for RootRPC service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -7322,6 +7482,26 @@ var RootRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetListenerIdentityRemoval",
 			Handler:    _RootRPC_GetListenerIdentityRemoval_Handler,
+		},
+		{
+			MethodName: "PrepareListenerRuntime",
+			Handler:    _RootRPC_PrepareListenerRuntime_Handler,
+		},
+		{
+			MethodName: "GetListenerRuntimePreparation",
+			Handler:    _RootRPC_GetListenerRuntimePreparation_Handler,
+		},
+		{
+			MethodName: "GetListenerRuntime",
+			Handler:    _RootRPC_GetListenerRuntime_Handler,
+		},
+		{
+			MethodName: "CloseListenerRuntimeAdmission",
+			Handler:    _RootRPC_CloseListenerRuntimeAdmission_Handler,
+		},
+		{
+			MethodName: "GetListenerRuntimeClosure",
+			Handler:    _RootRPC_GetListenerRuntimeClosure_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
