@@ -6859,6 +6859,8 @@ type RootRPCClient interface {
 	GetListenerIdentityOperation(ctx context.Context, in *rootpb.ListenerIdentityOperationRequest, opts ...grpc.CallOption) (*rootpb.ListenerIdentityOperation, error)
 	GetListenerIdentity(ctx context.Context, in *rootpb.ListenerIdentityRequest, opts ...grpc.CallOption) (*rootpb.ListenerIdentity, error)
 	GetListenerIdentityConfig(ctx context.Context, in *rootpb.ListenerIdentityRequest, opts ...grpc.CallOption) (*rootpb.ListenerIdentityConfig, error)
+	RemoveListenerIdentity(ctx context.Context, in *rootpb.RemoveListenerIdentityRequest, opts ...grpc.CallOption) (*rootpb.ListenerIdentityRemoval, error)
+	GetListenerIdentityRemoval(ctx context.Context, in *rootpb.ListenerIdentityOperationRequest, opts ...grpc.CallOption) (*rootpb.ListenerIdentityRemoval, error)
 }
 
 type rootRPCClient struct {
@@ -6959,6 +6961,24 @@ func (c *rootRPCClient) GetListenerIdentityConfig(ctx context.Context, in *rootp
 	return out, nil
 }
 
+func (c *rootRPCClient) RemoveListenerIdentity(ctx context.Context, in *rootpb.RemoveListenerIdentityRequest, opts ...grpc.CallOption) (*rootpb.ListenerIdentityRemoval, error) {
+	out := new(rootpb.ListenerIdentityRemoval)
+	err := c.cc.Invoke(ctx, "/clientrpc.RootRPC/RemoveListenerIdentity", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rootRPCClient) GetListenerIdentityRemoval(ctx context.Context, in *rootpb.ListenerIdentityOperationRequest, opts ...grpc.CallOption) (*rootpb.ListenerIdentityRemoval, error) {
+	out := new(rootpb.ListenerIdentityRemoval)
+	err := c.cc.Invoke(ctx, "/clientrpc.RootRPC/GetListenerIdentityRemoval", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RootRPCServer is the server API for RootRPC service.
 // All implementations must embed UnimplementedRootRPCServer
 // for forward compatibility
@@ -6974,6 +6994,8 @@ type RootRPCServer interface {
 	GetListenerIdentityOperation(context.Context, *rootpb.ListenerIdentityOperationRequest) (*rootpb.ListenerIdentityOperation, error)
 	GetListenerIdentity(context.Context, *rootpb.ListenerIdentityRequest) (*rootpb.ListenerIdentity, error)
 	GetListenerIdentityConfig(context.Context, *rootpb.ListenerIdentityRequest) (*rootpb.ListenerIdentityConfig, error)
+	RemoveListenerIdentity(context.Context, *rootpb.RemoveListenerIdentityRequest) (*rootpb.ListenerIdentityRemoval, error)
+	GetListenerIdentityRemoval(context.Context, *rootpb.ListenerIdentityOperationRequest) (*rootpb.ListenerIdentityRemoval, error)
 	mustEmbedUnimplementedRootRPCServer()
 }
 
@@ -7010,6 +7032,12 @@ func (UnimplementedRootRPCServer) GetListenerIdentity(context.Context, *rootpb.L
 }
 func (UnimplementedRootRPCServer) GetListenerIdentityConfig(context.Context, *rootpb.ListenerIdentityRequest) (*rootpb.ListenerIdentityConfig, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetListenerIdentityConfig not implemented")
+}
+func (UnimplementedRootRPCServer) RemoveListenerIdentity(context.Context, *rootpb.RemoveListenerIdentityRequest) (*rootpb.ListenerIdentityRemoval, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveListenerIdentity not implemented")
+}
+func (UnimplementedRootRPCServer) GetListenerIdentityRemoval(context.Context, *rootpb.ListenerIdentityOperationRequest) (*rootpb.ListenerIdentityRemoval, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetListenerIdentityRemoval not implemented")
 }
 func (UnimplementedRootRPCServer) mustEmbedUnimplementedRootRPCServer() {}
 
@@ -7204,6 +7232,42 @@ func _RootRPC_GetListenerIdentityConfig_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RootRPC_RemoveListenerIdentity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(rootpb.RemoveListenerIdentityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RootRPCServer).RemoveListenerIdentity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.RootRPC/RemoveListenerIdentity",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RootRPCServer).RemoveListenerIdentity(ctx, req.(*rootpb.RemoveListenerIdentityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RootRPC_GetListenerIdentityRemoval_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(rootpb.ListenerIdentityOperationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RootRPCServer).GetListenerIdentityRemoval(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/clientrpc.RootRPC/GetListenerIdentityRemoval",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RootRPCServer).GetListenerIdentityRemoval(ctx, req.(*rootpb.ListenerIdentityOperationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RootRPC_ServiceDesc is the grpc.ServiceDesc for RootRPC service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -7250,6 +7314,14 @@ var RootRPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetListenerIdentityConfig",
 			Handler:    _RootRPC_GetListenerIdentityConfig_Handler,
+		},
+		{
+			MethodName: "RemoveListenerIdentity",
+			Handler:    _RootRPC_RemoveListenerIdentity_Handler,
+		},
+		{
+			MethodName: "GetListenerIdentityRemoval",
+			Handler:    _RootRPC_GetListenerIdentityRemoval_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
